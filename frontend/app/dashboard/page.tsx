@@ -69,17 +69,32 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="mt-6 rounded-lg border border-white/10 bg-white/5 p-6">
-          <h2 className="text-lg font-semibold">Hồ sơ nghề nghiệp</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-            Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho các bước Career Diagnosis và roadmap cá nhân hóa sau này.
-          </p>
-          <Link
-            href="/profile"
-            className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
-          >
-            Cập nhật hồ sơ nghề nghiệp
-          </Link>
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold">Hồ sơ nghề nghiệp</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho Career Diagnosis và roadmap cá nhân hóa.
+            </p>
+            <Link
+              href="/profile"
+              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            >
+              Cập nhật hồ sơ
+            </Link>
+          </div>
+
+          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold">CV và Job Description</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Upload CV PDF và lưu JD mục tiêu. Đây là dữ liệu nền cho Resume ↔ Job Matching ở phase AI MVP.
+            </p>
+            <Link
+              href="/documents"
+              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            >
+              Quản lý CV và JD
+            </Link>
+          </div>
         </div>
       </section>
     </main>

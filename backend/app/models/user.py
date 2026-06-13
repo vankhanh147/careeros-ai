@@ -28,3 +28,7 @@ class User(Base):
         cascade="all, delete-orphan",
         uselist=False,
     )
+    resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
+    job_descriptions = relationship(
+        "JobDescription", back_populates="user", cascade="all, delete-orphan"
+    )

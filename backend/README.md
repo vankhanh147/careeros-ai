@@ -37,13 +37,27 @@ Backend URL: `http://localhost:8000`
 
 Health check: `GET http://localhost:8000/health`
 
+The app creates initial tables at startup through SQLAlchemy metadata. This keeps the MVP simple; migrations can be added later when schema changes become more frequent.
+
 ## Auth endpoints
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 
-The app creates the initial `users` table at startup through SQLAlchemy metadata. This keeps the MVP simple; migrations can be added later when schema changes become more frequent.
+## Career profile endpoints
+
+- `GET /api/career-profile/me`
+- `PUT /api/career-profile/me`
+
+## Resume and job description endpoints
+
+- `POST /api/resumes/upload`
+- `GET /api/resumes/me`
+- `POST /api/job-descriptions`
+- `GET /api/job-descriptions/me`
+
+Uploaded PDFs are stored locally in `backend/uploads/resumes` for now. The database stores `storage_path` and nullable `file_url`, so the storage layer can move to Supabase Storage later without changing the core API shape.
 
 ## Manual test with curl
 
@@ -63,10 +77,36 @@ curl -X POST http://localhost:8000/api/auth/login \
   -d '{"email":"user@example.com","password":"password123"}'
 ```
 
-Use the returned `access_token`:
+Use the returned `access_token` for protected endpoints.
+
+Upload resume PDF:
 
 ```bash
-curl http://localhost:8000/api/auth/me \
+curl -X POST http://localhost:8000/api/resumes/upload \
+  -H "Authorization: Bearer <access_token>" \
+  -F "file=@/path/to/resume.pdf"
+```
+
+List uploaded resumes:
+
+```bash
+curl http://localhost:8000/api/resumes/me \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Create job description:
+
+```bash
+curl -X POST http://localhost:8000/api/job-descriptions \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Backend Intern","company":"Example Co","content":"We need Python, FastAPI and PostgreSQL.","source_url":"https://example.com/jobs/backend-intern"}'
+```
+
+List job descriptions:
+
+```bash
+curl http://localhost:8000/api/job-descriptions/me \
   -H "Authorization: Bearer <access_token>"
 ```
 
