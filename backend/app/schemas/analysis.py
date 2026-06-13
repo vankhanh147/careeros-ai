@@ -11,7 +11,8 @@ class ResumeJobMatchRequest(BaseModel):
 class ScoringBreakdown(BaseModel):
     skill_score: float
     keyword_score: float
-    length_score: float
+    semantic_score: float
+    length_sanity: float
     final_score: float
 
 

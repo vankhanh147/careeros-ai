@@ -1,8 +1,14 @@
 from collections import Counter
+import os
 from pathlib import Path
 import re
+from typing import Any
 
 from pypdf import PdfReader
+
+SEMANTIC_MODEL_NAME = "all-MiniLM-L6-v2"
+SEMANTIC_MODEL: Any | None = None
+SEMANTIC_MODEL_LOAD_ERROR: str | None = None
 
 SKILL_ALIASES = {
     "js": "javascript",
@@ -120,6 +126,7 @@ STOPWORDS = {
 }
 
 PREVIEW_LENGTH = 1200
+MIN_TEXT_LENGTH_FOR_SEMANTIC = 80
 
 
 def extract_pdf_text(storage_path: str) -> str:
@@ -150,19 +157,32 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
     matched_skills = sorted(set(resume_skills).intersection(jd_skills))
     missing_skills = sorted(set(jd_skills).difference(resume_skills))
     overlapping_keywords = _keyword_overlap(resume_text, job_description_text)
+    semantic_score, semantic_available = _semantic_score(resume_text, job_description_text)
 
-    skill_score = round(_skill_score(matched_skills, jd_skills), 1)
-    keyword_score = round(_keyword_score(overlapping_keywords, job_description_text), 1)
-    length_score = round(_length_sanity_score(resume_text, job_description_text), 1)
-    match_score = round(min(100, skill_score + keyword_score + length_score), 1)
+    if semantic_available:
+        skill_score = round(_skill_score(matched_skills, jd_skills, max_score=45.0), 1)
+        keyword_score = round(_keyword_score(overlapping_keywords, job_description_text, max_score=20.0), 1)
+        length_sanity = round(_length_sanity_score(resume_text, job_description_text, max_score=10.0), 1)
+        final_score = round(min(100, skill_score + keyword_score + semantic_score + length_sanity), 1)
+    else:
+        skill_score = round(_skill_score(matched_skills, jd_skills, max_score=65.0), 1)
+        keyword_score = round(_keyword_score(overlapping_keywords, job_description_text, max_score=25.0), 1)
+        length_sanity = round(_length_sanity_score(resume_text, job_description_text, max_score=10.0), 1)
+        final_score = round(min(100, skill_score + keyword_score + length_sanity), 1)
 
     return {
-        "match_score": match_score,
+        "match_score": final_score,
         "matched_skills": matched_skills,
         "missing_skills": missing_skills,
         "keyword_overlap": overlapping_keywords,
-        "summary": _build_summary(match_score, matched_skills, missing_skills),
-        "suggestions": _build_suggestions(missing_skills, resume_text, job_description_text),
+        "summary": _build_summary(final_score, matched_skills, missing_skills, semantic_score, semantic_available),
+        "suggestions": _build_suggestions(
+            missing_skills=missing_skills,
+            resume_text=resume_text,
+            job_description_text=job_description_text,
+            semantic_score=semantic_score,
+            semantic_available=semantic_available,
+        ),
         "resume_text_preview": build_text_preview(resume_text),
         "jd_text_preview": build_text_preview(job_description_text),
         "resume_detected_skills": resume_skills,
@@ -170,8 +190,9 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "scoring_breakdown": {
             "skill_score": skill_score,
             "keyword_score": keyword_score,
-            "length_score": length_score,
-            "final_score": match_score,
+            "semantic_score": semantic_score,
+            "length_sanity": length_sanity,
+            "final_score": final_score,
         },
     }
 
@@ -222,30 +243,77 @@ def _keyword_overlap(resume_text: str, job_description_text: str) -> list[str]:
     return ranked[:25]
 
 
-def _skill_score(matched_skills: list[str], jd_skills: list[str]) -> float:
+def _skill_score(matched_skills: list[str], jd_skills: list[str], max_score: float) -> float:
     if not jd_skills:
-        return 20.0 if matched_skills else 0.0
-    return (len(matched_skills) / len(set(jd_skills))) * 65.0
+        return min(20.0, max_score) if matched_skills else 0.0
+    return (len(matched_skills) / len(set(jd_skills))) * max_score
 
 
-def _keyword_score(overlapping_keywords: list[str], job_description_text: str) -> float:
+def _keyword_score(overlapping_keywords: list[str], job_description_text: str, max_score: float) -> float:
     jd_keyword_count = max(len(_keywords(job_description_text)), 1)
-    return min(25.0, (len(overlapping_keywords) / min(jd_keyword_count, 30)) * 25.0)
+    return min(max_score, (len(overlapping_keywords) / min(jd_keyword_count, 30)) * max_score)
 
 
-def _length_sanity_score(resume_text: str, job_description_text: str) -> float:
+def _length_sanity_score(resume_text: str, job_description_text: str, max_score: float) -> float:
     resume_length = len(resume_text.strip())
     jd_length = len(job_description_text.strip())
     if resume_length >= 800 and jd_length >= 300:
-        return 10.0
+        return max_score
     if resume_length >= 400 and jd_length >= 150:
-        return 6.0
+        return max_score * 0.6
     if resume_length >= 150 and jd_length >= 80:
-        return 3.0
+        return max_score * 0.3
     return 0.0
 
 
-def _build_summary(match_score: float, matched_skills: list[str], missing_skills: list[str]) -> str:
+def _semantic_score(resume_text: str, job_description_text: str) -> tuple[float, bool]:
+    if len(resume_text.strip()) < MIN_TEXT_LENGTH_FOR_SEMANTIC or len(job_description_text.strip()) < MIN_TEXT_LENGTH_FOR_SEMANTIC:
+        return 0.0, False
+
+    model = _get_semantic_model()
+    if model is None:
+        return 0.0, False
+
+    try:
+        embeddings = model.encode(
+            [resume_text, job_description_text],
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        cosine_similarity = float(embeddings[0] @ embeddings[1])
+        normalized_similarity = max(0.0, min(1.0, cosine_similarity))
+        return round(normalized_similarity * 25.0, 1), True
+    except Exception:
+        return 0.0, False
+
+
+def _get_semantic_model() -> Any | None:
+    global SEMANTIC_MODEL, SEMANTIC_MODEL_LOAD_ERROR
+
+    if SEMANTIC_MODEL is not None:
+        return SEMANTIC_MODEL
+    if SEMANTIC_MODEL_LOAD_ERROR is not None:
+        return None
+
+    try:
+        from sentence_transformers import SentenceTransformer
+
+        local_files_only = os.getenv("SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY", "true").lower() != "false"
+        SEMANTIC_MODEL = SentenceTransformer(SEMANTIC_MODEL_NAME, local_files_only=local_files_only)
+        return SEMANTIC_MODEL
+    except Exception as exc:
+        SEMANTIC_MODEL_LOAD_ERROR = str(exc)
+        return None
+
+
+def _build_summary(
+    match_score: float,
+    matched_skills: list[str],
+    missing_skills: list[str],
+    semantic_score: float,
+    semantic_available: bool,
+) -> str:
     if match_score >= 80:
         level = "mức độ phù hợp cao"
     elif match_score >= 60:
@@ -257,14 +325,36 @@ def _build_summary(match_score: float, matched_skills: list[str], missing_skills
 
     matched_text = ", ".join(matched_skills[:5]) if matched_skills else "chưa phát hiện kỹ năng trùng khớp rõ ràng"
     missing_text = ", ".join(missing_skills[:5]) if missing_skills else "không có skill gap lớn trong danh sách kỹ năng hiện tại"
-    return f"CV có {level} với JD. Điểm mạnh chính: {matched_text}. Khoảng trống cần chú ý: {missing_text}."
+    semantic_text = (
+        f"Semantic score hiện là {semantic_score}/25."
+        if semantic_available
+        else "Semantic score chưa khả dụng, hệ thống đang fallback về rule-based scoring."
+    )
+    return f"CV có {level} với JD. Điểm mạnh chính: {matched_text}. Khoảng trống cần chú ý: {missing_text}. {semantic_text}"
 
 
-def _build_suggestions(missing_skills: list[str], resume_text: str, job_description_text: str) -> list[str]:
+def _build_suggestions(
+    missing_skills: list[str],
+    resume_text: str,
+    job_description_text: str,
+    semantic_score: float,
+    semantic_available: bool,
+) -> list[str]:
     suggestions = []
-    if missing_skills:
+    if len(missing_skills) >= 4:
+        top_missing = ", ".join(missing_skills[:8])
+        suggestions.append(f"JD đang yêu cầu nhiều kỹ năng CV chưa thể hiện rõ. Ưu tiên bổ sung hoặc chứng minh kinh nghiệm với: {top_missing}.")
+    elif missing_skills:
         top_missing = ", ".join(missing_skills[:5])
         suggestions.append(f"Bổ sung hoặc làm rõ kinh nghiệm liên quan đến: {top_missing}.")
+
+    if semantic_available and semantic_score < 10:
+        suggestions.append("Semantic score thấp: nên viết lại phần project/experience sát JD hơn, dùng mô tả trách nhiệm, domain và impact gần với vị trí mục tiêu.")
+    elif semantic_available and semantic_score < 16:
+        suggestions.append("Semantic score ở mức trung bình: hãy làm rõ project nào liên quan trực tiếp đến trách nhiệm trong JD thay vì chỉ liệt kê tech stack.")
+    elif not semantic_available:
+        suggestions.append("Semantic score chưa khả dụng trong lần phân tích này; hãy dựa vào skill gap, keyword overlap và text preview để kiểm chứng kết quả.")
+
     suggestions.append("Điều chỉnh CV theo JD bằng cách đưa các keyword quan trọng vào phần project, experience và skills nếu phản ánh đúng năng lực thật.")
     if len(resume_text.strip()) < 800:
         suggestions.append("CV đang khá ngắn sau khi trích xuất text; nên mô tả project bằng impact, tech stack, vai trò cá nhân và kết quả cụ thể.")

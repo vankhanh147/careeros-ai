@@ -27,6 +27,8 @@ DATABASE_URL="postgresql://postgres:<password>@<host>:5432/postgres"
 
 Set a strong `JWT_SECRET_KEY` before using the backend beyond local development.
 
+Semantic matching uses `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` by default so local development does not hang when Hugging Face is blocked. Set it to `"false"` in an environment with internet access if you want the backend to download `all-MiniLM-L6-v2` automatically on first use.
+
 ## Run backend
 
 ```powershell
@@ -65,7 +67,7 @@ Uploaded PDFs are stored locally in `backend/uploads/resumes` for now. The datab
 - `POST /api/analysis/resume-job-match`
 - `GET /api/analysis/history`
 
-Resume ↔ Job Matching MVP extracts PDF text with `pypdf`, detects technology skills with a rule-based list, calculates skill overlap, missing skills, keyword overlap and saves the result to the database. The response also includes `resume_text_preview`, `jd_text_preview`, detected skills and `scoring_breakdown` so developers can verify what the matcher actually read. It does not use an LLM API in this phase.
+Resume ↔ Job Matching extracts PDF text with `pypdf`, keeps rule-based technology skill matching, and adds optional semantic similarity through `sentence-transformers` using the lightweight `all-MiniLM-L6-v2` model. If the model/library cannot load, the matcher automatically falls back to rule-based scoring. The response includes `resume_text_preview`, `jd_text_preview`, detected skills and `scoring_breakdown` with `skill_score`, `keyword_score`, `semantic_score`, `length_sanity` and `final_score`. It does not use an LLM API in this phase.
 
 ## Manual test with curl
 

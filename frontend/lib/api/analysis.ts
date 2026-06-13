@@ -3,7 +3,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 export type ScoringBreakdown = {
   skill_score: number;
   keyword_score: number;
-  length_score: number;
+  semantic_score: number;
+  length_sanity: number;
   final_score: number;
 };
 

@@ -292,10 +292,11 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
         <SkillList title="Skills phát hiện trong JD" items={analysis.jd_detected_skills} emptyText="Chưa phát hiện skill trong JD." tone="warning" />
       </div>
 
-      <dl className="mt-5 grid gap-3 sm:grid-cols-4">
+      <dl className="mt-5 grid gap-3 sm:grid-cols-5">
         <ScoreItem label="Skill score" value={analysis.scoring_breakdown.skill_score} />
         <ScoreItem label="Keyword score" value={analysis.scoring_breakdown.keyword_score} />
-        <ScoreItem label="Length sanity" value={analysis.scoring_breakdown.length_score} />
+        <ScoreItem label="Semantic score" value={analysis.scoring_breakdown.semantic_score} />
+        <ScoreItem label="Length sanity" value={analysis.scoring_breakdown.length_sanity} />
         <ScoreItem label="Final score" value={analysis.scoring_breakdown.final_score} />
       </dl>
     </div>
