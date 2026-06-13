@@ -1,10 +1,18 @@
-﻿# AGENTS.md
+# AGENTS.md
 
 Tài liệu này hướng dẫn AI agents và contributors khi làm việc trên CareerOS AI.
 
 CareerOS AI là một startup/product thực tế trong lĩnh vực AI hỗ trợ định hướng và phát triển nghề nghiệp công nghệ. Đây không phải demo sinh viên, không phải bài tập nhỏ và không nên được phát triển theo kiểu làm cho đủ chức năng bề mặt.
 
 Mục tiêu là xây dựng một sản phẩm MVP có thể chạy được, deploy được, kiểm chứng với user thật và phát triển dần thành nền tảng production-ready.
+
+
+## Long-term project memory
+
+- Luôn đọc `context/*.md` trước khi implement feature mới, sửa kiến trúc, thay đổi AI logic, database, API contract hoặc UI/UX flow.
+- Xem `context/` là single source of truth cho trạng thái hiện tại, quyết định kỹ thuật, known issues và changelog của CareerOS AI.
+- Nếu codebase thực tế khác với tài liệu trong `context/`, phải ưu tiên xác minh bằng code thật, sau đó cập nhật lại file context liên quan.
+- Sau mỗi phase hoặc thay đổi đáng kể, cập nhật tối thiểu `context/CURRENT_STATUS.md`, `context/CHANGELOG.md`, và các file context liên quan như `API_CONTRACTS.md`, `DATABASE_CONTEXT.md`, `AI_SYSTEMS.md`, `UI_UX_RULES.md`, `DECISIONS.md` hoặc `KNOWN_ISSUES.md`.
 
 ## Nguyên tắc cốt lõi
 
