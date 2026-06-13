@@ -46,10 +46,7 @@ async function interviewRequest<T>(path: string, token: string, init: RequestIni
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể xử lý mock interview. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý Mock Interview. Vui lòng thử lại.";
     throw new Error(message);
   }
 
@@ -67,11 +64,7 @@ export function getMyInterviews(token: string): Promise<InterviewSession[]> {
   return interviewRequest<InterviewSession[]>("/api/interviews/me", token);
 }
 
-export function answerInterviewQuestion(
-  token: string,
-  sessionId: number,
-  payload: AnswerInterviewPayload
-): Promise<InterviewSession> {
+export function answerInterviewQuestion(token: string, sessionId: number, payload: AnswerInterviewPayload): Promise<InterviewSession> {
   return interviewRequest<InterviewSession>(`/api/interviews/${sessionId}/answer`, token, {
     method: "POST",
     body: JSON.stringify(payload)

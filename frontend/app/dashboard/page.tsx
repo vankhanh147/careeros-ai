@@ -40,7 +40,7 @@ export default function DashboardPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : "Không thể tải dashboard.");
+          setError(err instanceof Error ? err.message : "Không thể tải dashboard. Vui lòng kiểm tra kết nối backend.");
         }
       } finally {
         if (isMounted) {
@@ -74,7 +74,9 @@ export default function DashboardPage() {
       <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
         <div className="max-w-md rounded-lg border border-white/10 bg-white/5 p-6 text-center">
           <h1 className="text-xl font-semibold">Chưa tải được dashboard</h1>
-          <p className="mt-2 text-sm text-slate-300">{error || "Vui lòng đăng nhập lại hoặc thử refresh trang."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            {error || "Vui lòng đăng nhập lại hoặc kiểm tra backend đang chạy."}
+          </p>
           <Link href="/login" className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950">
             Về trang đăng nhập
           </Link>
@@ -104,27 +106,33 @@ export default function DashboardPage() {
       <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
           <section className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-            <p className="text-sm font-medium text-cyan-200">Career workspace</p>
+            <p className="text-sm font-medium text-cyan-200">Không gian nghề nghiệp</p>
             <h2 className="mt-3 break-words text-3xl font-semibold tracking-tight">Xin chào, {summary.user.full_name}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-              Đây là trung tâm điều phối AI MVP của CareerOS AI: hồ sơ nghề nghiệp, tài liệu, matching, roadmap và mock interview trong cùng một luồng sản phẩm.
+              Đây là trung tâm điều phối CareerOS AI: hồ sơ nghề nghiệp, CV/JD, Resume ↔ JD Matching, Roadmap và Mock Interview trong cùng một luồng sản phẩm.
             </p>
             <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-              <MetricCard label="Resume" value={summary.resume_count} helper="CV đã upload" />
-              <MetricCard label="Job Description" value={summary.job_description_count} helper="JD đã lưu" />
-              <MetricCard label="Profile" value={summary.has_career_profile ? "Ready" : "Missing"} helper="Hồ sơ nghề nghiệp" />
+              <MetricCard label="CV" value={summary.resume_count} helper="CV đã upload" />
+              <MetricCard label="JD" value={summary.job_description_count} helper="Job Description đã lưu" />
+              <MetricCard label="Hồ sơ" value={summary.has_career_profile ? "Đã có" : "Chưa có"} helper="Hồ sơ nghề nghiệp" />
             </dl>
           </section>
 
           <section className="min-w-0 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-cyan-50">Bước tiếp theo nên làm</h2>
-            <ul className="mt-4 space-y-3">
-              {summary.recommended_next_actions.map((action) => (
-                <li key={action} className="rounded-md border border-cyan-300/20 bg-slate-950/40 p-3 text-sm leading-6 text-cyan-50">
-                  {action}
-                </li>
-              ))}
-            </ul>
+            {summary.recommended_next_actions.length === 0 ? (
+              <p className="mt-4 rounded-md border border-cyan-300/20 bg-slate-950/40 p-3 text-sm leading-6 text-cyan-50">
+                Tiếp tục cải thiện CV hoặc thử một JD mới để nhận gợi ý sát hơn.
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {summary.recommended_next_actions.map((action) => (
+                  <li key={action} className="rounded-md border border-cyan-300/20 bg-slate-950/40 p-3 text-sm leading-6 text-cyan-50">
+                    {action}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
 
@@ -134,7 +142,7 @@ export default function DashboardPage() {
           <DashboardFeatureCard
             title="Hồ sơ nghề nghiệp"
             status={summary.has_career_profile ? "Đã có dữ liệu" : "Chưa hoàn thiện"}
-            description="Target role, current level, skills, experience và timeline là nền cho roadmap/interview."
+            description="Target role, current level, kỹ năng, kinh nghiệm và timeline là nền dữ liệu cho roadmap/interview."
             href="/profile"
             cta="Cập nhật hồ sơ"
           />
@@ -147,7 +155,7 @@ export default function DashboardPage() {
           />
           <DashboardFeatureCard
             title="Resume ↔ JD Matching"
-            status={summary.latest_analysis ? `Match ${summary.latest_analysis.match_score}%` : "Chưa có analysis"}
+            status={summary.latest_analysis ? `Điểm phù hợp ${summary.latest_analysis.match_score}%` : "Chưa có phân tích"}
             description={summary.latest_analysis?.skill_gap_summary ?? "Chạy matching để nhận skill gap và improvement plan."}
             href="/analysis"
             cta="Phân tích CV ↔ JD"
@@ -161,7 +169,7 @@ export default function DashboardPage() {
           />
           <DashboardFeatureCard
             title="Mock Interview"
-            status={summary.latest_interview ? `${summary.latest_interview.status} · ${summary.latest_interview.score ?? "--"}/100` : "Chưa luyện phỏng vấn"}
+            status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} · ${formatInterviewScore(summary.latest_interview.score)}` : "Chưa luyện phỏng vấn"}
             description={summary.latest_interview ? `Gần nhất: ${summary.latest_interview.target_role}` : "Luyện phỏng vấn kỹ thuật bằng question bank rule-based."}
             href="/interview"
             cta="Luyện phỏng vấn"
@@ -169,12 +177,7 @@ export default function DashboardPage() {
         </div>
 
         <section className="mt-6 grid gap-6 lg:grid-cols-3">
-          <LatestInsightCard
-            title="Latest Matching"
-            empty="Chưa có kết quả matching."
-            href="/analysis"
-            cta="Chạy matching"
-          >
+          <LatestInsightCard title="Phân tích gần nhất" empty="Chưa có kết quả matching. Hãy chọn CV và JD để chạy phân tích đầu tiên." href="/analysis" cta="Chạy matching">
             {summary.latest_analysis ? (
               <>
                 <p className="text-3xl font-bold text-cyan-200">{summary.latest_analysis.match_score}%</p>
@@ -184,12 +187,7 @@ export default function DashboardPage() {
             ) : null}
           </LatestInsightCard>
 
-          <LatestInsightCard
-            title="Latest Roadmap"
-            empty="Chưa có roadmap học tập."
-            href="/roadmap"
-            cta="Tạo roadmap"
-          >
+          <LatestInsightCard title="Roadmap gần nhất" empty="Chưa có roadmap học tập. Tạo roadmap sau khi có profile hoặc analysis." href="/roadmap" cta="Tạo roadmap">
             {summary.latest_roadmap ? (
               <>
                 <h3 className="break-words text-lg font-semibold text-slate-100">{summary.latest_roadmap.title}</h3>
@@ -199,17 +197,12 @@ export default function DashboardPage() {
             ) : null}
           </LatestInsightCard>
 
-          <LatestInsightCard
-            title="Latest Interview"
-            empty="Chưa có mock interview."
-            href="/interview"
-            cta="Luyện phỏng vấn"
-          >
+          <LatestInsightCard title="Phiên phỏng vấn gần nhất" empty="Chưa có Mock Interview. Bắt đầu một phiên luyện tập khi bạn đã có target role." href="/interview" cta="Luyện phỏng vấn">
             {summary.latest_interview ? (
               <>
                 <h3 className="break-words text-lg font-semibold text-slate-100">{summary.latest_interview.target_role}</h3>
-                <p className="mt-2 text-sm text-cyan-200">Status: {summary.latest_interview.status}</p>
-                <p className="mt-2 text-sm text-slate-300">Score: {summary.latest_interview.score ?? "--"}/100</p>
+                <p className="mt-2 text-sm text-cyan-200">Trạng thái: {formatInterviewStatus(summary.latest_interview.status)}</p>
+                <p className="mt-2 text-sm text-slate-300">Điểm: {formatInterviewScore(summary.latest_interview.score)}</p>
                 <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_interview.created_at)}</p>
               </>
             ) : null}
@@ -248,10 +241,7 @@ function DashboardFeatureCard({
       <p className="break-words text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">{status}</p>
       <h2 className="mt-3 text-lg font-semibold text-slate-100">{title}</h2>
       <p className="mt-2 flex-1 break-words text-sm leading-6 text-slate-300">{description}</p>
-      <Link
-        href={href}
-        className="mt-5 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
-      >
+      <Link href={href} className="mt-5 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
         {cta}
       </Link>
     </article>
@@ -285,4 +275,18 @@ function LatestInsightCard({
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString("vi-VN");
+}
+
+function formatInterviewStatus(status: string) {
+  if (status === "in_progress") {
+    return "Đang luyện";
+  }
+  if (status === "finished") {
+    return "Hoàn tất";
+  }
+  return status || "Chưa có";
+}
+
+function formatInterviewScore(score: number | null) {
+  return score === null ? "Chưa hoàn thành" : `${score}/100`;
 }

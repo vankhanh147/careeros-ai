@@ -62,7 +62,7 @@ export default function InterviewPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu mock interview.");
+          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu Mock Interview. Vui lòng kiểm tra kết nối backend.");
         }
       } finally {
         if (isMounted) {
@@ -109,9 +109,9 @@ export default function InterviewPage() {
       });
       setCurrentSession(session);
       setSessions((current) => [session, ...current.filter((item) => item.id !== session.id)].slice(0, 20));
-      setStatusMessage("Đã bắt đầu mock interview mới.");
+      setStatusMessage("Đã bắt đầu phiên Mock Interview mới.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể bắt đầu mock interview.");
+      setError(err instanceof Error ? err.message : "Không thể bắt đầu Mock Interview. Hãy kiểm tra target role hoặc profile.");
     } finally {
       setIsStarting(false);
     }
@@ -141,7 +141,7 @@ export default function InterviewPage() {
       setAnswerText("");
       setStatusMessage("Đã chấm câu trả lời và lưu feedback.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể gửi câu trả lời.");
+      setError(err instanceof Error ? err.message : "Không thể gửi câu trả lời. Vui lòng thử lại.");
     } finally {
       setIsAnswering(false);
     }
@@ -160,9 +160,9 @@ export default function InterviewPage() {
       const finished = await finishInterview(token, currentSession.id);
       setCurrentSession(finished);
       setSessions((current) => [finished, ...current.filter((item) => item.id !== finished.id)].slice(0, 20));
-      setStatusMessage("Đã hoàn tất mock interview.");
+      setStatusMessage("Đã hoàn tất phiên Mock Interview.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể finish interview.");
+      setError(err instanceof Error ? err.message : "Không thể tổng kết phiên phỏng vấn. Vui lòng thử lại.");
     } finally {
       setIsFinishing(false);
     }
@@ -171,7 +171,7 @@ export default function InterviewPage() {
   if (isLoading || isFetching) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">Đang tải mock interview...</p>
+        <p className="text-sm text-slate-300">Đang tải Mock Interview...</p>
       </main>
     );
   }
@@ -180,7 +180,7 @@ export default function InterviewPage() {
     <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <header className="border-b border-white/10">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-1 text-xl font-semibold">Mock Interview AI</h1>
           </div>
@@ -216,7 +216,7 @@ export default function InterviewPage() {
                 <option value="">Không chọn analysis</option>
                 {analyses.map((analysis) => (
                   <option key={analysis.id} value={analysis.id}>
-                    #{analysis.id} - Match score {analysis.match_score}% - {new Date(analysis.created_at).toLocaleDateString("vi-VN")}
+                    #{analysis.id} - Điểm phù hợp {analysis.match_score}% - {new Date(analysis.created_at).toLocaleDateString("vi-VN")}
                   </option>
                 ))}
               </select>
@@ -236,7 +236,7 @@ export default function InterviewPage() {
             {selectedAnalysis ? (
               <div className="rounded-md border border-white/10 bg-slate-950/60 p-4 text-sm leading-6 text-slate-300">
                 <p className="font-medium text-slate-100">Analysis đang chọn</p>
-                <p className="mt-2">Skill gap: {selectedAnalysis.skill_gap_summary}</p>
+                <p className="mt-2 break-words">Skill gap: {selectedAnalysis.skill_gap_summary}</p>
               </div>
             ) : null}
 
@@ -245,7 +245,7 @@ export default function InterviewPage() {
               disabled={isStarting}
               className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isStarting ? "Đang tạo câu hỏi..." : "Bắt đầu phỏng vấn"}
+              {isStarting ? "Đang tạo phiên phỏng vấn..." : "Bắt đầu phỏng vấn"}
             </button>
           </form>
         </div>
@@ -271,10 +271,10 @@ export default function InterviewPage() {
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6">
         <div className="rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-          <h2 className="text-xl font-semibold">Lịch sử interview</h2>
+          <h2 className="text-xl font-semibold">Lịch sử phỏng vấn</h2>
           <div className="mt-4 space-y-4">
             {sessions.length === 0 ? (
-              <p className="text-sm text-slate-400">Chưa có interview session nào.</p>
+              <p className="text-sm leading-6 text-slate-400">Chưa có phiên phỏng vấn nào. Bắt đầu phiên đầu tiên bằng form bên trên.</p>
             ) : (
               sessions.map((session) => (
                 <InterviewHistoryCard key={session.id} session={session} onSelect={() => setCurrentSession(session)} />
@@ -292,7 +292,7 @@ function EmptyInterview() {
     <div className="rounded-lg border border-white/10 bg-white/5 p-6">
       <h2 className="text-xl font-semibold">Phiên phỏng vấn sẽ hiển thị ở đây</h2>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        Bắt đầu một session để nhận khoảng 5 câu hỏi kỹ thuật theo target role và skill gap hiện có.
+        Bắt đầu một phiên để nhận khoảng 5 câu hỏi kỹ thuật theo target role và skill gap hiện có.
       </p>
     </div>
   );
@@ -323,29 +323,30 @@ function InterviewSessionPanel({
   const allAnswered = answeredCount === session.answers.length;
 
   return (
-    <article className="rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">Session #{session.id}</p>
-          <h2 className="mt-2 text-xl font-semibold">{session.target_role}</h2>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">Phiên #{session.id}</p>
+          <h2 className="mt-2 break-words text-xl font-semibold">{session.target_role}</h2>
           <p className="mt-1 text-sm text-slate-400">{answeredCount}/{session.answers.length} câu đã trả lời</p>
+          <p className="mt-1 text-sm text-slate-400">Trạng thái: {formatInterviewStatus(session.status)}</p>
         </div>
-        <div className="rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Score</p>
+        <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Điểm</p>
           <p className="mt-1 text-2xl font-bold">{session.score ?? "--"}</p>
         </div>
       </div>
 
-      {session.summary ? <p className="mt-4 rounded-md bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">{session.summary}</p> : null}
+      {session.summary ? <p className="mt-4 break-words rounded-md bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">{session.summary}</p> : null}
 
       {!isFinished && currentQuestion ? (
         <form onSubmit={onAnswer} className="mt-6 space-y-4">
           <div className="rounded-md border border-white/10 bg-slate-950/60 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Câu hỏi tiếp theo</p>
-            <p className="mt-2 text-base font-semibold leading-7 text-slate-100">{currentQuestion.question}</p>
+            <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-100">{currentQuestion.question}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {currentQuestion.expected_keywords.map((keyword) => (
-                <span key={keyword} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                <span key={keyword} className="break-words rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
                   {keyword}
                 </span>
               ))}
@@ -366,7 +367,7 @@ function InterviewSessionPanel({
             disabled={isAnswering}
             className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isAnswering ? "Đang chấm..." : "Gửi câu trả lời"}
+            {isAnswering ? "Đang chấm câu trả lời..." : "Gửi câu trả lời"}
           </button>
         </form>
       ) : null}
@@ -378,7 +379,7 @@ function InterviewSessionPanel({
           disabled={isFinishing}
           className="mt-6 w-full rounded-md bg-emerald-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isFinishing ? "Đang tổng kết..." : "Finish session"}
+          {isFinishing ? "Đang tổng kết phiên phỏng vấn..." : "Hoàn tất phiên phỏng vấn"}
         </button>
       ) : null}
 
@@ -393,39 +394,51 @@ function InterviewSessionPanel({
 
 function AnswerCard({ answer, index }: { answer: InterviewAnswer; index: number }) {
   return (
-    <div className="rounded-md border border-white/10 bg-slate-950/60 p-4">
+    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Câu {index + 1}</p>
-          <p className="mt-1 text-sm font-semibold leading-6 text-slate-100">{answer.question}</p>
+          <p className="mt-1 break-words text-sm font-semibold leading-6 text-slate-100">{answer.question}</p>
         </div>
         <p className="shrink-0 rounded-md border border-white/10 px-3 py-2 text-sm font-semibold text-cyan-100">
-          {answer.score ?? "--"}/100
+          {answer.score === null ? "Chưa chấm" : `${answer.score}/100`}
         </p>
       </div>
-      {answer.user_answer ? <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-300">{answer.user_answer}</p> : null}
-      {answer.feedback ? <p className="mt-3 rounded-md bg-cyan-300/10 p-3 text-sm leading-6 text-cyan-100">{answer.feedback}</p> : null}
+      {answer.user_answer ? <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-slate-300">{answer.user_answer}</p> : null}
+      {answer.feedback ? <p className="mt-3 break-words rounded-md bg-cyan-300/10 p-3 text-sm leading-6 text-cyan-100">{answer.feedback}</p> : null}
     </div>
   );
 }
 
 function InterviewHistoryCard({ session, onSelect }: { session: InterviewSession; onSelect: () => void }) {
   return (
-    <article className="rounded-md border border-white/10 bg-slate-950/60 p-4">
+    <article className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="font-semibold text-slate-100">{session.target_role}</h3>
+        <div className="min-w-0">
+          <h3 className="break-words font-semibold text-slate-100">{session.target_role}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(session.created_at).toLocaleString("vi-VN")}</p>
-          <p className="mt-1 text-sm text-slate-400">Status: {session.status} · Score: {session.score ?? "--"}</p>
+          <p className="mt-1 text-sm text-slate-400">
+            Trạng thái: {formatInterviewStatus(session.status)} · Điểm: {formatInterviewScore(session.score)}
+          </p>
         </div>
-        <button
-          type="button"
-          onClick={onSelect}
-          className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
-        >
-          Xem session
+        <button type="button" onClick={onSelect} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
+          Xem phiên
         </button>
       </div>
     </article>
   );
+}
+
+function formatInterviewStatus(status: string) {
+  if (status === "in_progress") {
+    return "Đang luyện";
+  }
+  if (status === "finished") {
+    return "Hoàn tất";
+  }
+  return status || "Chưa có";
+}
+
+function formatInterviewScore(score: number | null) {
+  return score === null ? "Chưa hoàn thành" : `${score}/100`;
 }

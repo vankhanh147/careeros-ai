@@ -47,10 +47,7 @@ export async function getDashboardSummary(token: string): Promise<DashboardSumma
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể tải dashboard summary. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể tải dashboard summary. Vui lòng thử lại.";
     throw new Error(message);
   }
 

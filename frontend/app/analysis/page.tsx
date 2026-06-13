@@ -55,7 +55,7 @@ export default function AnalysisPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu phân tích.");
+          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu phân tích. Vui lòng kiểm tra kết nối backend.");
         }
       } finally {
         if (isMounted) {
@@ -87,7 +87,7 @@ export default function AnalysisPage() {
       return;
     }
     if (!selectedResumeId || !selectedJobDescriptionId) {
-      setError("Vui lòng chọn cả CV và Job Description để phân tích.");
+      setError("Vui lòng chọn cả CV và JD trước khi phân tích.");
       return;
     }
 
@@ -102,9 +102,9 @@ export default function AnalysisPage() {
       });
       setCurrentResult(result);
       setHistory((current) => [result, ...current.filter((item) => item.id !== result.id)].slice(0, 20));
-      setStatusMessage("Đã phân tích mức độ phù hợp giữa CV và Job Description.");
+      setStatusMessage("Đã phân tích mức độ phù hợp giữa CV và JD.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể chạy phân tích matching.");
+      setError(err instanceof Error ? err.message : "Không thể chạy Resume ↔ JD Matching. Vui lòng thử lại.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -119,16 +119,16 @@ export default function AnalysisPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <header className="border-b border-white/10">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-          <div>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
-            <h1 className="mt-1 text-xl font-semibold">Resume ↔ Job Matching</h1>
+            <h1 className="mt-1 text-xl font-semibold">Resume ↔ JD Matching</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Link href="/documents" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-              CV và JD
+              CV & JD
             </Link>
             <Link href="/dashboard" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
               Dashboard
@@ -137,19 +137,19 @@ export default function AnalysisPage() {
         </div>
       </header>
 
-      <section className="mx-auto grid w-full max-w-6xl gap-6 px-6 py-10 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+      <section className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
           <h2 className="text-xl font-semibold">Chọn dữ liệu phân tích</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            MVP này dùng rule-based scoring: trích xuất text từ PDF, nhận diện skill công nghệ và tính overlap với Job Description.
+            MVP này dùng skill matching rule-based, keyword overlap và semantic score để đánh giá mức độ phù hợp giữa CV và JD.
           </p>
 
           {resumes.length === 0 || jobDescriptions.length === 0 ? (
             <div className="mt-6 rounded-md border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
-              Bạn cần có ít nhất một CV PDF và một Job Description trước khi chạy phân tích.
+              Bạn cần có ít nhất một CV PDF và một JD trước khi chạy phân tích.
               <div className="mt-4">
                 <Link href="/documents" className="font-semibold text-amber-50 underline underline-offset-4">
-                  Thêm CV hoặc Job Description
+                  Upload CV hoặc thêm JD
                 </Link>
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function AnalysisPage() {
               </label>
 
               <label className="block text-sm font-medium text-slate-200">
-                Job Description
+                JD mục tiêu
                 <select
                   value={selectedJobDescriptionId}
                   onChange={(event) => setSelectedJobDescriptionId(event.target.value)}
@@ -183,8 +183,8 @@ export default function AnalysisPage() {
 
               <div className="rounded-md border border-white/10 bg-slate-950/60 p-4 text-sm text-slate-300">
                 <p className="font-medium text-slate-100">Dữ liệu đang chọn</p>
-                <p className="mt-2">CV: {selectedResume?.file_name ?? "Chưa chọn"}</p>
-                <p className="mt-1">JD: {selectedJobDescription?.title ?? "Chưa chọn"}</p>
+                <p className="mt-2 break-words">CV: {selectedResume?.file_name ?? "Chưa chọn"}</p>
+                <p className="mt-1 break-words">JD: {selectedJobDescription?.title ?? "Chưa chọn"}</p>
               </div>
 
               <button
@@ -198,19 +198,19 @@ export default function AnalysisPage() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
           {statusMessage ? <p className="rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
           {currentResult ? <AnalysisResultCard analysis={currentResult} title="Kết quả vừa tạo" /> : <EmptyResult />}
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-6 pb-10">
-        <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+      <section className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6">
+        <div className="rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
           <h2 className="text-xl font-semibold">Lịch sử phân tích gần đây</h2>
           <div className="mt-4 space-y-4">
             {history.length === 0 ? (
-              <p className="text-sm text-slate-400">Chưa có lịch sử phân tích.</p>
+              <p className="text-sm leading-6 text-slate-400">Chưa có analysis nào. Chạy matching đầu tiên để xem điểm phù hợp, skill gap và gợi ý cải thiện.</p>
             ) : (
               history.map((analysis) => <AnalysisResultCard key={analysis.id} analysis={analysis} compact />)
             )}
@@ -226,7 +226,7 @@ function EmptyResult() {
     <div className="rounded-lg border border-white/10 bg-white/5 p-6">
       <h2 className="text-xl font-semibold">Kết quả matching</h2>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        Chọn một CV và một JD, sau đó chạy phân tích để xem match score, kỹ năng khớp, skill gap, preview dữ liệu đã đọc và breakdown điểm.
+        Chọn một CV và một JD, sau đó chạy phân tích để xem điểm phù hợp, kỹ năng khớp, skill gap, preview dữ liệu đã đọc và breakdown điểm.
       </p>
     </div>
   );
@@ -234,38 +234,38 @@ function EmptyResult() {
 
 function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compact = false }: { analysis: MatchAnalysis; title?: string; compact?: boolean }) {
   return (
-    <article className="rounded-lg border border-white/10 bg-slate-950/60 p-5">
+    <article className="min-w-0 rounded-lg border border-white/10 bg-slate-950/60 p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(analysis.created_at).toLocaleString("vi-VN")}</p>
         </div>
-        <div className="rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Match score</p>
+        <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Điểm phù hợp</p>
           <p className="mt-1 text-2xl font-bold">{analysis.match_score}%</p>
         </div>
       </div>
 
-      <p className="mt-4 text-sm leading-6 text-slate-300">{analysis.summary}</p>
+      <p className="mt-4 break-words text-sm leading-6 text-slate-300">{analysis.summary}</p>
 
       <SkillGapSection analysis={analysis} compact={compact} />
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <SkillList title="Skills đã khớp" items={analysis.matched_skills} emptyText="Chưa phát hiện skill khớp rõ ràng." tone="positive" />
-        <SkillList title="Skills còn thiếu" items={analysis.missing_skills} emptyText="Chưa phát hiện skill gap lớn." tone="warning" />
+        <SkillList title="Kỹ năng đã khớp" items={analysis.matched_skills} emptyText="Chưa phát hiện kỹ năng khớp rõ ràng." tone="positive" />
+        <SkillList title="Kỹ năng còn thiếu" items={analysis.missing_skills} emptyText="Chưa phát hiện skill gap lớn." tone="warning" />
       </div>
 
       {!compact ? (
         <>
           <div className="mt-5">
-            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Keyword overlap</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Keyword trùng khớp</h4>
             <TagList items={analysis.keyword_overlap} emptyText="Chưa có keyword overlap đáng kể." />
           </div>
           <div className="mt-5">
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Gợi ý cải thiện</h4>
             <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
               {analysis.suggestions.map((suggestion) => (
-                <li key={suggestion} className="rounded-md border border-white/10 bg-white/5 p-3">{suggestion}</li>
+                <li key={suggestion} className="break-words rounded-md border border-white/10 bg-white/5 p-3">{suggestion}</li>
               ))}
             </ul>
           </div>
@@ -276,18 +276,17 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
   );
 }
 
-
 function SkillGapSection({ analysis, compact }: { analysis: MatchAnalysis; compact: boolean }) {
   const prioritized = analysis.prioritized_missing_skills;
   return (
     <section className="mt-5 rounded-lg border border-white/10 bg-white/5 p-5">
-      <h4 className="text-base font-semibold text-slate-100">Skill Gap Summary</h4>
-      <p className="mt-2 text-sm leading-6 text-slate-300">{analysis.skill_gap_summary}</p>
+      <h4 className="text-base font-semibold text-slate-100">Tóm tắt skill gap</h4>
+      <p className="mt-2 break-words text-sm leading-6 text-slate-300">{analysis.skill_gap_summary}</p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
-        <PriorityList title="Kỹ năng thiếu ưu tiên cao" items={prioritized.high_priority} tone="high" />
-        <PriorityList title="Kỹ năng thiếu ưu tiên trung bình" items={prioritized.medium_priority} tone="medium" />
-        <PriorityList title="Kỹ năng thiếu ưu tiên thấp" items={prioritized.low_priority} tone="low" />
+        <PriorityList title="Ưu tiên cao" items={prioritized.high_priority} tone="high" />
+        <PriorityList title="Ưu tiên trung bình" items={prioritized.medium_priority} tone="medium" />
+        <PriorityList title="Ưu tiên thấp" items={prioritized.low_priority} tone="low" />
       </div>
 
       {!compact ? (
@@ -295,7 +294,7 @@ function SkillGapSection({ analysis, compact }: { analysis: MatchAnalysis; compa
           <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Kế hoạch cải thiện ngắn hạn</h5>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
             {analysis.improvement_plan.map((action) => (
-              <li key={action} className="rounded-md border border-white/10 bg-slate-950/60 p-3">{action}</li>
+              <li key={action} className="break-words rounded-md border border-white/10 bg-slate-950/60 p-3">{action}</li>
             ))}
           </ul>
         </div>
@@ -311,18 +310,15 @@ function PriorityList({ title, items, tone }: { title: string; items: string[]; 
     low: "text-slate-200"
   }[tone];
   return (
-    <div>
+    <div className="min-w-0">
       <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</h5>
       <div className="mt-3">
-        {items.length === 0 ? (
-          <p className="text-sm text-slate-500">Không có.</p>
-        ) : (
-          <TagList items={items} className={toneClass} />
-        )}
+        {items.length === 0 ? <p className="text-sm text-slate-500">Chưa có.</p> : <TagList items={items} className={toneClass} />}
       </div>
     </div>
   );
 }
+
 function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
   return (
     <div className="mt-6 rounded-lg border border-cyan-300/20 bg-cyan-300/5 p-5">
@@ -332,21 +328,21 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
       </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <PreviewBox title="CV text preview" text={analysis.resume_text_preview} />
-        <PreviewBox title="JD text preview" text={analysis.jd_text_preview} />
+        <PreviewBox title="Preview nội dung CV" text={analysis.resume_text_preview} />
+        <PreviewBox title="Preview nội dung JD" text={analysis.jd_text_preview} />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <SkillList title="Skills phát hiện trong CV" items={analysis.resume_detected_skills} emptyText="Chưa phát hiện skill trong CV." tone="positive" />
-        <SkillList title="Skills phát hiện trong JD" items={analysis.jd_detected_skills} emptyText="Chưa phát hiện skill trong JD." tone="warning" />
+        <SkillList title="Kỹ năng phát hiện trong CV" items={analysis.resume_detected_skills} emptyText="Chưa phát hiện kỹ năng trong CV." tone="positive" />
+        <SkillList title="Kỹ năng phát hiện trong JD" items={analysis.jd_detected_skills} emptyText="Chưa phát hiện kỹ năng trong JD." tone="warning" />
       </div>
 
-      <dl className="mt-5 grid gap-3 sm:grid-cols-5">
-        <ScoreItem label="Skill score" value={analysis.scoring_breakdown.skill_score} />
-        <ScoreItem label="Keyword score" value={analysis.scoring_breakdown.keyword_score} />
-        <ScoreItem label="Semantic score" value={analysis.scoring_breakdown.semantic_score} />
-        <ScoreItem label="Length sanity" value={analysis.scoring_breakdown.length_sanity} />
-        <ScoreItem label="Final score" value={analysis.scoring_breakdown.final_score} />
+      <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <ScoreItem label="Điểm kỹ năng" value={analysis.scoring_breakdown.skill_score} />
+        <ScoreItem label="Điểm keyword" value={analysis.scoring_breakdown.keyword_score} />
+        <ScoreItem label="Điểm semantic" value={analysis.scoring_breakdown.semantic_score} />
+        <ScoreItem label="Độ đủ dữ liệu" value={analysis.scoring_breakdown.length_sanity} />
+        <ScoreItem label="Điểm cuối" value={analysis.scoring_breakdown.final_score} />
       </dl>
     </div>
   );
@@ -354,9 +350,9 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
 
 function PreviewBox({ title, text }: { title: string; text: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</h5>
-      <p className="mt-3 max-h-48 overflow-auto rounded-md border border-white/10 bg-slate-950/80 p-3 text-sm leading-6 text-slate-300">
+      <p className="mt-3 max-h-48 overflow-auto break-words rounded-md border border-white/10 bg-slate-950/80 p-3 text-sm leading-6 text-slate-300">
         {text || "Không có text preview."}
       </p>
     </div>
@@ -365,8 +361,8 @@ function PreviewBox({ title, text }: { title: string; text: string }) {
 
 function ScoreItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-white/10 bg-slate-950/70 p-3">
-      <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">{label}</dt>
+    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/70 p-3">
+      <dt className="break-words text-xs uppercase tracking-[0.16em] text-slate-500">{label}</dt>
       <dd className="mt-2 text-lg font-semibold text-slate-100">{value}</dd>
     </div>
   );
@@ -375,7 +371,7 @@ function ScoreItem({ label, value }: { label: string; value: number }) {
 function SkillList({ title, items, emptyText, tone }: { title: string; items: string[]; emptyText: string; tone: "positive" | "warning" }) {
   const textColor = tone === "positive" ? "text-emerald-200" : "text-amber-200";
   return (
-    <div>
+    <div className="min-w-0">
       <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</h4>
       <div className="mt-3">
         {items.length === 0 ? <p className="text-sm text-slate-500">{emptyText}</p> : <TagList items={items} className={textColor} />}
@@ -392,7 +388,7 @@ function TagList({ items, emptyText, className = "text-slate-100" }: { items: st
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((item) => (
-        <span key={item} className={`rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium ${className}`}>
+        <span key={item} className={`break-words rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium ${className}`}>
           {item}
         </span>
       ))}

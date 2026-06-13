@@ -48,10 +48,7 @@ async function jsonRequest<T>(path: string, token: string, init: RequestInit = {
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể xử lý dữ liệu tài liệu. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý dữ liệu tài liệu. Vui lòng thử lại.";
     throw new Error(message);
   }
 
@@ -69,10 +66,7 @@ async function emptyRequest(path: string, token: string, init: RequestInit): Pro
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể thực hiện thao tác. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể thực hiện thao tác. Vui lòng thử lại.";
     throw new Error(message);
   }
 }
@@ -91,10 +85,7 @@ export async function uploadResume(token: string, file: File): Promise<Resume> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể upload CV. Vui lòng kiểm tra file PDF và thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể upload CV. Vui lòng kiểm tra file PDF và thử lại.";
     throw new Error(message);
   }
 
@@ -109,21 +100,14 @@ export function getMyResumes(token: string): Promise<Resume[]> {
   return jsonRequest<Resume[]>("/api/resumes/me", token);
 }
 
-export function createJobDescription(
-  token: string,
-  payload: JobDescriptionPayload
-): Promise<JobDescription> {
+export function createJobDescription(token: string, payload: JobDescriptionPayload): Promise<JobDescription> {
   return jsonRequest<JobDescription>("/api/job-descriptions", token, {
     method: "POST",
     body: JSON.stringify(payload)
   });
 }
 
-export function updateJobDescription(
-  token: string,
-  jobDescriptionId: number,
-  payload: JobDescriptionPayload
-): Promise<JobDescription> {
+export function updateJobDescription(token: string, jobDescriptionId: number, payload: JobDescriptionPayload): Promise<JobDescription> {
   return jsonRequest<JobDescription>(`/api/job-descriptions/${jobDescriptionId}`, token, {
     method: "PUT",
     body: JSON.stringify(payload)
@@ -134,10 +118,7 @@ export function deleteJobDescription(token: string, jobDescriptionId: number): P
   return emptyRequest(`/api/job-descriptions/${jobDescriptionId}`, token, { method: "DELETE" });
 }
 
-export async function uploadJobDescription(
-  token: string,
-  payload: JobDescriptionUploadPayload
-): Promise<JobDescription> {
+export async function uploadJobDescription(token: string, payload: JobDescriptionUploadPayload): Promise<JobDescription> {
   const formData = new FormData();
   formData.append("file", payload.file);
   if (payload.title) formData.append("title", payload.title);
@@ -154,10 +135,7 @@ export async function uploadJobDescription(
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể upload Job Description. Vui lòng dùng file PDF hoặc TXT dưới 5MB.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể upload JD. Vui lòng dùng file PDF hoặc TXT dưới 5MB.";
     throw new Error(message);
   }
 

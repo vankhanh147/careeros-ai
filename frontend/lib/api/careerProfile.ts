@@ -36,10 +36,7 @@ async function request<T>(path: string, token: string, init: RequestInit = {}): 
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể lưu hồ sơ nghề nghiệp. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý hồ sơ nghề nghiệp. Vui lòng thử lại.";
     throw new Error(message);
   }
 
@@ -50,10 +47,7 @@ export function getMyCareerProfile(token: string): Promise<CareerProfile | null>
   return request<CareerProfile | null>("/api/career-profile/me", token);
 }
 
-export function updateMyCareerProfile(
-  token: string,
-  payload: CareerProfilePayload
-): Promise<CareerProfile> {
+export function updateMyCareerProfile(token: string, payload: CareerProfilePayload): Promise<CareerProfile> {
   return request<CareerProfile>("/api/career-profile/me", token, {
     method: "PUT",
     body: JSON.stringify(payload)

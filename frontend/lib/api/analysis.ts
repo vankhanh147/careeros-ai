@@ -54,20 +54,14 @@ async function analysisRequest<T>(path: string, token: string, init: RequestInit
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể xử lý phân tích CV và Job Description. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý phân tích CV và JD. Vui lòng thử lại.";
     throw new Error(message);
   }
 
   return response.json() as Promise<T>;
 }
 
-export function runResumeJobMatch(
-  token: string,
-  payload: ResumeJobMatchPayload
-): Promise<MatchAnalysis> {
+export function runResumeJobMatch(token: string, payload: ResumeJobMatchPayload): Promise<MatchAnalysis> {
   return analysisRequest<MatchAnalysis>("/api/analysis/resume-job-match", token, {
     method: "POST",
     body: JSON.stringify(payload)

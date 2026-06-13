@@ -74,7 +74,7 @@ export default function DocumentsPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu tài liệu.");
+          setError(err instanceof Error ? err.message : "Không thể tải dữ liệu tài liệu. Vui lòng kiểm tra kết nối backend.");
         }
       } finally {
         if (isMounted) {
@@ -183,9 +183,9 @@ export default function DocumentsPage() {
       setJdUploadTitle("");
       setJdUploadCompany("");
       setJdFileInputKey((current) => current + 1);
-      setStatusMessage("Đã upload và đọc nội dung Job Description.");
+      setStatusMessage("Đã upload và đọc nội dung JD.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể upload Job Description.");
+      setError(err instanceof Error ? err.message : "Không thể upload JD.");
     } finally {
       setIsUploadingJd(false);
     }
@@ -198,11 +198,11 @@ export default function DocumentsPage() {
       return;
     }
     if (!jdTitle.trim()) {
-      setError("Tiêu đề Job Description không được để trống.");
+      setError("Tiêu đề JD không được để trống.");
       return;
     }
     if (!jdContent.trim()) {
-      setError("Nội dung Job Description không được để trống.");
+      setError("Nội dung JD không được để trống.");
       return;
     }
 
@@ -219,18 +219,16 @@ export default function DocumentsPage() {
       };
       if (editingJobDescriptionId) {
         const updated = await updateJobDescription(token, editingJobDescriptionId, payload);
-        setJobDescriptions((current) =>
-          current.map((job) => (job.id === updated.id ? updated : job))
-        );
-        setStatusMessage("Đã cập nhật Job Description.");
+        setJobDescriptions((current) => current.map((job) => (job.id === updated.id ? updated : job)));
+        setStatusMessage("Đã cập nhật JD.");
       } else {
         const created = await createJobDescription(token, payload);
         setJobDescriptions((current) => [created, ...current]);
-        setStatusMessage("Đã lưu Job Description.");
+        setStatusMessage("Đã lưu JD.");
       }
       resetJobDescriptionForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể lưu Job Description.");
+      setError(err instanceof Error ? err.message : "Không thể lưu JD.");
     } finally {
       setIsSavingJd(false);
     }
@@ -243,7 +241,7 @@ export default function DocumentsPage() {
     setJdContent(job.content);
     setJdSourceUrl(job.source_url ?? "");
     setError("");
-    setStatusMessage("Đang chỉnh sửa Job Description đã chọn.");
+    setStatusMessage("Đang chỉnh sửa JD đã chọn.");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -260,7 +258,7 @@ export default function DocumentsPage() {
       router.replace("/login");
       return;
     }
-    const confirmed = window.confirm(`Xóa Job Description "${job.title}"? Các phân tích cũ liên quan có thể không còn dùng lại được.`);
+    const confirmed = window.confirm(`Xóa JD "${job.title}"? Các phân tích cũ liên quan có thể không còn dùng lại được.`);
     if (!confirmed) return;
 
     setError("");
@@ -272,9 +270,9 @@ export default function DocumentsPage() {
       if (editingJobDescriptionId === job.id) {
         resetJobDescriptionForm();
       }
-      setStatusMessage("Đã xóa Job Description.");
+      setStatusMessage("Đã xóa JD.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể xóa Job Description.");
+      setError(err instanceof Error ? err.message : "Không thể xóa JD.");
     } finally {
       setDeletingJobDescriptionId(null);
     }
@@ -294,7 +292,7 @@ export default function DocumentsPage() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
-            <h1 className="mt-1 text-xl font-semibold">Quản lý CV và Job Description</h1>
+            <h1 className="mt-1 text-xl font-semibold">Quản lý CV và JD</h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/analysis" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
@@ -311,7 +309,7 @@ export default function DocumentsPage() {
         <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
           <h2 className="text-xl font-semibold">Upload CV PDF</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            Lưu CV PDF để hệ thống trích xuất text và chạy Resume ↔ Job Matching. File tối đa 5MB.
+            Lưu CV PDF để hệ thống trích xuất text và chạy Resume ↔ JD Matching. File tối đa 5MB.
           </p>
           <form onSubmit={handleResumeUpload} className="mt-6 space-y-4">
             <input
@@ -322,7 +320,7 @@ export default function DocumentsPage() {
               className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
             />
             <button type="submit" disabled={isUploadingResume} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
-              {isUploadingResume ? "Đang upload..." : "Upload CV"}
+              {isUploadingResume ? "Đang upload CV..." : "Upload CV"}
             </button>
           </form>
 
@@ -330,7 +328,7 @@ export default function DocumentsPage() {
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">CV đã upload</h3>
             <div className="mt-4 space-y-3">
               {resumes.length === 0 ? (
-                <p className="text-sm text-slate-400">Chưa có CV nào.</p>
+                <p className="text-sm leading-6 text-slate-400">Chưa có CV nào. Upload CV PDF để bắt đầu phân tích matching.</p>
               ) : (
                 resumes.map((resume) => (
                   <div key={resume.id} className="min-w-0 overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4">
@@ -339,12 +337,7 @@ export default function DocumentsPage() {
                         <p className="break-words text-sm font-medium leading-6 text-slate-100">{resume.file_name}</p>
                         <p title={resume.storage_path} className="mt-1 break-all text-xs leading-5 text-slate-500">{resume.storage_path}</p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => void handleDeleteResume(resume)}
-                        disabled={deletingResumeId === resume.id}
-                        className="w-full shrink-0 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                      >
+                      <button type="button" onClick={() => void handleDeleteResume(resume)} disabled={deletingResumeId === resume.id} className="w-full shrink-0 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
                         {deletingResumeId === resume.id ? "Đang xóa..." : "Xóa CV"}
                       </button>
                     </div>
@@ -357,7 +350,7 @@ export default function DocumentsPage() {
 
         <div className="min-w-0 space-y-6">
           <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-            <h2 className="text-xl font-semibold">Upload Job Description</h2>
+            <h2 className="text-xl font-semibold">Upload JD</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
               Upload JD dạng PDF hoặc TXT. Backend sẽ extract text và lưu vào nội dung JD để dùng cho matching.
             </p>
@@ -380,7 +373,7 @@ export default function DocumentsPage() {
           <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <h2 className="text-xl font-semibold">{editingJobDescriptionId ? "Sửa Job Description" : "Paste Job Description"}</h2>
+                <h2 className="text-xl font-semibold">{editingJobDescriptionId ? "Sửa JD" : "Paste JD"}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
                   {editingJobDescriptionId ? "Cập nhật JD đã lưu. Các lần analysis mới sẽ dùng nội dung mới." : "Paste JD trực tiếp từ trang tuyển dụng nếu không có file."}
                 </p>
@@ -396,18 +389,11 @@ export default function DocumentsPage() {
               <TextInput label="Công ty" value={jdCompany} onChange={setJdCompany} placeholder="Tên công ty nếu có" />
               <TextInput label="Nguồn JD" value={jdSourceUrl} onChange={setJdSourceUrl} placeholder="https://..." />
               <label className="block text-sm font-medium text-slate-200">
-                Nội dung Job Description
-                <textarea
-                  required
-                  rows={8}
-                  value={jdContent}
-                  onChange={(event) => setJdContent(event.target.value)}
-                  placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..."
-                  className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-                />
+                Nội dung JD
+                <textarea required rows={8} value={jdContent} onChange={(event) => setJdContent(event.target.value)} placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..." className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
               </label>
               <button type="submit" disabled={isSavingJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
-                {isSavingJd ? "Đang lưu..." : editingJobDescriptionId ? "Lưu cập nhật" : "Lưu Job Description"}
+                {isSavingJd ? "Đang lưu JD..." : editingJobDescriptionId ? "Lưu cập nhật" : "Lưu JD"}
               </button>
             </form>
           </div>
@@ -419,10 +405,10 @@ export default function DocumentsPage() {
         {statusMessage ? <p className="mb-4 rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
 
         <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-          <h2 className="text-xl font-semibold">Job Description đã lưu</h2>
+          <h2 className="text-xl font-semibold">JD đã lưu</h2>
           <div className="mt-4 space-y-3">
             {jobDescriptions.length === 0 ? (
-              <p className="text-sm text-slate-400">Chưa có Job Description nào.</p>
+              <p className="text-sm leading-6 text-slate-400">Chưa có JD nào. Paste hoặc upload JD để hệ thống có dữ liệu matching.</p>
             ) : (
               jobDescriptions.map((job) => (
                 <article key={job.id} className="min-w-0 overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4">
@@ -439,12 +425,7 @@ export default function DocumentsPage() {
                       <button type="button" onClick={() => startEditJobDescription(job)} className="flex-1 rounded-md border border-white/15 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 sm:flex-none">
                         Sửa
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => void handleDeleteJobDescription(job)}
-                        disabled={deletingJobDescriptionId === job.id}
-                        className="flex-1 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
-                      >
+                      <button type="button" onClick={() => void handleDeleteJobDescription(job)} disabled={deletingJobDescriptionId === job.id} className="flex-1 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none">
                         {deletingJobDescriptionId === job.id ? "Đang xóa..." : "Xóa"}
                       </button>
                     </div>
@@ -460,30 +441,11 @@ export default function DocumentsPage() {
   );
 }
 
-function TextInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  required = false
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  required?: boolean;
-}) {
+function TextInput({ label, value, onChange, placeholder, required = false }: { label: string; value: string; onChange: (value: string) => void; placeholder: string; required?: boolean }) {
   return (
     <label className="block min-w-0 text-sm font-medium text-slate-200">
       {label}
-      <input
-        type="text"
-        required={required}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="mt-2 w-full min-w-0 rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-      />
+      <input type="text" required={required} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="mt-2 w-full min-w-0 rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
     </label>
   );
 }

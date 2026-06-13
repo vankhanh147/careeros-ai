@@ -38,20 +38,14 @@ async function roadmapRequest<T>(path: string, token: string, init: RequestInit 
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    const message =
-      typeof error?.detail === "string"
-        ? error.detail
-        : "Không thể xử lý roadmap học tập. Vui lòng thử lại.";
+    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý roadmap học tập. Vui lòng thử lại.";
     throw new Error(message);
   }
 
   return response.json() as Promise<T>;
 }
 
-export function generateRoadmap(
-  token: string,
-  payload: GenerateRoadmapPayload
-): Promise<LearningRoadmap> {
+export function generateRoadmap(token: string, payload: GenerateRoadmapPayload): Promise<LearningRoadmap> {
   return roadmapRequest<LearningRoadmap>("/api/roadmaps/generate", token, {
     method: "POST",
     body: JSON.stringify(payload)
