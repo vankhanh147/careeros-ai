@@ -1,8 +1,10 @@
 import json
+import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.core.errors import AppError, raise_app_error
 from app.database import get_db
 from app.models.job_description import JobDescription
 from app.models.match_analysis import MatchAnalysis
@@ -13,6 +15,7 @@ from app.services.resume_job_matcher import analyze_resume_job_match, extract_pd
 from app.services.security import get_current_user
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
+logger = logging.getLogger("careeros_api.analysis")
 
 
 @router.post("/resume-job-match", response_model=MatchAnalysisResponse, status_code=status.HTTP_201_CREATED)
@@ -21,63 +24,62 @@ def run_resume_job_match(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> MatchAnalysisResponse:
-    resume = (
-        db.query(Resume)
-        .filter(Resume.id == payload.resume_id, Resume.user_id == current_user.id)
-        .first()
-    )
+    resume = db.query(Resume).filter(Resume.id == payload.resume_id, Resume.user_id == current_user.id).first()
     if resume is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resume not found")
+        logger.warning("Analysis rejected: resume not found", extra={"user_id": current_user.id, "resume_id": payload.resume_id})
+        raise_app_error(status.HTTP_404_NOT_FOUND, "Resume not found", "RESUME_NOT_FOUND")
 
     job_description = (
         db.query(JobDescription)
-        .filter(
-            JobDescription.id == payload.job_description_id,
-            JobDescription.user_id == current_user.id,
-        )
+        .filter(JobDescription.id == payload.job_description_id, JobDescription.user_id == current_user.id)
         .first()
     )
     if job_description is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job description not found")
+        logger.warning("Analysis rejected: job description not found", extra={"user_id": current_user.id, "job_description_id": payload.job_description_id})
+        raise_app_error(status.HTTP_404_NOT_FOUND, "Job description not found", "JOB_DESCRIPTION_NOT_FOUND")
 
-    if not resume.extracted_text:
-        try:
+    try:
+        if not resume.extracted_text:
             resume.extracted_text = extract_pdf_text(resume.storage_path)
-        except FileNotFoundError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Resume PDF file is missing on storage. Please upload the file again.",
-            ) from exc
 
-    result = analyze_resume_job_match(resume.extracted_text or "", job_description.content)
-    analysis = MatchAnalysis(
-        user_id=current_user.id,
-        resume_id=resume.id,
-        job_description_id=job_description.id,
-        match_score=float(result["match_score"]),
-        matched_skills=json.dumps(result["matched_skills"], ensure_ascii=False),
-        missing_skills=json.dumps(result["missing_skills"], ensure_ascii=False),
-        keyword_overlap=json.dumps(result["keyword_overlap"], ensure_ascii=False),
-        summary=str(result["summary"]),
-        suggestions=json.dumps(result["suggestions"], ensure_ascii=False),
-    )
-    db.add(analysis)
-    db.commit()
-    db.refresh(analysis)
-    return _to_response(analysis, result)
+        result = analyze_resume_job_match(resume.extracted_text or "", job_description.content)
+        analysis = MatchAnalysis(
+            user_id=current_user.id,
+            resume_id=resume.id,
+            job_description_id=job_description.id,
+            match_score=float(result["match_score"]),
+            matched_skills=json.dumps(result["matched_skills"], ensure_ascii=False),
+            missing_skills=json.dumps(result["missing_skills"], ensure_ascii=False),
+            keyword_overlap=json.dumps(result["keyword_overlap"], ensure_ascii=False),
+            summary=str(result["summary"]),
+            suggestions=json.dumps(result["suggestions"], ensure_ascii=False),
+        )
+        db.add(analysis)
+        db.commit()
+        db.refresh(analysis)
+        logger.info("Analysis completed", extra={"user_id": current_user.id, "analysis_id": analysis.id})
+        return _to_response(analysis, result)
+    except FileNotFoundError as exc:
+        logger.warning("Analysis failed: resume file missing", extra={"user_id": current_user.id, "resume_id": resume.id})
+        raise AppError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Resume PDF file is missing on storage. Please upload the file again.",
+            code="RESUME_FILE_MISSING",
+        ) from exc
+    except AppError:
+        raise
+    except Exception as exc:
+        logger.exception("Analysis failed", extra={"user_id": current_user.id, "resume_id": resume.id, "job_description_id": job_description.id})
+        raise AppError(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not run resume-job analysis",
+            code="ANALYSIS_FAILED",
+        ) from exc
 
 
 @router.get("/history", response_model=list[MatchAnalysisResponse])
-def get_analysis_history(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> list[MatchAnalysisResponse]:
-    analyses = (
-        db.query(MatchAnalysis)
-        .filter(MatchAnalysis.user_id == current_user.id)
-        .order_by(MatchAnalysis.created_at.desc())
-        .limit(20)
-        .all()
-    )
+def get_analysis_history(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> list[MatchAnalysisResponse]:
+    analyses = db.query(MatchAnalysis).filter(MatchAnalysis.user_id == current_user.id).order_by(MatchAnalysis.created_at.desc()).limit(20).all()
     return [_to_response(analysis) for analysis in analyses]
 
 

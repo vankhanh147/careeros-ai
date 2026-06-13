@@ -380,3 +380,32 @@ Behavior:
 - Sets status to `finished`.
 
 Response: updated `InterviewSessionResponse`.
+## Error Response Format
+
+Phase 5.2 standardizes backend errors without breaking existing frontend behavior. Error responses keep `detail` as a string and add `code`:
+
+```json
+{
+  "detail": "Invalid email or password",
+  "code": "INVALID_CREDENTIALS"
+}
+```
+
+Validation errors return HTTP 422 with code `VALIDATION_ERROR` and a concise detail string such as `Invalid field 'resume_id': Field required`.
+
+Common codes include:
+
+- `EMAIL_ALREADY_REGISTERED`
+- `INVALID_CREDENTIALS`
+- `INVALID_TOKEN`
+- `INACTIVE_USER`
+- `INVALID_FILE_TYPE`
+- `FILE_TOO_LARGE`
+- `RESUME_NOT_FOUND`
+- `JOB_DESCRIPTION_NOT_FOUND`
+- `ANALYSIS_NOT_FOUND`
+- `ROADMAP_INPUT_REQUIRED`
+- `PROFILE_INCOMPLETE`
+- `INTERVIEW_SESSION_NOT_FOUND`
+- `INTERVIEW_NO_ANSWERS`
+- `INTERNAL_SERVER_ERROR`

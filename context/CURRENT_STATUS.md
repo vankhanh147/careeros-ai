@@ -166,15 +166,25 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Layout dùng `overflow-x-hidden`, `min-w-0`, `break-words`, `break-all` cho text/path/URL dài.
 - Frontend `npm run lint` và `npm run build` pass sau Phase 5.1.
 
+### Phase 5.2: Backend Validation + Error Handling + Logging Foundation - Completed
+
+- Added consistent backend error response shape: `detail` string plus `code`.
+- Added FastAPI exception handlers for app errors, HTTP errors, validation errors and unhandled errors.
+- Added Python standard logging foundation with `LOG_LEVEL`.
+- Added validation refinements for auth, career profile, JD, roadmap and interview schemas.
+- Added logging for auth success/failure, upload rejection, analysis failure, roadmap generation failure and interview failure.
+- Added safer local file delete checks for resume files and cleanup for invalid JD uploads.
+- Kept API success contracts and database schema unchanged.
+
 ## Current Phase
 
-Current phase: Phase 5 - Production Readiness.
+Current phase: Phase 5 - Production Readiness. Phase 5.2 backend validation/error/logging foundation is complete.
 
-Đã hoàn thành bước đầu của Phase 5 là UI/UX polish. Các phần production readiness còn lại chưa hoàn thành đầy đủ: backend validation tổng thể, response format chuẩn, logging, test suite, security review, deployment docs.
+Đã hoàn thành UI/UX polish và backend validation/error/logging foundation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: automated test suite, security review sâu hơn, deployment docs, monitoring/logging nâng cao.
 
 ## Next Recommended Phase
 
-Recommended next: Phase 5.2 - Backend Quality, Error Handling & Tests.
+Recommended next: Phase 5.3 - Backend automated test suite and deployment hardening.
 
 Ưu tiên tiếp theo:
 

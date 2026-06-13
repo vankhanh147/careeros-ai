@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
+from app.core.errors import register_exception_handlers
+from app.core.logging import configure_logging
 from app.database import Base, engine
 import app.models  # noqa: F401
 from app.routers.analysis import router as analysis_router
@@ -16,15 +19,20 @@ from app.routers.resumes import router as resumes_router
 from app.routers.roadmaps import router as roadmaps_router
 
 settings = get_settings()
+configure_logging()
+logger = logging.getLogger("careeros_api")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Starting CareerOS AI API")
     Base.metadata.create_all(bind=engine)
     yield
+    logger.info("Stopping CareerOS AI API")
 
 
 app = FastAPI(title=settings.project_name, lifespan=lifespan)
+register_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

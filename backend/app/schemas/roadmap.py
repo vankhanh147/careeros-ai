@@ -1,12 +1,20 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class RoadmapGenerateRequest(BaseModel):
     analysis_id: int | None = Field(default=None, gt=0)
     timeline: str | None = Field(default=None, max_length=255)
+
+    @field_validator("timeline")
+    @classmethod
+    def optional_timeline_to_none(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
 
 
 class RoadmapItem(BaseModel):

@@ -29,6 +29,28 @@ Set a strong `JWT_SECRET_KEY` before using the backend beyond local development.
 
 Semantic matching uses `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` by default so local development does not hang when Hugging Face is blocked. Set it to `"false"` in an environment with internet access if you want the backend to download `all-MiniLM-L6-v2` automatically on first use.
 
+
+## Error handling and logging
+
+Backend error responses now keep `detail` as a human-readable string and add a stable `code` field:
+
+```json
+{
+  "detail": "Invalid email or password",
+  "code": "INVALID_CREDENTIALS"
+}
+```
+
+This keeps the frontend compatible with the existing `detail` string while making errors easier to debug.
+
+Logging uses Python standard logging. Default level is `INFO`; override with:
+
+```text
+LOG_LEVEL="DEBUG"
+```
+
+Do not log passwords, JWT tokens, database URLs, full CV/JD file content, or secrets. Current logs cover app startup/shutdown, auth success/failure, upload validation failures, analysis failures, roadmap generation failures, and interview failures.
+
 ## Run backend
 
 ```powershell

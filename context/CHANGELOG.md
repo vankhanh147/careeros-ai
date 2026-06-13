@@ -118,3 +118,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `context/` folder.
 - Moved `PROJECT_CONTEXT.md` into `context/PROJECT_CONTEXT.md`.
 - Added long-term memory files for status, architecture, AI systems, database, API contracts, UI/UX rules, decisions, known issues and changelog.
+## Phase 5.2: Backend Validation + Error Handling + Logging Foundation
+
+- Added `backend/app/core/errors.py` with app error class and FastAPI exception handlers.
+- Added `backend/app/core/logging.py` using Python standard logging and `LOG_LEVEL`.
+- Standardized backend error responses to `{detail, code}` while preserving `detail` as string.
+- Refined Pydantic validation for auth, profile, JD, roadmap and interview requests.
+- Added logging to auth, resume upload, JD upload, analysis, roadmap and interview flows.
+- Added safer local upload cleanup/path checks.
+- Updated backend README and context docs.

@@ -1,9 +1,11 @@
 import json
+import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.core.errors import AppError, raise_app_error
 from app.database import get_db
 from app.models.career_profile import CareerProfile
 from app.models.learning_roadmap import LearningRoadmap
@@ -15,6 +17,7 @@ from app.services.roadmap_generator import build_roadmap_from_analysis, build_ro
 from app.services.security import get_current_user
 
 router = APIRouter(prefix="/api/roadmaps", tags=["roadmaps"])
+logger = logging.getLogger("careeros_api.roadmaps")
 
 
 @router.post("/generate", response_model=LearningRoadmapResponse, status_code=status.HTTP_201_CREATED)
@@ -28,84 +31,66 @@ def generate_learning_roadmap(
 
     analysis = None
     if payload.analysis_id is not None:
-        analysis = (
-            db.query(MatchAnalysis)
-            .filter(MatchAnalysis.id == payload.analysis_id, MatchAnalysis.user_id == current_user.id)
-            .first()
-        )
+        analysis = db.query(MatchAnalysis).filter(MatchAnalysis.id == payload.analysis_id, MatchAnalysis.user_id == current_user.id).first()
         if analysis is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found")
+            logger.warning("Roadmap generation rejected: analysis not found", extra={"user_id": current_user.id, "analysis_id": payload.analysis_id})
+            raise_app_error(status.HTTP_404_NOT_FOUND, "Analysis not found", "ANALYSIS_NOT_FOUND")
 
     if analysis is None and profile is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cần có career profile hoặc chọn một analysis để tạo roadmap.",
-        )
+        logger.warning("Roadmap generation rejected: missing profile and analysis", extra={"user_id": current_user.id})
+        raise_app_error(status.HTTP_400_BAD_REQUEST, "Career profile or analysis is required to generate a roadmap", "ROADMAP_INPUT_REQUIRED")
 
-    if analysis is not None:
-        resume_text = analysis.resume.extracted_text if analysis.resume else ""
-        jd_text = analysis.job_description.content if analysis.job_description else ""
-        analysis_result = analyze_resume_job_match(resume_text or "", jd_text or "")
-        target_role = (profile.target_role if profile else "") or (
-            analysis.job_description.title if analysis.job_description else ""
-        )
-        roadmap_data = build_roadmap_from_analysis(
-            target_role=target_role,
-            current_level=profile.current_level if profile else "",
-            timeline=timeline,
-            prioritized_missing_skills=_as_priority_dict(analysis_result["prioritized_missing_skills"]),
-            improvement_plan=[str(item) for item in analysis_result["improvement_plan"]],
-        )
-    else:
-        if _is_empty_profile(profile):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Career profile chưa đủ dữ liệu để tạo roadmap basic.",
+    try:
+        if analysis is not None:
+            resume_text = analysis.resume.extracted_text if analysis.resume else ""
+            jd_text = analysis.job_description.content if analysis.job_description else ""
+            analysis_result = analyze_resume_job_match(resume_text or "", jd_text or "")
+            target_role = (profile.target_role if profile else "") or (analysis.job_description.title if analysis.job_description else "")
+            roadmap_data = build_roadmap_from_analysis(
+                target_role=target_role,
+                current_level=profile.current_level if profile else "",
+                timeline=timeline,
+                prioritized_missing_skills=_as_priority_dict(analysis_result["prioritized_missing_skills"]),
+                improvement_plan=[str(item) for item in analysis_result["improvement_plan"]],
             )
-        roadmap_data = build_roadmap_from_profile(profile, timeline=timeline)
+        else:
+            if _is_empty_profile(profile):
+                logger.warning("Roadmap generation rejected: profile has no usable data", extra={"user_id": current_user.id})
+                raise_app_error(status.HTTP_400_BAD_REQUEST, "Career profile does not have enough data to generate a roadmap", "PROFILE_INCOMPLETE")
+            roadmap_data = build_roadmap_from_profile(profile, timeline=timeline)
 
-    roadmap = LearningRoadmap(
-        user_id=current_user.id,
-        analysis_id=analysis.id if analysis else None,
-        title=str(roadmap_data["title"]),
-        target_role=str(roadmap_data["target_role"]),
-        timeline=str(roadmap_data["timeline"]),
-        items=json.dumps(roadmap_data["items"], ensure_ascii=False),
-        summary=str(roadmap_data["summary"]),
-    )
-    db.add(roadmap)
-    db.commit()
-    db.refresh(roadmap)
-    return _to_response(roadmap)
+        roadmap = LearningRoadmap(
+            user_id=current_user.id,
+            analysis_id=analysis.id if analysis else None,
+            title=str(roadmap_data["title"]),
+            target_role=str(roadmap_data["target_role"]),
+            timeline=str(roadmap_data["timeline"]),
+            items=json.dumps(roadmap_data["items"], ensure_ascii=False),
+            summary=str(roadmap_data["summary"]),
+        )
+        db.add(roadmap)
+        db.commit()
+        db.refresh(roadmap)
+        logger.info("Roadmap generated", extra={"user_id": current_user.id, "roadmap_id": roadmap.id})
+        return _to_response(roadmap)
+    except AppError:
+        raise
+    except Exception as exc:
+        logger.exception("Roadmap generation failed", extra={"user_id": current_user.id, "analysis_id": payload.analysis_id})
+        raise AppError(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not generate roadmap", code="ROADMAP_GENERATION_FAILED") from exc
 
 
 @router.get("/me", response_model=list[LearningRoadmapResponse])
-def get_my_roadmaps(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> list[LearningRoadmapResponse]:
-    roadmaps = (
-        db.query(LearningRoadmap)
-        .filter(LearningRoadmap.user_id == current_user.id)
-        .order_by(LearningRoadmap.created_at.desc())
-        .limit(20)
-        .all()
-    )
+def get_my_roadmaps(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> list[LearningRoadmapResponse]:
+    roadmaps = db.query(LearningRoadmap).filter(LearningRoadmap.user_id == current_user.id).order_by(LearningRoadmap.created_at.desc()).limit(20).all()
     return [_to_response(roadmap) for roadmap in roadmaps]
 
 
 @router.get("/{roadmap_id}", response_model=LearningRoadmapResponse)
-def get_roadmap_by_id(
-    roadmap_id: int,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-) -> LearningRoadmapResponse:
-    roadmap = (
-        db.query(LearningRoadmap)
-        .filter(LearningRoadmap.id == roadmap_id, LearningRoadmap.user_id == current_user.id)
-        .first()
-    )
+def get_roadmap_by_id(roadmap_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> LearningRoadmapResponse:
+    roadmap = db.query(LearningRoadmap).filter(LearningRoadmap.id == roadmap_id, LearningRoadmap.user_id == current_user.id).first()
     if roadmap is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Roadmap not found")
+        raise_app_error(status.HTTP_404_NOT_FOUND, "Roadmap not found", "ROADMAP_NOT_FOUND")
     return _to_response(roadmap)
 
 
@@ -147,12 +132,5 @@ def _as_priority_dict(value: object) -> dict[str, list[str]]:
 def _is_empty_profile(profile: CareerProfile | None) -> bool:
     if profile is None:
         return True
-    fields = [
-        profile.target_role,
-        profile.current_level,
-        profile.skills,
-        profile.experience_summary,
-        profile.projects_summary,
-        profile.career_goal,
-    ]
+    fields = [profile.target_role, profile.current_level, profile.skills, profile.experience_summary, profile.projects_summary, profile.career_goal]
     return not any((value or "").strip() for value in fields)

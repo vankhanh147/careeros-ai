@@ -14,7 +14,7 @@ Some Vietnamese strings inside backend services/routers currently appear mojibak
 
 Frontend Phase 5.1 cleaned the main UI copy, but backend-generated summaries/feedback may still display corrupted Vietnamese until backend strings are normalized to UTF-8.
 
-Recommended fix: Phase 5.2 should clean backend service strings without changing business logic.
+Recommended fix: clean backend-generated Vietnamese strings in a dedicated polish pass without changing business logic.
 
 ## No Migration System Yet
 
@@ -84,10 +84,13 @@ Dashboard latest analysis calls matcher logic to derive skill gap summary when p
 
 The roadmap still lists Career Diagnosis as MVP v1 feature, but current codebase does not have a standalone Career Diagnosis module/page. Some diagnosis-like value is covered indirectly by career profile, analysis, skill gap, roadmap and interview.
 
-## No Production Logging Standard Yet
+## Logging Limitation
 
-No structured logging, request IDs, error tracking or monitoring setup exists yet.
+Phase 5.2 added Python standard logging for startup, auth, upload, analysis, roadmap and interview events. There is still no request ID middleware, structured JSON logging, external error tracking or monitoring setup yet.
 
 ## No Deployment Config Finalization Yet
 
 Vercel/Render are target platforms, but production deployment docs/config are not complete in the current codebase.
+## Error Handling Limitation
+
+Phase 5.2 adds consistent `{detail, code}` error responses. Existing frontend remains compatible because `detail` is still a string. Error messages are intentionally short English strings for backend consistency. Full i18n of backend error messages is not implemented.
