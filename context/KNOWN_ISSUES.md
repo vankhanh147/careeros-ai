@@ -27,7 +27,8 @@ Recommended fix: clean backend-generated Vietnamese strings in a dedicated polis
 - CV files are stored locally under `uploads/resumes/user_{id}`.
 - JD upload files are stored locally under `uploads/job_descriptions/user_{id}`.
 - Supabase Storage is planned but not implemented.
-- Local storage is not ideal for Render deployments unless persistent disk is configured.
+- Local storage is not durable on Render free/ephemeral filesystems unless persistent disk is configured.
+- For real production or beta users, uploads should move to Supabase Storage before relying on uploaded files long term.
 
 ## Analysis Persistence Limitation
 
@@ -96,9 +97,9 @@ The roadmap still lists Career Diagnosis as MVP v1 feature, but current codebase
 
 Phase 5.2 added Python standard logging for startup, auth, upload, analysis, roadmap and interview events. There is still no request ID middleware, structured JSON logging, external error tracking or monitoring setup yet.
 
-## No Deployment Config Finalization Yet
+## Deployment Limitations
 
-Vercel/Render are target platforms, but production deployment docs/config are not complete in the current codebase.
+Phase 5.4 adds deployment documentation and baseline Render/Vercel configuration. A real production deploy still needs environment variables set in Render/Vercel, Supabase PostgreSQL credentials, production CORS origins, and a decision for durable upload storage.
 ## Error Handling Limitation
 
 Phase 5.2 adds consistent `{detail, code}` error responses. Existing frontend remains compatible because `detail` is still a string. Error messages are intentionally short English strings for backend consistency. Full i18n of backend error messages is not implemented.

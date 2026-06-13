@@ -136,3 +136,13 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Patched upload roots to temporary test directories to avoid writing test files into persistent upload storage.
 - Added roadmap timeline parser regression tests for `1 tuần`, `2 tuần`, `1 tháng` and empty timeline fallback.
 - Backend checks passed: compileall, pytest and pip check.
+
+## Phase 5.4: Deployment Preparation
+
+- Added `backend/render.yaml` baseline for Render Web Service deployment.
+- Added `backend/runtime.txt` with recommended Python runtime.
+- Added `docs/deployment.md` with Render/Vercel deployment checklist.
+- Updated backend README with Render build/start command, env vars, CORS and Sentence Transformers fallback notes.
+- Updated frontend README with Vercel env setup.
+- Updated root README with deployment overview.
+- Centralized frontend API base URL in `frontend/lib/api/config.ts` and removed localhost fallback from API clients.

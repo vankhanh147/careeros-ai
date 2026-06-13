@@ -40,6 +40,20 @@ CareerOS AI hướng tới việc biến dữ liệu nghề nghiệp rời rạc
 - AI/ML: Python, Sentence Transformers, scikit-learn, open-source pretrained models
 - Deployment: Vercel cho frontend, Render cho backend
 
+## Deployment Overview
+
+CareerOS AI được chuẩn bị để deploy theo hướng MVP production-ready:
+
+- Backend deploy lên Render từ thư mục `backend/`.
+- Frontend deploy lên Vercel từ thư mục `frontend/`.
+- Database dùng PostgreSQL/Supabase qua `DATABASE_URL`.
+- Frontend gọi backend qua `NEXT_PUBLIC_API_URL`.
+- Backend CORS cấu hình bằng `BACKEND_CORS_ORIGINS`, hỗ trợ nhiều origin phân tách bằng dấu phẩy.
+
+Tài liệu deployment chi tiết nằm ở `docs/deployment.md`.
+
+Lưu ý hiện tại: upload CV/JD vẫn dùng local filesystem trong `backend/uploads`. Render filesystem không bền vững nếu không cấu hình persistent disk, nên production thật cần chuyển sang Supabase Storage ở phase sau.
+
 ## Cấu trúc thư mục
 
 ```text

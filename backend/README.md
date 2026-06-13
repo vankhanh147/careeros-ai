@@ -63,6 +63,51 @@ Health check: `GET http://localhost:8000/health`
 
 The app creates initial tables at startup through SQLAlchemy metadata. This keeps the MVP simple; migrations can be added later when schema changes become more frequent.
 
+## Render deployment
+
+Use `backend/` as the Render service root.
+
+Build command:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start command:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Health check path:
+
+```text
+/health
+```
+
+Recommended Python runtime is documented in `runtime.txt`.
+
+Required Render environment variables:
+
+```text
+PROJECT_NAME="CareerOS AI API"
+DATABASE_URL="postgresql://..."
+JWT_SECRET_KEY="<strong-random-secret>"
+JWT_ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES="60"
+BACKEND_CORS_ORIGINS="https://your-vercel-app.vercel.app,http://localhost:3000"
+SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"
+LOG_LEVEL="INFO"
+```
+
+`BACKEND_CORS_ORIGINS` supports comma-separated origins. Use the local frontend origin for development and the Vercel URL for production. Avoid `*` in production.
+
+Do not commit `.env`. Keep production secrets in Render environment variables.
+
+`sentence-transformers` can be heavy on Render free instances. Keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` for stable MVP deploys; if the model is not available locally, CareerOS AI falls back to rule-based matching.
+
+Current file uploads are stored under `backend/uploads`. Render filesystem is not durable unless persistent disk is configured, so production should move uploads to Supabase Storage in a future phase.
+
 ## Run tests
 
 Backend tests use `pytest` with FastAPI `TestClient`.

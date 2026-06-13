@@ -184,20 +184,31 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Added coverage for auth, career profile, documents, analysis, roadmap timeline parser, interview flow and dashboard summary.
 - Checks passed: `python -m compileall app tests`, `pytest`, and `pip check`.
 
+### Phase 5.4: Deployment Preparation - Completed
+
+- Added Render deployment baseline for backend with `backend/render.yaml`.
+- Added backend Python runtime recommendation in `backend/runtime.txt`.
+- Added deployment guide in `docs/deployment.md`.
+- Documented Render build/start commands and required backend environment variables.
+- Documented Vercel frontend setup with `NEXT_PUBLIC_API_URL`.
+- Removed frontend API client hardcoded localhost fallback outside `.env.example`; API clients now require `NEXT_PUBLIC_API_URL`.
+- Documented CORS production setup and local upload storage limitation on Render.
+
 ## Current Phase
 
-Current phase: Phase 5 - Production Readiness. Phase 5.3 backend tests foundation is complete.
+Current phase: Phase 5 - Production Readiness. Phase 5.4 deployment preparation is complete.
 
-Đã hoàn thành UI/UX polish, backend validation/error/logging foundation và backend automated test foundation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, deployment docs, monitoring/logging nâng cao và test coverage mở rộng cho edge cases.
+Đã hoàn thành UI/UX polish, backend validation/error/logging foundation, backend automated test foundation và deployment preparation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, monitoring/logging nâng cao, Supabase Storage migration và test coverage mở rộng cho edge cases.
 
 ## Next Recommended Phase
 
-Recommended next: Phase 5.4 - Deployment hardening and production configuration.
+Recommended next: Phase 5.5 - Storage hardening, security review and beta deployment verification.
 
 Ưu tiên tiếp theo:
 
 - Sửa các chuỗi tiếng Việt bị mojibake còn trong backend service/router.
 - Mở rộng test coverage cho edge cases phức tạp hơn khi feature mới được thêm.
 - Rà quyền truy cập user-owned resources.
+- Chuyển upload storage sang Supabase Storage hoặc cấu hình persistent storage trước beta thật.
 - Rà file upload security và storage cleanup.
-- Viết hướng dẫn deployment tối thiểu.
+- Verify deploy thật trên Render/Vercel với Supabase PostgreSQL.
