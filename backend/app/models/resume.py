@@ -23,3 +23,4 @@ class Resume(Base):
     )
 
     user = relationship("User", back_populates="resumes")
+    match_analyses = relationship("MatchAnalysis", back_populates="resume", cascade="all, delete-orphan")

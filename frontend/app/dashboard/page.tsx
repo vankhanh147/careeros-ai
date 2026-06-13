@@ -69,7 +69,7 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid gap-6 lg:grid-cols-3">
           <div className="rounded-lg border border-white/10 bg-white/5 p-6">
             <h2 className="text-lg font-semibold">Hồ sơ nghề nghiệp</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
@@ -93,6 +93,19 @@ export default function DashboardPage() {
               className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
             >
               Quản lý CV và JD
+            </Link>
+          </div>
+
+          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold">Resume ↔ Job Matching</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Chọn CV và Job Description đã lưu để nhận match score, skill gap và gợi ý cải thiện theo hướng MVP có thể giải thích.
+            </p>
+            <Link
+              href="/analysis"
+              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            >
+              Phân tích matching
             </Link>
           </div>
         </div>

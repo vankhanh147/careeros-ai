@@ -29,6 +29,13 @@ export type JobDescriptionPayload = {
   source_url?: string;
 };
 
+export type JobDescriptionUploadPayload = {
+  file: File;
+  title?: string;
+  company?: string;
+  source_url?: string;
+};
+
 async function jsonRequest<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
@@ -87,6 +94,36 @@ export function createJobDescription(
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export async function uploadJobDescription(
+  token: string,
+  payload: JobDescriptionUploadPayload
+): Promise<JobDescription> {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  if (payload.title) formData.append("title", payload.title);
+  if (payload.company) formData.append("company", payload.company);
+  if (payload.source_url) formData.append("source_url", payload.source_url);
+
+  const response = await fetch(`${API_URL}/api/job-descriptions/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    const message =
+      typeof error?.detail === "string"
+        ? error.detail
+        : "Không thể upload Job Description. Vui lòng dùng file PDF hoặc TXT dưới 5MB.";
+    throw new Error(message);
+  }
+
+  return response.json() as Promise<JobDescription>;
 }
 
 export function getMyJobDescriptions(token: string): Promise<JobDescription[]> {

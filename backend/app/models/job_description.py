@@ -23,3 +23,4 @@ class JobDescription(Base):
     )
 
     user = relationship("User", back_populates="job_descriptions")
+    match_analyses = relationship("MatchAnalysis", back_populates="job_description", cascade="all, delete-orphan")

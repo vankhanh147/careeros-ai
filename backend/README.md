@@ -55,9 +55,17 @@ The app creates initial tables at startup through SQLAlchemy metadata. This keep
 - `POST /api/resumes/upload`
 - `GET /api/resumes/me`
 - `POST /api/job-descriptions`
+- `POST /api/job-descriptions/upload`
 - `GET /api/job-descriptions/me`
 
 Uploaded PDFs are stored locally in `backend/uploads/resumes` for now. The database stores `storage_path` and nullable `file_url`, so the storage layer can move to Supabase Storage later without changing the core API shape.
+
+## Analysis endpoints
+
+- `POST /api/analysis/resume-job-match`
+- `GET /api/analysis/history`
+
+Resume ↔ Job Matching MVP extracts PDF text with `pypdf`, detects technology skills with a rule-based list, calculates skill overlap, missing skills, keyword overlap and saves the result to the database. The response also includes `resume_text_preview`, `jd_text_preview`, detected skills and `scoring_breakdown` so developers can verify what the matcher actually read. It does not use an LLM API in this phase.
 
 ## Manual test with curl
 
@@ -107,6 +115,32 @@ List job descriptions:
 
 ```bash
 curl http://localhost:8000/api/job-descriptions/me \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Upload job description file PDF/TXT:
+
+```bash
+curl -X POST http://localhost:8000/api/job-descriptions/upload \
+  -H "Authorization: Bearer <access_token>" \
+  -F "file=@/path/to/job-description.pdf" \
+  -F "title=Backend Intern" \
+  -F "company=Example Co"
+```
+
+Run resume-job analysis:
+
+```bash
+curl -X POST http://localhost:8000/api/analysis/resume-job-match \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"resume_id":1,"job_description_id":1}'
+```
+
+List analysis history:
+
+```bash
+curl http://localhost:8000/api/analysis/history \
   -H "Authorization: Bearer <access_token>"
 ```
 

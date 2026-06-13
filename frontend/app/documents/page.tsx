@@ -8,28 +8,35 @@ import {
   createJobDescription,
   getMyJobDescriptions,
   getMyResumes,
+  uploadJobDescription,
   uploadResume,
   type JobDescription,
   type Resume
 } from "@/lib/api/documents";
 import { useAuth } from "@/lib/auth/AuthContext";
 
-const MAX_RESUME_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
 export default function DocumentsPage() {
   const router = useRouter();
   const { token, isAuthenticated, isLoading } = useAuth();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [jobDescriptions, setJobDescriptions] = useState<JobDescription[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedResumeFile, setSelectedResumeFile] = useState<File | null>(null);
+  const [resumeFileInputKey, setResumeFileInputKey] = useState(0);
+  const [selectedJdFile, setSelectedJdFile] = useState<File | null>(null);
+  const [jdFileInputKey, setJdFileInputKey] = useState(0);
   const [jdTitle, setJdTitle] = useState("");
   const [jdCompany, setJdCompany] = useState("");
   const [jdContent, setJdContent] = useState("");
   const [jdSourceUrl, setJdSourceUrl] = useState("");
+  const [jdUploadTitle, setJdUploadTitle] = useState("");
+  const [jdUploadCompany, setJdUploadCompany] = useState("");
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isFetching, setIsFetching] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [isUploadingJd, setIsUploadingJd] = useState(false);
   const [isSavingJd, setIsSavingJd] = useState(false);
 
   useEffect(() => {
@@ -83,33 +90,76 @@ export default function DocumentsPage() {
       router.replace("/login");
       return;
     }
-    if (!selectedFile) {
+    if (!selectedResumeFile) {
       setError("Vui lòng chọn file CV PDF.");
       return;
     }
-    if (!selectedFile.name.toLowerCase().endsWith(".pdf")) {
-      setError("Chỉ hỗ trợ file PDF.");
+    if (!selectedResumeFile.name.toLowerCase().endsWith(".pdf")) {
+      setError("CV chỉ hỗ trợ file PDF.");
       return;
     }
-    if (selectedFile.size > MAX_RESUME_SIZE_BYTES) {
-      setError("File PDF phải nhỏ hơn hoặc bằng 5MB.");
+    if (selectedResumeFile.size > MAX_FILE_SIZE_BYTES) {
+      setError("File CV phải nhỏ hơn hoặc bằng 5MB.");
       return;
     }
 
     setError("");
     setStatusMessage("");
-    setIsUploading(true);
+    setIsUploadingResume(true);
 
     try {
-      const uploaded = await uploadResume(token, selectedFile);
+      const uploaded = await uploadResume(token, selectedResumeFile);
       setResumes((current) => [uploaded, ...current]);
-      setSelectedFile(null);
-      event.currentTarget.reset();
+      setSelectedResumeFile(null);
+      setResumeFileInputKey((current) => current + 1);
       setStatusMessage("Đã upload CV PDF.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể upload CV.");
     } finally {
-      setIsUploading(false);
+      setIsUploadingResume(false);
+    }
+  }
+
+  async function handleJobDescriptionUpload(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+    if (!selectedJdFile) {
+      setError("Vui lòng chọn file JD PDF hoặc TXT.");
+      return;
+    }
+    const lowerName = selectedJdFile.name.toLowerCase();
+    if (!lowerName.endsWith(".pdf") && !lowerName.endsWith(".txt")) {
+      setError("JD upload hiện hỗ trợ file PDF hoặc TXT.");
+      return;
+    }
+    if (selectedJdFile.size > MAX_FILE_SIZE_BYTES) {
+      setError("File JD phải nhỏ hơn hoặc bằng 5MB.");
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setIsUploadingJd(true);
+
+    try {
+      const uploaded = await uploadJobDescription(token, {
+        file: selectedJdFile,
+        title: jdUploadTitle.trim() || undefined,
+        company: jdUploadCompany.trim() || undefined
+      });
+      setJobDescriptions((current) => [uploaded, ...current]);
+      setSelectedJdFile(null);
+      setJdUploadTitle("");
+      setJdUploadCompany("");
+      setJdFileInputKey((current) => current + 1);
+      setStatusMessage("Đã upload và đọc nội dung Job Description.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể upload Job Description.");
+    } finally {
+      setIsUploadingJd(false);
     }
   }
 
@@ -164,12 +214,20 @@ export default function DocumentsPage() {
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-1 text-xl font-semibold">CV và Job Description</h1>
           </div>
-          <Link
-            href="/dashboard"
-            className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
-          >
-            Về dashboard
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/analysis"
+              className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
+            >
+              Phân tích matching
+            </Link>
+            <Link
+              href="/dashboard"
+              className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
+            >
+              Về dashboard
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -177,21 +235,22 @@ export default function DocumentsPage() {
         <div className="rounded-lg border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold">Upload CV PDF</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            Lưu CV PDF để chuẩn bị cho bước Resume ↔ Job Matching sau này. Giai đoạn này chưa phân tích nội dung CV.
+            Lưu CV PDF để hệ thống trích xuất text và chạy Resume ↔ Job Matching. File tối đa 5MB.
           </p>
           <form onSubmit={handleResumeUpload} className="mt-6 space-y-4">
             <input
+              key={resumeFileInputKey}
               type="file"
               accept="application/pdf,.pdf"
-              onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
+              onChange={(event) => setSelectedResumeFile(event.target.files?.[0] ?? null)}
               className="block w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
             />
             <button
               type="submit"
-              disabled={isUploading}
+              disabled={isUploadingResume}
               className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isUploading ? "Đang upload..." : "Upload CV"}
+              {isUploadingResume ? "Đang upload..." : "Upload CV"}
             </button>
           </form>
 
@@ -212,34 +271,61 @@ export default function DocumentsPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-          <h2 className="text-xl font-semibold">Lưu Job Description mục tiêu</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
-            Paste JD từ vị trí bạn muốn apply. Giai đoạn này chỉ lưu dữ liệu, chưa chấm điểm matching.
-          </p>
-          <form onSubmit={handleCreateJobDescription} className="mt-6 space-y-4">
-            <TextInput label="Tiêu đề vị trí" value={jdTitle} onChange={setJdTitle} placeholder="Backend Intern" required />
-            <TextInput label="Công ty" value={jdCompany} onChange={setJdCompany} placeholder="Tên công ty nếu có" />
-            <TextInput label="Nguồn JD" value={jdSourceUrl} onChange={setJdSourceUrl} placeholder="https://..." />
-            <label className="block text-sm font-medium text-slate-200">
-              Nội dung Job Description
-              <textarea
-                required
-                rows={8}
-                value={jdContent}
-                onChange={(event) => setJdContent(event.target.value)}
-                placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..."
-                className="mt-2 w-full resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+        <div className="space-y-6">
+          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+            <h2 className="text-xl font-semibold">Upload Job Description</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Upload JD dạng PDF hoặc TXT. Backend sẽ extract text và lưu vào nội dung JD để dùng cho matching.
+            </p>
+            <form onSubmit={handleJobDescriptionUpload} className="mt-6 space-y-4">
+              <TextInput label="Tiêu đề vị trí" value={jdUploadTitle} onChange={setJdUploadTitle} placeholder="Backend Intern" />
+              <TextInput label="Công ty" value={jdUploadCompany} onChange={setJdUploadCompany} placeholder="Tên công ty nếu có" />
+              <input
+                key={jdFileInputKey}
+                type="file"
+                accept="application/pdf,text/plain,.pdf,.txt"
+                onChange={(event) => setSelectedJdFile(event.target.files?.[0] ?? null)}
+                className="block w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
               />
-            </label>
-            <button
-              type="submit"
-              disabled={isSavingJd}
-              className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSavingJd ? "Đang lưu..." : "Lưu Job Description"}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isUploadingJd}
+                className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isUploadingJd ? "Đang đọc JD..." : "Upload JD"}
+              </button>
+            </form>
+          </div>
+
+          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+            <h2 className="text-xl font-semibold">Paste Job Description</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Vẫn có thể paste JD trực tiếp từ trang tuyển dụng nếu không có file.
+            </p>
+            <form onSubmit={handleCreateJobDescription} className="mt-6 space-y-4">
+              <TextInput label="Tiêu đề vị trí" value={jdTitle} onChange={setJdTitle} placeholder="Backend Intern" required />
+              <TextInput label="Công ty" value={jdCompany} onChange={setJdCompany} placeholder="Tên công ty nếu có" />
+              <TextInput label="Nguồn JD" value={jdSourceUrl} onChange={setJdSourceUrl} placeholder="https://..." />
+              <label className="block text-sm font-medium text-slate-200">
+                Nội dung Job Description
+                <textarea
+                  required
+                  rows={8}
+                  value={jdContent}
+                  onChange={(event) => setJdContent(event.target.value)}
+                  placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..."
+                  className="mt-2 w-full resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={isSavingJd}
+                className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSavingJd ? "Đang lưu..." : "Lưu Job Description"}
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 

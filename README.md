@@ -1,4 +1,4 @@
-﻿# CareerOS AI
+# CareerOS AI
 
 ## Tên đề tài
 
@@ -56,9 +56,9 @@ CareerOS-AI/
 
 ## Trạng thái hiện tại
 
-Project đang ở giai đoạn khởi tạo nền tảng. Hiện tại chỉ có cấu trúc thư mục và tài liệu định hướng ban đầu.
+Project đã có nền tảng kỹ thuật ban đầu: FastAPI backend, Next.js frontend, JWT authentication, career profile, upload CV PDF, lưu Job Description và Resume ↔ Job Matching MVP.
 
-Chưa scaffold Next.js hoặc FastAPI. Việc scaffold sẽ được thực hiện sau khi phạm vi MVP, kiến trúc cơ bản và luồng sản phẩm chính được xác định rõ.
+Phase hiện tại tập trung vào AI MVP có thể giải thích được: trích xuất text từ CV PDF, so khớp skill/keyword với Job Description và lưu lịch sử phân tích. Các module Career Diagnosis, Personalized Roadmap và Mock Interview AI chưa được triển khai ở bước này.
 
 ## Nguyên tắc phát triển
 

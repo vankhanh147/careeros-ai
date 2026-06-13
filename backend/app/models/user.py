@@ -32,3 +32,4 @@ class User(Base):
     job_descriptions = relationship(
         "JobDescription", back_populates="user", cascade="all, delete-orphan"
     )
+    match_analyses = relationship("MatchAnalysis", back_populates="user", cascade="all, delete-orphan")
