@@ -17,7 +17,7 @@ This file records technical and product decisions already made for CareerOS AI. 
 - Frontend is Next.js + React + TypeScript + Tailwind CSS.
 - Database is PostgreSQL/Supabase via SQLAlchemy.
 - Auth is JWT.
-- Storage target is Supabase Storage, but current MVP uses local filesystem for uploaded files.
+- Storage uses Supabase Storage private bucket for uploaded CV/JD files when configured, with local filesystem fallback for development.
 - Deployment targets remain Vercel for frontend and Render for backend.
 - Keep a modular monolith. Do not add microservices, queues, Kubernetes or distributed systems until real need.
 - Do not introduce repository pattern yet; routers use SQLAlchemy Session directly for MVP simplicity.

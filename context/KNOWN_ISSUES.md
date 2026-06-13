@@ -22,13 +22,12 @@ Recommended fix: clean backend-generated Vietnamese strings in a dedicated polis
 - There is no Alembic migration setup.
 - Adding/changing columns in existing databases may require manual migration.
 
-## Local File Storage
+## Storage Limitations
 
-- CV files are stored locally under `uploads/resumes/user_{id}`.
-- JD upload files are stored locally under `uploads/job_descriptions/user_{id}`.
-- Supabase Storage is planned but not implemented.
-- Local storage is not durable on Render free/ephemeral filesystems unless persistent disk is configured.
-- For real production or beta users, uploads should move to Supabase Storage before relying on uploaded files long term.
+- Phase 5.5 wires Resume and uploaded JD files to Supabase Storage when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured.
+- Local storage under `backend/uploads` remains as a development fallback when Supabase env vars are missing.
+- Existing databases created before Phase 5.5 need a one-time migration: `ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS storage_path VARCHAR(500);`.
+- There is still no Alembic migration system, so production schema changes must be applied manually for now.
 
 ## Analysis Persistence Limitation
 
@@ -83,7 +82,7 @@ Remaining gaps:
 - No browser/E2E test suite yet.
 - Backend tests use SQLite, so PostgreSQL-specific behavior is not fully covered.
 - File upload tests use minimal generated PDFs; complex real-world PDF extraction edge cases are not covered.
-- Supabase Storage is still not wired, so storage integration tests do not exist yet.
+- Supabase Storage behavior is covered with mocked storage service tests, but not with live Supabase integration tests.
 
 ## Dashboard Summary Recompute
 

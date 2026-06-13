@@ -34,6 +34,7 @@ class JobDescriptionResponse(BaseModel):
     title: str
     company: str | None
     content: str
+    storage_path: str | None
     source_url: str | None
     created_at: datetime
     updated_at: datetime

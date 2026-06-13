@@ -7,7 +7,7 @@ This guide prepares the current MVP for Render backend deployment and Vercel fro
 - Backend: Render Web Service
 - Frontend: Vercel
 - Database: PostgreSQL / Supabase
-- Storage: currently local backend filesystem; production should move to Supabase Storage
+- Storage: Supabase Storage private bucket, with local filesystem fallback for development
 
 ## Backend on Render
 
@@ -54,6 +54,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 BACKEND_CORS_ORIGINS=https://your-vercel-app.vercel.app,http://localhost:3000
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 LOG_LEVEL=INFO
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+SUPABASE_STORAGE_BUCKET=career-documents
 ```
 
 Do not commit `.env`. Keep secrets only in Render environment variables.
@@ -88,16 +91,38 @@ With this setting, the backend does not try to download `all-MiniLM-L6-v2` at ru
 
 Only set `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=false` if the deployment environment has enough resources and network access for model download.
 
-### Backend Storage Limitation
+### Supabase Storage
 
-Current upload storage is local:
+Production/beta uploads should use the private Supabase Storage bucket:
 
-- `backend/uploads/resumes`
-- `backend/uploads/job_descriptions`
+```text
+career-documents
+```
 
-Render filesystem is not durable unless persistent disk is configured. Uploaded CV/JD files may be lost across deploys/restarts on free or ephemeral storage.
+Required backend env vars:
 
-Production-ready storage should move to Supabase Storage in a future phase. The database already has `storage_path` / `file_url` style fields to support that migration.
+```text
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+SUPABASE_STORAGE_BUCKET=career-documents
+```
+
+Do not expose `SUPABASE_SERVICE_ROLE_KEY` to the frontend. Keep the bucket private. The backend uploads, downloads for analysis, and deletes objects with the service role key.
+
+Object paths:
+
+```text
+users/{user_id}/resumes/{uuid}-{filename}
+users/{user_id}/job-descriptions/{uuid}-{filename}
+```
+
+If `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY` is missing, the backend falls back to local development storage under `backend/uploads`.
+
+For existing databases created before Phase 5.5, run this once:
+
+```sql
+ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS storage_path VARCHAR(500);
+```
 
 ## Frontend on Vercel
 
@@ -130,6 +155,7 @@ Backend:
 - `JWT_SECRET_KEY` is strong and not committed.
 - `BACKEND_CORS_ORIGINS` includes the Vercel production URL.
 - `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` for stable MVP deploy unless model hosting is prepared.
+- Supabase Storage env vars point to the private `career-documents` bucket.
 
 Frontend:
 
@@ -140,7 +166,7 @@ Frontend:
 
 Before real beta:
 
-- Move upload storage to Supabase Storage or configure persistent disk.
+- Verify upload/delete flow against Supabase Storage private bucket.
 - Add database migrations before frequent schema changes.
 - Review localStorage JWT risk for production security.
 - Add monitoring/error tracking when traffic begins.

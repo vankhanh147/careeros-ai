@@ -194,21 +194,32 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Removed frontend API client hardcoded localhost fallback outside `.env.example`; API clients now require `NEXT_PUBLIC_API_URL`.
 - Documented CORS production setup and local upload storage limitation on Render.
 
+### Phase 5.5: Supabase Storage Migration for Uploads - Completed
+
+- Added backend Supabase Storage service using server-side `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `SUPABASE_STORAGE_BUCKET`.
+- Resume uploads now store files in private Supabase Storage path `users/{user_id}/resumes/{uuid}-{filename}` when configured.
+- JD uploads now store files in private Supabase Storage path `users/{user_id}/job-descriptions/{uuid}-{filename}` when configured.
+- Local fallback under `backend/uploads` remains active when Supabase Storage env vars are missing.
+- Resume analysis can download Supabase Storage objects into temp files when local files do not exist.
+- Delete Resume/JD removes the Supabase object when `storage_path` exists.
+- Added nullable `JobDescription.storage_path` for uploaded JD file tracking.
+- Added mocked storage tests; pytest does not require real Supabase.
+
 ## Current Phase
 
-Current phase: Phase 5 - Production Readiness. Phase 5.4 deployment preparation is complete.
+Current phase: Phase 5 - Production Readiness. Phase 5.5 Supabase Storage migration is complete.
 
-Đã hoàn thành UI/UX polish, backend validation/error/logging foundation, backend automated test foundation và deployment preparation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, monitoring/logging nâng cao, Supabase Storage migration và test coverage mở rộng cho edge cases.
+Đã hoàn thành UI/UX polish, backend validation/error/logging foundation, backend automated test foundation, deployment preparation và Supabase Storage migration. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, monitoring/logging nâng cao, migration system và test coverage mở rộng cho edge cases.
 
 ## Next Recommended Phase
 
-Recommended next: Phase 5.5 - Storage hardening, security review and beta deployment verification.
+Recommended next: Phase 5.6 - Security review, migration system and beta deployment verification.
 
 Ưu tiên tiếp theo:
 
 - Sửa các chuỗi tiếng Việt bị mojibake còn trong backend service/router.
 - Mở rộng test coverage cho edge cases phức tạp hơn khi feature mới được thêm.
 - Rà quyền truy cập user-owned resources.
-- Chuyển upload storage sang Supabase Storage hoặc cấu hình persistent storage trước beta thật.
 - Rà file upload security và storage cleanup.
 - Verify deploy thật trên Render/Vercel với Supabase PostgreSQL.
+- Thêm migration system như Alembic trước khi schema thay đổi thường xuyên.

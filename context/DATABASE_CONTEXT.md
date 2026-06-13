@@ -94,8 +94,9 @@ Relationships:
 
 Notes:
 
-- File currently stored locally under `uploads/resumes/user_{id}`.
-- `file_url` is reserved for future Supabase Storage/public URL integration.
+- File is stored in Supabase Storage when configured, using `storage_path` like `users/{user_id}/resumes/{uuid}-{filename}`.
+- Local fallback stores files under `uploads/resumes/user_{id}` when Supabase Storage env vars are missing.
+- `file_url` stays nullable because the bucket is private; frontend does not receive public URLs.
 
 ### `JobDescription`
 
@@ -110,6 +111,7 @@ Fields:
 - `title`: string(255), required.
 - `company`: string(255), nullable.
 - `content`: text, required.
+- `storage_path`: string(500), nullable. Present for uploaded JD files, null for pasted JD content.
 - `source_url`: string(1000), nullable.
 - `created_at`, `updated_at`.
 
@@ -121,7 +123,8 @@ Relationships:
 Notes:
 
 - JD can be created from pasted content or upload PDF/TXT.
-- Uploaded JD files are saved under `uploads/job_descriptions/user_{id}`, but model currently stores only extracted content and metadata, not a JD file path.
+- Uploaded JD files are stored in Supabase Storage when configured, using `storage_path` like `users/{user_id}/job-descriptions/{uuid}-{filename}`.
+- Local fallback stores uploaded JD files under `uploads/job_descriptions/user_{id}` when Supabase Storage env vars are missing.
 
 ### `MatchAnalysis`
 
@@ -236,4 +239,5 @@ Relationships:
 
 - Several structured fields are stored as JSON strings in text columns for MVP simplicity.
 - No migration system yet; adding/changing columns currently relies on `create_all`, which does not handle migrations for existing databases.
-- Supabase Storage is planned but not wired; local upload folders are used now.
+- Supabase Storage is wired for Resume and uploaded JD files. Local upload folders are fallback only.
+- Existing databases from before Phase 5.5 need `ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS storage_path VARCHAR(500);`.

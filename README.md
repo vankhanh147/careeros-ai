@@ -52,7 +52,7 @@ CareerOS AI được chuẩn bị để deploy theo hướng MVP production-read
 
 Tài liệu deployment chi tiết nằm ở `docs/deployment.md`.
 
-Lưu ý hiện tại: upload CV/JD vẫn dùng local filesystem trong `backend/uploads`. Render filesystem không bền vững nếu không cấu hình persistent disk, nên production thật cần chuyển sang Supabase Storage ở phase sau.
+Upload CV/JD dùng Supabase Storage private bucket khi backend có `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` và `SUPABASE_STORAGE_BUCKET`. Local filesystem trong `backend/uploads` chỉ còn là fallback cho local development khi thiếu Supabase env vars.
 
 ## Cấu trúc thư mục
 

@@ -9,7 +9,7 @@ CareerOS AI hiện là monorepo MVP gồm:
 - Database: PostgreSQL/Supabase qua `DATABASE_URL`.
 - Auth: JWT access token.
 - AI services: Python services trong `backend/app/services`.
-- File storage hiện tại: local filesystem trong `backend/uploads/...`; schema có `storage_path`/`file_url` để chuyển sang Supabase Storage sau.
+- File storage hiện tại: Supabase Storage private bucket khi `SUPABASE_URL` và `SUPABASE_SERVICE_ROLE_KEY` được cấu hình; local filesystem `backend/uploads/...` là fallback cho local development.
 
 Project đi theo kiến trúc monolith modular, chưa dùng microservices, queues, Kubernetes hoặc Docker.
 
@@ -51,6 +51,9 @@ Config:
   - `BACKEND_CORS_ORIGINS`
   - `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY`
   - `LOG_LEVEL`
+  - `SUPABASE_URL`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `SUPABASE_STORAGE_BUCKET`
 
 ## Frontend Structure
 
@@ -108,18 +111,18 @@ API clients:
 
 1. User uploads CV PDF on `/documents`.
 2. Frontend calls `POST /api/resumes/upload` with multipart file.
-3. Backend validates `.pdf`, max 5MB, writes local file to `uploads/resumes/user_{id}` and stores `Resume`.
+3. Backend validates `.pdf`, max 5MB, uploads to Supabase Storage path `users/{user_id}/resumes/{uuid}-{filename}` when configured, otherwise writes local fallback to `uploads/resumes/user_{id}`.
 4. User adds JD by paste or upload.
 5. Paste calls `POST /api/job-descriptions`.
-6. Upload calls `POST /api/job-descriptions/upload`, supports `.pdf` and `.txt`, max 5MB, extracts content into `JobDescription.content`.
-7. User can update/delete JD and delete CV.
+6. Upload calls `POST /api/job-descriptions/upload`, supports `.pdf` and `.txt`, max 5MB, uploads to Supabase Storage path `users/{user_id}/job-descriptions/{uuid}-{filename}` when configured, extracts content into `JobDescription.content`, and stores `JobDescription.storage_path`.
+7. User can update/delete JD and delete CV; delete removes the Supabase object when a storage path exists.
 
 ### Analysis Flow
 
 1. User opens `/analysis`, chooses a Resume and JobDescription.
 2. Frontend calls `POST /api/analysis/resume-job-match`.
 3. Backend verifies both resources belong to current user.
-4. If `Resume.extracted_text` is null, backend extracts PDF text and stores it.
+4. If `Resume.extracted_text` is null, backend extracts PDF text from local file or downloads the object from Supabase Storage into a temp file, then stores extracted text.
 5. `analyze_resume_job_match` computes skills, keywords, semantic score/fallback, skill gap, improvement plan.
 6. Backend stores `MatchAnalysis` base fields and returns full response with debug preview and derived fields.
 7. History endpoint recomputes derived/debug fields from stored resume/JD text when returning old analyses.

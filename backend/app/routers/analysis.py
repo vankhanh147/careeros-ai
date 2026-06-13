@@ -13,6 +13,7 @@ from app.models.user import User
 from app.schemas.analysis import MatchAnalysisResponse, ResumeJobMatchRequest
 from app.services.resume_job_matcher import analyze_resume_job_match, extract_pdf_text
 from app.services.security import get_current_user
+from app.services.storage import readable_file_path
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 logger = logging.getLogger("careeros_api.analysis")
@@ -40,7 +41,8 @@ def run_resume_job_match(
 
     try:
         if not resume.extracted_text:
-            resume.extracted_text = extract_pdf_text(resume.storage_path)
+            with readable_file_path(resume.storage_path, suffix=".pdf") as resume_file_path:
+                resume.extracted_text = extract_pdf_text(resume_file_path)
 
         result = analyze_resume_job_match(resume.extracted_text or "", job_description.content)
         analysis = MatchAnalysis(

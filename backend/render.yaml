@@ -24,3 +24,9 @@ services:
         value: "true"
       - key: LOG_LEVEL
         value: INFO
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: career-documents

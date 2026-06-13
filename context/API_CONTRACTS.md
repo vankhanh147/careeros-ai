@@ -137,7 +137,8 @@ Validation:
 
 Behavior:
 
-- Stores file locally under `uploads/resumes/user_{id}`.
+- Stores file in Supabase Storage path `users/{user_id}/resumes/{uuid}-{filename}` when configured.
+- Falls back to local `uploads/resumes/user_{id}` when Supabase Storage env vars are missing.
 - Creates `Resume` row with `file_name`, `storage_path`, `file_url=null`, `extracted_text=null`.
 
 Response: `ResumeResponse`.
@@ -198,11 +199,12 @@ Validation:
 
 Behavior:
 
-- Saves upload under `uploads/job_descriptions/user_{id}`.
+- Stores file in Supabase Storage path `users/{user_id}/job-descriptions/{uuid}-{filename}` when configured.
+- Falls back to local `uploads/job_descriptions/user_{id}` when Supabase Storage env vars are missing.
 - Extracts PDF/TXT text.
-- Creates `JobDescription` with extracted text in `content`.
+- Creates `JobDescription` with extracted text in `content` and uploaded file path in `storage_path`.
 
-Response: `JobDescriptionResponse`.
+Response: `JobDescriptionResponse`, including nullable `storage_path`.
 
 ### `GET /api/job-descriptions/me`
 
@@ -224,7 +226,7 @@ Response: `JobDescriptionResponse`.
 
 JWT protected.
 
-Only deletes current user's JD.
+Only deletes current user's JD. If the JD was uploaded and has `storage_path`, the backend also deletes the Supabase/local object.
 
 Response: 204 no content.
 

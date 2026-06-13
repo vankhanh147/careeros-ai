@@ -146,3 +146,14 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Updated frontend README with Vercel env setup.
 - Updated root README with deployment overview.
 - Centralized frontend API base URL in `frontend/lib/api/config.ts` and removed localhost fallback from API clients.
+
+## Phase 5.5: Supabase Storage Migration for Uploads
+
+- Added backend Supabase Storage service using private bucket access through service role key.
+- Resume uploads now store objects at `users/{user_id}/resumes/{uuid}-{filename}` when Supabase env vars are configured.
+- JD uploads now store objects at `users/{user_id}/job-descriptions/{uuid}-{filename}` when Supabase env vars are configured.
+- Added local fallback under `backend/uploads` for development without Supabase env vars.
+- Added `JobDescription.storage_path` to track uploaded JD objects for deletion.
+- Analysis can download resume PDFs from Supabase Storage when local file paths do not exist.
+- Delete Resume/JD removes the Supabase object when a storage path exists.
+- Added mocked storage tests so pytest does not depend on real Supabase.

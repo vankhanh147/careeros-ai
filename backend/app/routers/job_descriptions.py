@@ -12,6 +12,7 @@ from app.models.user import User
 from app.schemas.job_description import JobDescriptionCreateRequest, JobDescriptionResponse
 from app.services.resume_job_matcher import extract_pdf_text, extract_txt_text
 from app.services.security import get_current_user
+from app.services.storage import build_job_description_storage_path, get_storage_service
 
 router = APIRouter(prefix="/api/job-descriptions", tags=["job-descriptions"])
 logger = logging.getLogger("careeros_api.job_descriptions")
@@ -48,6 +49,7 @@ def create_job_description(
         title=payload.title,
         company=payload.company,
         content=payload.content,
+        storage_path=None,
         source_url=payload.source_url,
     )
     db.add(job_description)
@@ -81,24 +83,38 @@ async def upload_job_description(
         logger.warning("JD upload rejected: file too large", extra={"user_id": current_user.id, "file_name": original_file_name})
         raise_app_error(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "Job description file must be 5MB or smaller", "FILE_TOO_LARGE")
 
-    user_upload_dir = JD_UPLOAD_ROOT / f"user_{current_user.id}"
-    user_upload_dir.mkdir(parents=True, exist_ok=True)
-    stored_file_name = f"{uuid4().hex}_{original_file_name}"
-    storage_path = user_upload_dir / stored_file_name
-    storage_path.write_bytes(content_bytes)
+    stored_file_name = f"{uuid4().hex}-{original_file_name}"
+    storage = get_storage_service()
+    storage_path_value: str | None = None
+    local_storage_path: Path | None = None
+
+    if storage.enabled:
+        storage_path_value = build_job_description_storage_path(current_user.id, stored_file_name)
+        storage.upload_bytes(storage_path_value, content_bytes, file.content_type or "application/octet-stream")
+    else:
+        user_upload_dir = JD_UPLOAD_ROOT / f"user_{current_user.id}"
+        user_upload_dir.mkdir(parents=True, exist_ok=True)
+        local_storage_path = user_upload_dir / stored_file_name
+        local_storage_path.write_bytes(content_bytes)
+        storage_path_value = local_storage_path.as_posix()
 
     try:
         if extension == ".pdf":
-            extracted_content = extract_pdf_text(storage_path.as_posix())
+            extraction_path = _write_temp_pdf_for_extraction(content_bytes) if storage.enabled else local_storage_path
+            try:
+                extracted_content = extract_pdf_text(str(extraction_path))
+            finally:
+                if storage.enabled and extraction_path is not None:
+                    Path(extraction_path).unlink(missing_ok=True)
         else:
             extracted_content = extract_txt_text(content_bytes)
     except Exception:
-        _delete_uploaded_file(storage_path)
+        _delete_uploaded_file(storage_path_value)
         logger.exception("JD upload extraction failed", extra={"user_id": current_user.id})
         raise_app_error(status.HTTP_400_BAD_REQUEST, "Could not extract readable text from the uploaded job description file", "TEXT_EXTRACTION_FAILED")
 
     if not extracted_content.strip():
-        _delete_uploaded_file(storage_path)
+        _delete_uploaded_file(storage_path_value)
         logger.warning("JD upload rejected: empty extracted text", extra={"user_id": current_user.id})
         raise_app_error(status.HTTP_400_BAD_REQUEST, "Could not extract readable text from the uploaded job description file", "TEXT_EXTRACTION_FAILED")
 
@@ -108,6 +124,7 @@ async def upload_job_description(
         title=clean_title[:255],
         company=(company or "").strip() or None,
         content=extracted_content,
+        storage_path=storage_path_value,
         source_url=(source_url or "").strip() or None,
     )
     db.add(job_description)
@@ -149,13 +166,32 @@ def delete_job_description(
     db: Session = Depends(get_db),
 ) -> None:
     job_description = _get_user_job_description(job_description_id, current_user.id, db)
+    storage_path = job_description.storage_path
     db.delete(job_description)
     db.commit()
+    if storage_path:
+        _delete_uploaded_file(storage_path)
     logger.info("Job description deleted", extra={"user_id": current_user.id, "job_description_id": job_description_id})
 
 
-def _delete_uploaded_file(path: Path) -> None:
+def _write_temp_pdf_for_extraction(content: bytes) -> Path:
+    from tempfile import NamedTemporaryFile
+
+    with NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+        temp_file.write(content)
+        return Path(temp_file.name)
+
+
+def _delete_uploaded_file(path_value: str | None) -> None:
+    if not path_value:
+        return
     try:
+        path = Path(path_value)
+        if not path.exists():
+            storage = get_storage_service()
+            if storage.enabled:
+                storage.delete_object(path_value)
+            return
         resolved_path = path.resolve()
         upload_root = JD_UPLOAD_ROOT.resolve()
         if _is_relative_to(resolved_path, upload_root) and resolved_path.exists() and resolved_path.is_file():

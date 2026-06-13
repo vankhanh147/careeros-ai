@@ -98,6 +98,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES="60"
 BACKEND_CORS_ORIGINS="https://your-vercel-app.vercel.app,http://localhost:3000"
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"
 LOG_LEVEL="INFO"
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="<service-role-key>"
+SUPABASE_STORAGE_BUCKET="career-documents"
 ```
 
 `BACKEND_CORS_ORIGINS` supports comma-separated origins. Use the local frontend origin for development and the Vercel URL for production. Avoid `*` in production.
@@ -106,7 +109,13 @@ Do not commit `.env`. Keep production secrets in Render environment variables.
 
 `sentence-transformers` can be heavy on Render free instances. Keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` for stable MVP deploys; if the model is not available locally, CareerOS AI falls back to rule-based matching.
 
-Current file uploads are stored under `backend/uploads`. Render filesystem is not durable unless persistent disk is configured, so production should move uploads to Supabase Storage in a future phase.
+File uploads use Supabase Storage when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured. The bucket should be private; the backend uses the service role key server-side only. If Supabase Storage env vars are missing, local development falls back to `backend/uploads`.
+
+For existing databases created before Phase 5.5, add the nullable JD storage path column once:
+
+```sql
+ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS storage_path VARCHAR(500);
+```
 
 ## Run tests
 
@@ -145,7 +154,7 @@ Useful checks before backend changes:
 - `POST /api/job-descriptions/upload`
 - `GET /api/job-descriptions/me`
 
-Uploaded PDFs are stored locally in `backend/uploads/resumes` for now. The database stores `storage_path` and nullable `file_url`, so the storage layer can move to Supabase Storage later without changing the core API shape.
+Uploaded CV/JD files are stored in Supabase Storage when configured, using paths such as `users/{user_id}/resumes/{uuid}-{filename}` and `users/{user_id}/job-descriptions/{uuid}-{filename}`. Local fallback stores files in `backend/uploads` for development when Supabase env vars are missing.
 
 ## Analysis endpoints
 

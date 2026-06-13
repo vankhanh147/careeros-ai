@@ -11,6 +11,7 @@ from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.resume import ResumeResponse
 from app.services.security import get_current_user
+from app.services.storage import build_resume_storage_path, get_storage_service
 
 router = APIRouter(prefix="/api/resumes", tags=["resumes"])
 logger = logging.getLogger("careeros_api.resumes")
@@ -47,16 +48,22 @@ async def upload_resume(
         logger.warning("Resume upload rejected: file too large", extra={"user_id": current_user.id, "file_name": original_file_name})
         raise_app_error(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "Resume PDF must be 5MB or smaller", "FILE_TOO_LARGE")
 
-    user_upload_dir = UPLOAD_ROOT / f"user_{current_user.id}"
-    user_upload_dir.mkdir(parents=True, exist_ok=True)
-    stored_file_name = f"{uuid4().hex}_{original_file_name}"
-    storage_path = user_upload_dir / stored_file_name
-    storage_path.write_bytes(content)
+    stored_file_name = f"{uuid4().hex}-{original_file_name}"
+    storage = get_storage_service()
+    if storage.enabled:
+        storage_path_value = build_resume_storage_path(current_user.id, stored_file_name)
+        storage.upload_bytes(storage_path_value, content, "application/pdf")
+    else:
+        user_upload_dir = UPLOAD_ROOT / f"user_{current_user.id}"
+        user_upload_dir.mkdir(parents=True, exist_ok=True)
+        storage_path = user_upload_dir / stored_file_name
+        storage_path.write_bytes(content)
+        storage_path_value = storage_path.as_posix()
 
     resume = Resume(
         user_id=current_user.id,
         file_name=original_file_name,
-        storage_path=storage_path.as_posix(),
+        storage_path=storage_path_value,
         file_url=None,
         extracted_text=None,
     )
@@ -79,11 +86,22 @@ def delete_resume(
     db: Session = Depends(get_db),
 ) -> None:
     resume = _get_user_resume(resume_id, current_user.id, db)
-    storage_path = Path(resume.storage_path)
+    storage_path = resume.storage_path
     db.delete(resume)
     db.commit()
-    _delete_local_resume_file(storage_path, current_user.id, resume_id)
+    _delete_resume_file(storage_path, current_user.id, resume_id)
     logger.info("Resume deleted", extra={"user_id": current_user.id, "resume_id": resume_id})
+
+
+def _delete_resume_file(storage_path_value: str, user_id: int, resume_id: int) -> None:
+    storage_path = Path(storage_path_value)
+    if storage_path.exists():
+        _delete_local_resume_file(storage_path, user_id, resume_id)
+        return
+
+    storage = get_storage_service()
+    if storage.enabled:
+        storage.delete_object(storage_path_value)
 
 
 def _delete_local_resume_file(storage_path: Path, user_id: int, resume_id: int) -> None:
