@@ -33,3 +33,4 @@ class User(Base):
         "JobDescription", back_populates="user", cascade="all, delete-orphan"
     )
     match_analyses = relationship("MatchAnalysis", back_populates="user", cascade="all, delete-orphan")
+    learning_roadmaps = relationship("LearningRoadmap", back_populates="user", cascade="all, delete-orphan")

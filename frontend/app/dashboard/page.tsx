@@ -32,7 +32,7 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-white/10">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-1 text-xl font-semibold">Dashboard</h1>
@@ -47,7 +47,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-10">
+      <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
         <div className="rounded-lg border border-white/10 bg-white/5 p-6">
           <p className="text-sm font-medium text-cyan-200">Tài khoản đang đăng nhập</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">{user.full_name}</h2>
@@ -69,47 +69,58 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-            <h2 className="text-lg font-semibold">Hồ sơ nghề nghiệp</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho Career Diagnosis và roadmap cá nhân hóa.
-            </p>
-            <Link
-              href="/profile"
-              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
-            >
-              Cập nhật hồ sơ
-            </Link>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-            <h2 className="text-lg font-semibold">CV và Job Description</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Upload CV PDF và lưu JD mục tiêu. Đây là dữ liệu nền cho Resume ↔ Job Matching ở phase AI MVP.
-            </p>
-            <Link
-              href="/documents"
-              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
-            >
-              Quản lý CV và JD
-            </Link>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-            <h2 className="text-lg font-semibold">Resume ↔ Job Matching</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              Chọn CV và Job Description đã lưu để nhận match score, skill gap và gợi ý cải thiện theo hướng MVP có thể giải thích.
-            </p>
-            <Link
-              href="/analysis"
-              className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
-            >
-              Phân tích matching
-            </Link>
-          </div>
+        <div className="mt-6 grid gap-6 lg:grid-cols-4">
+          <DashboardActionCard
+            title="Hồ sơ nghề nghiệp"
+            description="Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho Career Diagnosis và roadmap cá nhân hóa."
+            href="/profile"
+            cta="Cập nhật hồ sơ"
+          />
+          <DashboardActionCard
+            title="CV và Job Description"
+            description="Upload CV PDF và lưu JD mục tiêu. Đây là dữ liệu nền cho Resume ↔ Job Matching ở phase AI MVP."
+            href="/documents"
+            cta="Quản lý CV và JD"
+          />
+          <DashboardActionCard
+            title="Resume ↔ Job Matching"
+            description="Chọn CV và Job Description đã lưu để nhận match score, skill gap và gợi ý cải thiện có thể giải thích."
+            href="/analysis"
+            cta="Phân tích matching"
+          />
+          <DashboardActionCard
+            title="Personalized Roadmap"
+            description="Tạo roadmap học tập ngắn hạn từ career profile, analysis gần đây và skill gap đang cần ưu tiên."
+            href="/roadmap"
+            cta="Tạo roadmap"
+          />
         </div>
       </section>
     </main>
+  );
+}
+
+function DashboardActionCard({
+  title,
+  description,
+  href,
+  cta
+}: {
+  title: string;
+  description: string;
+  href: string;
+  cta: string;
+}) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
+      <Link
+        href={href}
+        className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+      >
+        {cta}
+      </Link>
+    </div>
   );
 }
