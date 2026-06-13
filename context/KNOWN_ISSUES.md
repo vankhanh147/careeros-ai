@@ -62,19 +62,27 @@ Debug fields, semantic breakdown, prioritized skill gaps and improvement plan ar
 - Frontend stores JWT in localStorage for MVP simplicity.
 - This is acceptable for early MVP but should be revisited for production security.
 
-## Test Coverage Gap
+## Test Coverage Limitations
 
-Current request history indicates lint/build checks were run, but there is no comprehensive automated backend/frontend test suite yet.
+Phase 5.3 added the backend test foundation with pytest and FastAPI TestClient. The suite covers the most important happy paths and baseline failure paths:
 
-High-priority test targets:
-
-- auth register/login/me
-- protected resource ownership
-- upload CV/JD validation
-- analysis with sample CV/JD
-- roadmap generation timeline parser
+- auth register/login/me and duplicate/wrong-password errors
+- career profile upsert/get
+- CV upload validation and delete
+- JD create/update/delete/upload validation
+- basic ownership protection for deleting another user's JD
+- Resume ↔ JD analysis response shape and missing resume failure
+- roadmap generation from profile/analysis and timeline parser regression cases
 - interview start/answer/finish
-- dashboard summary for empty and populated users
+- dashboard summary for new and populated users
+
+Remaining gaps:
+
+- No frontend automated tests yet.
+- No browser/E2E test suite yet.
+- Backend tests use SQLite, so PostgreSQL-specific behavior is not fully covered.
+- File upload tests use minimal generated PDFs; complex real-world PDF extraction edge cases are not covered.
+- Supabase Storage is still not wired, so storage integration tests do not exist yet.
 
 ## Dashboard Summary Recompute
 

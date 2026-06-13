@@ -176,21 +176,28 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Added safer local file delete checks for resume files and cleanup for invalid JD uploads.
 - Kept API success contracts and database schema unchanged.
 
+### Phase 5.3: Backend Tests Foundation - Completed
+
+- Added pytest + FastAPI TestClient backend test suite under `backend/tests/`.
+- Tests use isolated SQLite databases through `get_db` dependency override, not the real `.env` database.
+- Upload folders are patched to temporary directories during tests.
+- Added coverage for auth, career profile, documents, analysis, roadmap timeline parser, interview flow and dashboard summary.
+- Checks passed: `python -m compileall app tests`, `pytest`, and `pip check`.
+
 ## Current Phase
 
-Current phase: Phase 5 - Production Readiness. Phase 5.2 backend validation/error/logging foundation is complete.
+Current phase: Phase 5 - Production Readiness. Phase 5.3 backend tests foundation is complete.
 
-Đã hoàn thành UI/UX polish và backend validation/error/logging foundation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: automated test suite, security review sâu hơn, deployment docs, monitoring/logging nâng cao.
+Đã hoàn thành UI/UX polish, backend validation/error/logging foundation và backend automated test foundation. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, deployment docs, monitoring/logging nâng cao và test coverage mở rộng cho edge cases.
 
 ## Next Recommended Phase
 
-Recommended next: Phase 5.3 - Backend automated test suite and deployment hardening.
+Recommended next: Phase 5.4 - Deployment hardening and production configuration.
 
 Ưu tiên tiếp theo:
 
 - Sửa các chuỗi tiếng Việt bị mojibake còn trong backend service/router.
-- Chuẩn hóa error messages và response format.
-- Thêm test cho auth, documents, analysis, roadmap, interview, dashboard summary.
+- Mở rộng test coverage cho edge cases phức tạp hơn khi feature mới được thêm.
 - Rà quyền truy cập user-owned resources.
 - Rà file upload security và storage cleanup.
 - Viết hướng dẫn deployment tối thiểu.

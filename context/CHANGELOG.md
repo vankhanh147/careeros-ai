@@ -127,3 +127,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added logging to auth, resume upload, JD upload, analysis, roadmap and interview flows.
 - Added safer local upload cleanup/path checks.
 - Updated backend README and context docs.
+
+## Phase 5.3: Backend Tests Foundation
+
+- Added `pytest` and `httpx` test dependencies.
+- Added `backend/tests/` with FastAPI TestClient coverage for auth, career profile, documents, analysis, roadmaps, interviews and dashboard summary.
+- Added isolated SQLite test database setup through dependency override.
+- Patched upload roots to temporary test directories to avoid writing test files into persistent upload storage.
+- Added roadmap timeline parser regression tests for `1 tuần`, `2 tuần`, `1 tháng` and empty timeline fallback.
+- Backend checks passed: compileall, pytest and pip check.

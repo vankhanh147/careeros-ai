@@ -63,6 +63,24 @@ Health check: `GET http://localhost:8000/health`
 
 The app creates initial tables at startup through SQLAlchemy metadata. This keeps the MVP simple; migrations can be added later when schema changes become more frequent.
 
+## Run tests
+
+Backend tests use `pytest` with FastAPI `TestClient`.
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
+The test suite does not use the real `.env` database. Tests set isolated environment variables, override `get_db`, create a temporary SQLite database per test, and patch upload folders to temporary directories. This keeps tests fast and avoids depending on Supabase/PostgreSQL for local validation.
+
+Useful checks before backend changes:
+
+```powershell
+.\.venv\Scripts\python.exe -m compileall app tests
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pip check
+```
+
 ## Auth endpoints
 
 - `POST /api/auth/register`
