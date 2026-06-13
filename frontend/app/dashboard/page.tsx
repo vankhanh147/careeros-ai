@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -68,11 +69,17 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="mt-6 rounded-lg border border-dashed border-white/15 p-6">
-          <h2 className="text-lg font-semibold">Core MVP sẽ được xây dựng tiếp tại đây</h2>
+        <div className="mt-6 rounded-lg border border-white/10 bg-white/5 p-6">
+          <h2 className="text-lg font-semibold">Hồ sơ nghề nghiệp</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-            Phase này chỉ thiết lập authentication và dashboard shell. Career profile, resume, job description và AI workflows sẽ được triển khai ở các bước sau.
+            Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho các bước Career Diagnosis và roadmap cá nhân hóa sau này.
           </p>
+          <Link
+            href="/profile"
+            className="mt-5 inline-flex rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+          >
+            Cập nhật hồ sơ nghề nghiệp
+          </Link>
         </div>
       </section>
     </main>

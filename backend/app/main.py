@@ -7,6 +7,7 @@ from app.core.config import get_settings
 from app.database import Base, engine
 import app.models  # noqa: F401
 from app.routers.auth import router as auth_router
+from app.routers.career_profile import router as career_profile_router
 
 settings = get_settings()
 
@@ -28,9 +29,9 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(career_profile_router)
 
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok", "service": "career-os-ai-api"}
-
