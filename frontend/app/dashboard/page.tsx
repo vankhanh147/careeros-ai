@@ -69,7 +69,7 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-4">
+        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
           <DashboardActionCard
             title="Hồ sơ nghề nghiệp"
             description="Cập nhật mục tiêu, kỹ năng, kinh nghiệm và timeline để chuẩn bị cho Career Diagnosis và roadmap cá nhân hóa."
@@ -93,6 +93,12 @@ export default function DashboardPage() {
             description="Tạo roadmap học tập ngắn hạn từ career profile, analysis gần đây và skill gap đang cần ưu tiên."
             href="/roadmap"
             cta="Tạo roadmap"
+          />
+          <DashboardActionCard
+            title="Mock Interview AI"
+            description="Luyện phỏng vấn kỹ thuật bằng question bank theo target role, skill gap và feedback rule-based."
+            href="/interview"
+            cta="Luyện phỏng vấn"
           />
         </div>
       </section>

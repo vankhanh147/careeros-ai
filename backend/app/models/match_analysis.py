@@ -32,3 +32,4 @@ class MatchAnalysis(Base):
     resume = relationship("Resume", back_populates="match_analyses")
     job_description = relationship("JobDescription", back_populates="match_analyses")
     learning_roadmaps = relationship("LearningRoadmap", back_populates="analysis")
+    interview_sessions = relationship("InterviewSession", back_populates="analysis")

@@ -1,0 +1,195 @@
+import json
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.career_profile import CareerProfile
+from app.models.interview import InterviewAnswer, InterviewSession
+from app.models.match_analysis import MatchAnalysis
+from app.models.user import User
+from app.schemas.interview import InterviewAnswerRequest, InterviewSessionResponse, InterviewStartRequest
+from app.services.interview_evaluator import build_session_summary, evaluate_interview_answer
+from app.services.interview_generator import generate_interview_questions, infer_target_role
+from app.services.security import get_current_user
+
+router = APIRouter(prefix="/api/interviews", tags=["interviews"])
+
+
+@router.post("/start", response_model=InterviewSessionResponse, status_code=status.HTTP_201_CREATED)
+def start_interview_session(
+    payload: InterviewStartRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> InterviewSessionResponse:
+    profile = db.query(CareerProfile).filter(CareerProfile.user_id == current_user.id).first()
+    analysis = _get_user_analysis(db, current_user.id, payload.analysis_id) if payload.analysis_id else None
+    target_role = infer_target_role(profile, payload.target_role)
+    missing_skills = _load_missing_skills(analysis) if analysis else []
+    questions = generate_interview_questions(target_role, missing_skills=missing_skills)
+
+    session = InterviewSession(
+        user_id=current_user.id,
+        analysis_id=analysis.id if analysis else None,
+        target_role=target_role,
+        status="in_progress",
+    )
+    db.add(session)
+    db.flush()
+
+    for item in questions:
+        db.add(
+            InterviewAnswer(
+                session_id=session.id,
+                question=str(item["question"]),
+                expected_keywords=json.dumps(item["keywords"], ensure_ascii=False),
+            )
+        )
+
+    db.commit()
+    db.refresh(session)
+    return _to_response(session)
+
+
+@router.get("/me", response_model=list[InterviewSessionResponse])
+def get_my_interviews(
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+) -> list[InterviewSessionResponse]:
+    sessions = (
+        db.query(InterviewSession)
+        .filter(InterviewSession.user_id == current_user.id)
+        .order_by(InterviewSession.created_at.desc())
+        .limit(20)
+        .all()
+    )
+    return [_to_response(session) for session in sessions]
+
+
+@router.get("/{session_id}", response_model=InterviewSessionResponse)
+def get_interview_session(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> InterviewSessionResponse:
+    session = _get_user_session(db, current_user.id, session_id)
+    return _to_response(session)
+
+
+@router.post("/{session_id}/answer", response_model=InterviewSessionResponse)
+def answer_interview_question(
+    session_id: int,
+    payload: InterviewAnswerRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> InterviewSessionResponse:
+    session = _get_user_session(db, current_user.id, session_id)
+    if session.status == "finished":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Interview session already finished")
+
+    answer = next((item for item in session.answers if item.id == payload.answer_id), None)
+    if answer is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Interview question not found")
+
+    expected_keywords = _load_keywords(answer.expected_keywords)
+    evaluation = evaluate_interview_answer(answer.question, expected_keywords, payload.user_answer)
+    answer.user_answer = payload.user_answer.strip()
+    answer.score = float(evaluation["score"])
+    answer.feedback = str(evaluation["feedback"])
+    db.commit()
+    db.refresh(session)
+    return _to_response(session)
+
+
+@router.post("/{session_id}/finish", response_model=InterviewSessionResponse)
+def finish_interview_session(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> InterviewSessionResponse:
+    session = _get_user_session(db, current_user.id, session_id)
+    answered_scores = [float(answer.score) for answer in session.answers if answer.score is not None]
+    if not answered_scores:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cần trả lời ít nhất một câu trước khi finish interview.",
+        )
+
+    session.score = round(sum(answered_scores) / len(answered_scores), 1)
+    session.summary = build_session_summary(answered_scores)
+    session.status = "finished"
+    db.commit()
+    db.refresh(session)
+    return _to_response(session)
+
+
+def _get_user_session(db: Session, user_id: int, session_id: int) -> InterviewSession:
+    session = (
+        db.query(InterviewSession)
+        .filter(InterviewSession.id == session_id, InterviewSession.user_id == user_id)
+        .first()
+    )
+    if session is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Interview session not found")
+    return session
+
+
+def _get_user_analysis(db: Session, user_id: int, analysis_id: int | None) -> MatchAnalysis:
+    analysis = (
+        db.query(MatchAnalysis)
+        .filter(MatchAnalysis.id == analysis_id, MatchAnalysis.user_id == user_id)
+        .first()
+    )
+    if analysis is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found")
+    return analysis
+
+
+def _to_response(session: InterviewSession) -> InterviewSessionResponse:
+    return InterviewSessionResponse(
+        id=session.id,
+        user_id=session.user_id,
+        analysis_id=session.analysis_id,
+        target_role=session.target_role,
+        status=session.status,
+        score=session.score,
+        summary=session.summary,
+        answers=[
+            {
+                "id": answer.id,
+                "session_id": answer.session_id,
+                "question": answer.question,
+                "expected_keywords": _load_keywords(answer.expected_keywords),
+                "user_answer": answer.user_answer,
+                "score": answer.score,
+                "feedback": answer.feedback,
+                "created_at": answer.created_at,
+            }
+            for answer in session.answers
+        ],
+        created_at=session.created_at,
+        updated_at=session.updated_at,
+    )
+
+
+def _load_keywords(value: str) -> list[str]:
+    parsed = _load_json(value)
+    if not isinstance(parsed, list):
+        return []
+    return [str(item) for item in parsed]
+
+
+def _load_missing_skills(analysis: MatchAnalysis | None) -> list[str]:
+    if analysis is None:
+        return []
+    parsed = _load_json(analysis.missing_skills)
+    if not isinstance(parsed, list):
+        return []
+    return [str(item) for item in parsed]
+
+
+def _load_json(value: str) -> Any:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        return None

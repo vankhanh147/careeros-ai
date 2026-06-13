@@ -9,6 +9,7 @@ import app.models  # noqa: F401
 from app.routers.analysis import router as analysis_router
 from app.routers.auth import router as auth_router
 from app.routers.career_profile import router as career_profile_router
+from app.routers.interviews import router as interviews_router
 from app.routers.job_descriptions import router as job_descriptions_router
 from app.routers.resumes import router as resumes_router
 from app.routers.roadmaps import router as roadmaps_router
@@ -38,6 +39,7 @@ app.include_router(resumes_router)
 app.include_router(job_descriptions_router)
 app.include_router(analysis_router)
 app.include_router(roadmaps_router)
+app.include_router(interviews_router)
 
 
 @app.get("/health")
