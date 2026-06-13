@@ -23,6 +23,17 @@ def _safe_file_name(file_name: str) -> str:
     return name or "job-description.txt"
 
 
+def _get_user_job_description(job_description_id: int, user_id: int, db: Session) -> JobDescription:
+    job_description = (
+        db.query(JobDescription)
+        .filter(JobDescription.id == job_description_id, JobDescription.user_id == user_id)
+        .first()
+    )
+    if job_description is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job description not found")
+    return job_description
+
+
 @router.post("", response_model=JobDescriptionResponse, status_code=status.HTTP_201_CREATED)
 def create_job_description(
     payload: JobDescriptionCreateRequest,
@@ -107,3 +118,31 @@ def get_my_job_descriptions(
         .order_by(JobDescription.created_at.desc())
         .all()
     )
+
+
+@router.put("/{job_description_id}", response_model=JobDescriptionResponse)
+def update_job_description(
+    job_description_id: int,
+    payload: JobDescriptionCreateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> JobDescription:
+    job_description = _get_user_job_description(job_description_id, current_user.id, db)
+    job_description.title = payload.title
+    job_description.company = payload.company
+    job_description.content = payload.content
+    job_description.source_url = payload.source_url
+    db.commit()
+    db.refresh(job_description)
+    return job_description
+
+
+@router.delete("/{job_description_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_job_description(
+    job_description_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    job_description = _get_user_job_description(job_description_id, current_user.id, db)
+    db.delete(job_description)
+    db.commit()

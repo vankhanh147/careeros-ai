@@ -58,6 +58,25 @@ async function jsonRequest<T>(path: string, token: string, init: RequestInit = {
   return response.json() as Promise<T>;
 }
 
+async function emptyRequest(path: string, token: string, init: RequestInit): Promise<void> {
+  const response = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...init.headers
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    const message =
+      typeof error?.detail === "string"
+        ? error.detail
+        : "Không thể thực hiện thao tác. Vui lòng thử lại.";
+    throw new Error(message);
+  }
+}
+
 export async function uploadResume(token: string, file: File): Promise<Resume> {
   const formData = new FormData();
   formData.append("file", file);
@@ -82,6 +101,10 @@ export async function uploadResume(token: string, file: File): Promise<Resume> {
   return response.json() as Promise<Resume>;
 }
 
+export function deleteResume(token: string, resumeId: number): Promise<void> {
+  return emptyRequest(`/api/resumes/${resumeId}`, token, { method: "DELETE" });
+}
+
 export function getMyResumes(token: string): Promise<Resume[]> {
   return jsonRequest<Resume[]>("/api/resumes/me", token);
 }
@@ -94,6 +117,21 @@ export function createJobDescription(
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export function updateJobDescription(
+  token: string,
+  jobDescriptionId: number,
+  payload: JobDescriptionPayload
+): Promise<JobDescription> {
+  return jsonRequest<JobDescription>(`/api/job-descriptions/${jobDescriptionId}`, token, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function deleteJobDescription(token: string, jobDescriptionId: number): Promise<void> {
+  return emptyRequest(`/api/job-descriptions/${jobDescriptionId}`, token, { method: "DELETE" });
 }
 
 export async function uploadJobDescription(

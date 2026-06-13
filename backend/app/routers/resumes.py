@@ -21,6 +21,13 @@ def _safe_file_name(file_name: str) -> str:
     return name or "resume.pdf"
 
 
+def _get_user_resume(resume_id: int, user_id: int, db: Session) -> Resume:
+    resume = db.query(Resume).filter(Resume.id == resume_id, Resume.user_id == user_id).first()
+    if resume is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resume not found")
+    return resume
+
+
 @router.post("/upload", response_model=ResumeResponse, status_code=status.HTTP_201_CREATED)
 async def upload_resume(
     file: UploadFile = File(...),
@@ -70,3 +77,17 @@ def get_my_resumes(
         .order_by(Resume.created_at.desc())
         .all()
     )
+
+
+@router.delete("/{resume_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_resume(
+    resume_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    resume = _get_user_resume(resume_id, current_user.id, db)
+    storage_path = Path(resume.storage_path)
+    db.delete(resume)
+    db.commit()
+    if storage_path.exists() and storage_path.is_file():
+        storage_path.unlink()
