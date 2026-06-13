@@ -8,6 +8,12 @@ export type ScoringBreakdown = {
   final_score: number;
 };
 
+export type PrioritizedMissingSkills = {
+  high_priority: string[];
+  medium_priority: string[];
+  low_priority: string[];
+};
+
 export type MatchAnalysis = {
   id: number;
   user_id: number;
@@ -24,6 +30,9 @@ export type MatchAnalysis = {
   resume_detected_skills: string[];
   jd_detected_skills: string[];
   scoring_breakdown: ScoringBreakdown;
+  skill_gap_summary: string;
+  prioritized_missing_skills: PrioritizedMissingSkills;
+  improvement_plan: string[];
   created_at: string;
   updated_at: string;
 };

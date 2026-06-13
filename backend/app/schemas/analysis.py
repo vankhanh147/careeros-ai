@@ -16,6 +16,12 @@ class ScoringBreakdown(BaseModel):
     final_score: float
 
 
+class PrioritizedMissingSkills(BaseModel):
+    high_priority: list[str]
+    medium_priority: list[str]
+    low_priority: list[str]
+
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -34,5 +40,8 @@ class MatchAnalysisResponse(BaseModel):
     resume_detected_skills: list[str]
     jd_detected_skills: list[str]
     scoring_breakdown: ScoringBreakdown
+    skill_gap_summary: str
+    prioritized_missing_skills: PrioritizedMissingSkills
+    improvement_plan: list[str]
     created_at: datetime
     updated_at: datetime

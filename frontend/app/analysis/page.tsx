@@ -248,6 +248,8 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
 
       <p className="mt-4 text-sm leading-6 text-slate-300">{analysis.summary}</p>
 
+      <SkillGapSection analysis={analysis} compact={compact} />
+
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <SkillList title="Skills đã khớp" items={analysis.matched_skills} emptyText="Chưa phát hiện skill khớp rõ ràng." tone="positive" />
         <SkillList title="Skills còn thiếu" items={analysis.missing_skills} emptyText="Chưa phát hiện skill gap lớn." tone="warning" />
@@ -274,6 +276,53 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
   );
 }
 
+
+function SkillGapSection({ analysis, compact }: { analysis: MatchAnalysis; compact: boolean }) {
+  const prioritized = analysis.prioritized_missing_skills;
+  return (
+    <section className="mt-5 rounded-lg border border-white/10 bg-white/5 p-5">
+      <h4 className="text-base font-semibold text-slate-100">Skill Gap Summary</h4>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{analysis.skill_gap_summary}</p>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <PriorityList title="Kỹ năng thiếu ưu tiên cao" items={prioritized.high_priority} tone="high" />
+        <PriorityList title="Kỹ năng thiếu ưu tiên trung bình" items={prioritized.medium_priority} tone="medium" />
+        <PriorityList title="Kỹ năng thiếu ưu tiên thấp" items={prioritized.low_priority} tone="low" />
+      </div>
+
+      {!compact ? (
+        <div className="mt-5">
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Kế hoạch cải thiện ngắn hạn</h5>
+          <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+            {analysis.improvement_plan.map((action) => (
+              <li key={action} className="rounded-md border border-white/10 bg-slate-950/60 p-3">{action}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function PriorityList({ title, items, tone }: { title: string; items: string[]; tone: "high" | "medium" | "low" }) {
+  const toneClass = {
+    high: "text-red-200",
+    medium: "text-amber-200",
+    low: "text-slate-200"
+  }[tone];
+  return (
+    <div>
+      <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</h5>
+      <div className="mt-3">
+        {items.length === 0 ? (
+          <p className="text-sm text-slate-500">Không có.</p>
+        ) : (
+          <TagList items={items} className={toneClass} />
+        )}
+      </div>
+    </div>
+  );
+}
 function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
   return (
     <div className="mt-6 rounded-lg border border-cyan-300/20 bg-cyan-300/5 p-5">

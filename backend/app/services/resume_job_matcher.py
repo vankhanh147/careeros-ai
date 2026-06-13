@@ -128,6 +128,73 @@ STOPWORDS = {
 PREVIEW_LENGTH = 1200
 MIN_TEXT_LENGTH_FOR_SEMANTIC = 80
 
+ROLE_CORE_SKILLS = {
+    "backend": {
+        "backend",
+        "python",
+        "java",
+        "c#",
+        "fastapi",
+        "django",
+        "flask",
+        "node.js",
+        "express",
+        "rest api",
+        "api",
+        "sql",
+        "postgresql",
+        "mysql",
+        "mongodb",
+        "database",
+        "authentication",
+        "jwt",
+        "docker",
+    },
+    "frontend": {
+        "frontend",
+        "javascript",
+        "typescript",
+        "react",
+        "next.js",
+        "html",
+        "css",
+        "tailwind",
+        "authentication",
+        "api",
+    },
+    "fullstack": {
+        "fullstack",
+        "frontend",
+        "backend",
+        "javascript",
+        "typescript",
+        "react",
+        "next.js",
+        "node.js",
+        "express",
+        "python",
+        "fastapi",
+        "rest api",
+        "sql",
+        "postgresql",
+        "authentication",
+        "jwt",
+        "docker",
+    },
+    "ai": {
+        "ai",
+        "machine learning",
+        "nlp",
+        "python",
+        "scikit-learn",
+        "pandas",
+        "numpy",
+        "pytorch",
+        "tensorflow",
+        "sentence transformers",
+    },
+}
+
 
 def extract_pdf_text(storage_path: str) -> str:
     file_path = Path(storage_path)
@@ -156,6 +223,10 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
     jd_skills = extract_skills(job_description_text)
     matched_skills = sorted(set(resume_skills).intersection(jd_skills))
     missing_skills = sorted(set(jd_skills).difference(resume_skills))
+    role_context = _detect_role_context(job_description_text)
+    prioritized_missing_skills = _prioritize_missing_skills(missing_skills, role_context, job_description_text)
+    skill_gap_summary = _build_skill_gap_summary(prioritized_missing_skills, role_context)
+    improvement_plan = _build_improvement_plan(prioritized_missing_skills, resume_text, job_description_text)
     overlapping_keywords = _keyword_overlap(resume_text, job_description_text)
     semantic_score, semantic_available = _semantic_score(resume_text, job_description_text)
 
@@ -175,6 +246,9 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "matched_skills": matched_skills,
         "missing_skills": missing_skills,
         "keyword_overlap": overlapping_keywords,
+        "skill_gap_summary": skill_gap_summary,
+        "prioritized_missing_skills": prioritized_missing_skills,
+        "improvement_plan": improvement_plan,
         "summary": _build_summary(final_score, matched_skills, missing_skills, semantic_score, semantic_available),
         "suggestions": _build_suggestions(
             missing_skills=missing_skills,
@@ -362,3 +436,119 @@ def _build_suggestions(
         suggestions.append("JD đang khá ngắn; kết quả matching sẽ tốt hơn nếu JD có đủ trách nhiệm, yêu cầu kỹ năng và tiêu chí ưu tiên.")
     suggestions.append("Ưu tiên cải thiện các skill gap xuất hiện trực tiếp trong JD trước khi mở rộng sang kỹ năng ngoài phạm vi vị trí này.")
     return suggestions
+
+def _detect_role_context(job_description_text: str) -> list[str]:
+    normalized = _normalize(job_description_text)
+    detected_roles = []
+    if any(token in normalized for token in ("fullstack", "full-stack", "full stack")):
+        detected_roles.append("fullstack")
+    if any(token in normalized for token in ("backend", "back-end", "back end", "api", "server")):
+        detected_roles.append("backend")
+    if any(token in normalized for token in ("frontend", "front-end", "front end", "react", "next.js", "ui")):
+        detected_roles.append("frontend")
+    if any(token in normalized for token in ("ai", "machine learning", "ml", "nlp", "data scientist", "model")):
+        detected_roles.append("ai")
+    return detected_roles or ["general"]
+
+
+def _prioritize_missing_skills(
+    missing_skills: list[str], role_context: list[str], job_description_text: str
+) -> dict[str, list[str]]:
+    priority_groups: dict[str, list[str]] = {
+        "high_priority": [],
+        "medium_priority": [],
+        "low_priority": [],
+    }
+    if not missing_skills:
+        return priority_groups
+
+    jd_keywords = _keywords(job_description_text)
+    core_skills = set()
+    for role in role_context:
+        core_skills.update(ROLE_CORE_SKILLS.get(role, set()))
+
+    for skill in missing_skills:
+        skill_frequency = jd_keywords.get(skill, 0)
+        is_core_for_role = skill in core_skills
+        is_found_in_jd = _contains_skill(_normalize(job_description_text), skill)
+
+        if is_core_for_role and (skill_frequency > 1 or is_found_in_jd):
+            priority_groups["high_priority"].append(skill)
+        elif is_core_for_role or skill_frequency > 1 or skill in {"authentication", "jwt", "rest api", "database", "sql"}:
+            priority_groups["medium_priority"].append(skill)
+        else:
+            priority_groups["low_priority"].append(skill)
+
+    return {key: sorted(set(value)) for key, value in priority_groups.items()}
+
+
+def _build_skill_gap_summary(prioritized_missing_skills: dict[str, list[str]], role_context: list[str]) -> str:
+    high_count = len(prioritized_missing_skills["high_priority"])
+    medium_count = len(prioritized_missing_skills["medium_priority"])
+    low_count = len(prioritized_missing_skills["low_priority"])
+    total_missing = high_count + medium_count + low_count
+    role_text = ", ".join(role_context) if role_context != ["general"] else "vai trò mục tiêu"
+
+    if total_missing == 0:
+        return "Chưa phát hiện skill gap rõ ràng so với JD. CV đang bao phủ tốt các kỹ năng hệ thống nhận diện được, nên ưu tiên cải thiện cách trình bày cho sát JD hơn."
+    if high_count > 0:
+        return f"Phát hiện {total_missing} kỹ năng còn thiếu cho {role_text}, trong đó {high_count} kỹ năng thuộc nhóm ưu tiên cao cần xử lý trước."
+    if medium_count > 0:
+        return f"Phát hiện {total_missing} kỹ năng còn thiếu cho {role_text}. Chưa có gap ưu tiên cao, nhưng có {medium_count} kỹ năng nên làm rõ hoặc bổ sung."
+    return f"Phát hiện {total_missing} kỹ năng còn thiếu, chủ yếu ở mức ưu tiên thấp. CV có thể cải thiện bằng cách alignment tốt hơn với JD."
+
+
+def _build_improvement_plan(
+    prioritized_missing_skills: dict[str, list[str]], resume_text: str, job_description_text: str
+) -> list[str]:
+    plan = []
+    high_priority = prioritized_missing_skills["high_priority"]
+    medium_priority = prioritized_missing_skills["medium_priority"]
+    low_priority = prioritized_missing_skills["low_priority"]
+
+    for skill in high_priority[:5]:
+        plan.append(_skill_action(skill, urgent=True))
+    for skill in medium_priority[:4]:
+        plan.append(_skill_action(skill, urgent=False))
+
+    if not high_priority and not medium_priority and low_priority:
+        plan.append(f"Các kỹ năng còn thiếu đang ở mức ưu tiên thấp ({', '.join(low_priority[:5])}). Chỉ bổ sung vào CV nếu bạn thực sự đã dùng trong project hoặc kinh nghiệm thực tế.")
+
+    if not high_priority and not medium_priority and not low_priority:
+        plan.append("Giữ nguyên skill set chính, nhưng viết lại phần project/experience để bám sát ngôn ngữ trong JD hơn.")
+
+    if any(skill in high_priority + medium_priority for skill in ("rest api", "api", "database", "postgresql", "sql", "authentication", "jwt")):
+        plan.append("Viết lại phần project để thể hiện rõ REST API, database, authentication, vai trò cá nhân và kết quả đạt được.")
+    if len(resume_text.strip()) < 800:
+        plan.append("CV text đang ngắn; bổ sung mô tả project theo cấu trúc: vấn đề, tech stack, phần bạn làm, kết quả hoặc impact.")
+    if len(job_description_text.strip()) < 300:
+        plan.append("JD đang ngắn; nếu có thể, dùng JD đầy đủ hơn để hệ thống phân tích skill gap chính xác hơn.")
+
+    return _dedupe_preserve_order(plan)[:8]
+
+
+def _skill_action(skill: str, urgent: bool) -> str:
+    prefix = "Ưu tiên cao" if urgent else "Ưu tiên trung bình"
+    if skill == "docker":
+        return f"{prefix}: Nếu đã dùng Docker, bổ sung project hoặc kinh nghiệm liên quan. Nếu chưa biết Docker, học Docker cơ bản trước khi apply vị trí này."
+    if skill in {"rest api", "api"}:
+        return f"{prefix}: Làm rõ kinh nghiệm thiết kế REST API, endpoint CRUD, validation, error handling và authentication trong project."
+    if skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
+        return f"{prefix}: Bổ sung phần database: schema, query, relationship, migration hoặc tối ưu truy vấn nếu bạn đã làm."
+    if skill in {"authentication", "jwt", "oauth"}:
+        return f"{prefix}: Thể hiện rõ kinh nghiệm authentication, JWT/token flow, bảo vệ endpoint và xử lý quyền truy cập."
+    if skill in {"react", "next.js", "typescript", "javascript", "html", "css", "tailwind"}:
+        return f"{prefix}: Bổ sung ví dụ frontend liên quan đến {skill}, nhất là component, state, form, API integration và UI production-ready."
+    if skill in {"machine learning", "ai", "nlp", "scikit-learn", "pytorch", "tensorflow", "sentence transformers"}:
+        return f"{prefix}: Bổ sung project AI/ML liên quan đến {skill}, nêu rõ dữ liệu đầu vào, cách đánh giá và kết quả."
+    return f"{prefix}: Bổ sung hoặc học nền tảng {skill}; chỉ đưa vào CV khi bạn có project, bài lab hoặc kinh nghiệm đủ chứng minh."
+
+
+def _dedupe_preserve_order(items: list[str]) -> list[str]:
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            result.append(item)
+            seen.add(item)
+    return result

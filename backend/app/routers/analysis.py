@@ -110,6 +110,9 @@ def _to_response(analysis: MatchAnalysis, debug_result: dict[str, object] | None
         resume_detected_skills=[str(item) for item in debug_result["resume_detected_skills"]],
         jd_detected_skills=[str(item) for item in debug_result["jd_detected_skills"]],
         scoring_breakdown=debug_result["scoring_breakdown"],
+        skill_gap_summary=str(debug_result["skill_gap_summary"]),
+        prioritized_missing_skills=debug_result["prioritized_missing_skills"],
+        improvement_plan=[str(item) for item in debug_result["improvement_plan"]],
         created_at=analysis.created_at,
         updated_at=analysis.updated_at,
     )
