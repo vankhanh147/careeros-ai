@@ -73,6 +73,7 @@ export default function RoadmapPage() {
     () => analyses.find((analysis) => String(analysis.id) === selectedAnalysisId),
     [analyses, selectedAnalysisId]
   );
+  const canGenerateRoadmap = !isGenerating;
 
   async function handleGenerateRoadmap(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -180,7 +181,7 @@ export default function RoadmapPage() {
 
             <button
               type="submit"
-              disabled={isGenerating}
+              disabled={!canGenerateRoadmap}
               className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isGenerating ? "Đang tạo roadmap..." : "Tạo roadmap"}

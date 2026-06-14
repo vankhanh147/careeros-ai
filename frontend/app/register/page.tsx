@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const canSubmit = fullName.trim().length > 0 && email.trim().length > 0 && password.length >= 8 && !isSubmitting;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -27,7 +28,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      await register({ email, full_name: fullName, password });
+      await register({ email: email.trim(), full_name: fullName.trim(), password });
       router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đăng ký không thành công. Vui lòng kiểm tra thông tin hoặc kết nối backend.");
@@ -49,6 +50,7 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-slate-200">Họ và tên</label>
             <input id="fullName" type="text" required value={fullName} onChange={(event) => setFullName(event.target.value)} className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" placeholder="Nguyễn Văn A" />
+            <p className="mt-2 text-xs text-slate-500">Tên này sẽ hiển thị trong dashboard của bạn.</p>
           </div>
 
           <div>
@@ -59,11 +61,12 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-200">Mật khẩu</label>
             <input id="password" type="password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" placeholder="Ít nhất 8 ký tự" />
+            <p className="mt-2 text-xs text-slate-500">Mật khẩu tối thiểu 8 ký tự để bảo vệ tài khoản beta.</p>
           </div>
 
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
 
-          <button type="submit" disabled={isSubmitting} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+          <button type="submit" disabled={!canSubmit} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
             {isSubmitting ? "Đang tạo tài khoản..." : "Đăng ký"}
           </button>
         </form>

@@ -25,6 +25,7 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [isFetching, setIsFetching] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const hasAnyProfileData = Object.values(form).some((value) => value.trim().length > 0);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -131,12 +132,18 @@ export default function ProfilePage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+          {!hasAnyProfileData ? (
+            <div className="rounded-md border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm leading-6 text-cyan-50">
+              Bắt đầu bằng vai trò mục tiêu và kỹ năng hiện có. Những thông tin này giúp CareerOS AI tạo Roadmap và Mock Interview sát hơn.
+            </div>
+          ) : null}
+
           <div className="grid gap-5 md:grid-cols-2">
-            <TextInput label="Vai trò mục tiêu" value={form.target_role} onChange={(value) => updateField("target_role", value)} placeholder="Backend Intern, Frontend Developer, AI Engineer..." />
-            <TextInput label="Trình độ hiện tại" value={form.current_level} onChange={(value) => updateField("current_level", value)} placeholder="Sinh viên, Fresher, Junior, Career Switcher..." />
+            <TextInput label="Vai trò mục tiêu" value={form.target_role} onChange={(value) => updateField("target_role", value)} placeholder="Backend Intern, Frontend Developer, AI Engineer..." hint="Ví dụ: Backend Intern trong 3 tháng tới." />
+            <TextInput label="Trình độ hiện tại" value={form.current_level} onChange={(value) => updateField("current_level", value)} placeholder="Sinh viên, Fresher, Junior, Career Switcher..." hint="Giúp hệ thống điều chỉnh độ khó roadmap/interview." />
           </div>
 
-          <TextArea label="Kỹ năng hiện có" value={form.skills} onChange={(value) => updateField("skills", value)} placeholder="Ví dụ: Python, FastAPI, PostgreSQL, React, TypeScript..." />
+          <TextArea label="Kỹ năng hiện có" value={form.skills} onChange={(value) => updateField("skills", value)} placeholder="Ví dụ: Python, FastAPI, PostgreSQL, React, TypeScript..." hint="Liệt kê bằng dấu phẩy để matcher đọc dễ hơn." />
           <TextArea label="Tóm tắt kinh nghiệm" value={form.experience_summary} onChange={(value) => updateField("experience_summary", value)} placeholder="Bạn đã học/làm gì, mức độ kinh nghiệm, môi trường làm việc hoặc học tập." />
           <TextArea label="Tóm tắt project" value={form.projects_summary} onChange={(value) => updateField("projects_summary", value)} placeholder="Các project nổi bật, tech stack, vai trò của bạn, kết quả đạt được." />
           <TextArea label="Mục tiêu nghề nghiệp" value={form.career_goal} onChange={(value) => updateField("career_goal", value)} placeholder="Bạn muốn đạt internship/job/role nào và vì sao?" />
@@ -145,7 +152,7 @@ export default function ProfilePage() {
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
           {statusMessage ? <p className="rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
 
-          <button type="submit" disabled={isSaving} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+          <button type="submit" disabled={isSaving || !hasAnyProfileData} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
             {isSaving ? "Đang lưu hồ sơ..." : "Lưu hồ sơ"}
           </button>
         </form>
@@ -154,20 +161,22 @@ export default function ProfilePage() {
   );
 }
 
-function TextInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
+function TextInput({ label, value, onChange, placeholder, hint }: { label: string; value: string; onChange: (value: string) => void; placeholder: string; hint?: string }) {
   return (
     <label className="block min-w-0 text-sm font-medium text-slate-200">
       {label}
       <input type="text" value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="mt-2 w-full min-w-0 rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
+      {hint ? <span className="mt-2 block text-xs leading-5 text-slate-500">{hint}</span> : null}
     </label>
   );
 }
 
-function TextArea({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
+function TextArea({ label, value, onChange, placeholder, hint }: { label: string; value: string; onChange: (value: string) => void; placeholder: string; hint?: string }) {
   return (
     <label className="block min-w-0 text-sm font-medium text-slate-200">
       {label}
       <textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} rows={4} className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
+      {hint ? <span className="mt-2 block text-xs leading-5 text-slate-500">{hint}</span> : null}
     </label>
   );
 }

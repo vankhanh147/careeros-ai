@@ -109,3 +109,16 @@ Use these labels:
 - `/analysis`: select CV/JD, run matching, display score/skills/gap/debug/history.
 - `/roadmap`: choose analysis/timeline, generate roadmap, display steps and history.
 - `/interview`: start interview, answer questions, view feedback, finish session, view history.
+
+## Phase 6.2 UI/UX Rules Update
+
+After local beta polish, keep these additional rules:
+
+- Landing page should always tell new users the first 3 steps: complete profile, add CV/JD, run AI MVP.
+- Dashboard recommended next actions should include an obvious CTA, not just text.
+- Submit buttons should be disabled while submitting and when required input is clearly missing.
+- Profile can remain flexible, but the save button should not be active when every field is empty.
+- Documents upload buttons should require a selected file before submit; JD save should require title and content.
+- Feedback UI should be compact and should disable repeated submission after a successful send.
+- Hints should be short and practical, not long instructions.
+- Keep empty states actionable with links or clear next steps.

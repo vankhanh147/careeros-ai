@@ -128,7 +128,12 @@ export default function DashboardPage() {
               <ul className="mt-4 space-y-3">
                 {summary.recommended_next_actions.map((action) => (
                   <li key={action} className="rounded-md border border-cyan-300/20 bg-slate-950/40 p-3 text-sm leading-6 text-cyan-50">
-                    {action}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="break-words">{action}</span>
+                      <Link href={nextActionHref(action)} className="shrink-0 rounded-md bg-cyan-300 px-3 py-2 text-center text-xs font-semibold text-slate-950 transition hover:bg-cyan-200">
+                        Làm ngay
+                      </Link>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -289,4 +294,24 @@ function formatInterviewStatus(status: string) {
 
 function formatInterviewScore(score: number | null) {
   return score === null ? "Chưa hoàn thành" : `${score}/100`;
+}
+
+function nextActionHref(action: string) {
+  const normalized = action.toLowerCase();
+  if (normalized.includes("hồ sơ")) {
+    return "/profile";
+  }
+  if (normalized.includes("cv") || normalized.includes("job description") || normalized.includes("jd")) {
+    return "/documents";
+  }
+  if (normalized.includes("matching") || normalized.includes("phân tích")) {
+    return "/analysis";
+  }
+  if (normalized.includes("roadmap")) {
+    return "/roadmap";
+  }
+  if (normalized.includes("interview") || normalized.includes("phỏng vấn")) {
+    return "/interview";
+  }
+  return "/documents";
 }

@@ -80,6 +80,7 @@ export default function AnalysisPage() {
     () => jobDescriptions.find((job) => String(job.id) === selectedJobDescriptionId),
     [jobDescriptions, selectedJobDescriptionId]
   );
+  const canRunAnalysis = Boolean(selectedResumeId && selectedJobDescriptionId) && !isAnalyzing;
 
   async function handleRunAnalysis(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -190,7 +191,7 @@ export default function AnalysisPage() {
 
               <button
                 type="submit"
-                disabled={isAnalyzing}
+                disabled={!canRunAnalysis}
                 className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isAnalyzing ? "Đang phân tích..." : "Phân tích mức độ phù hợp"}

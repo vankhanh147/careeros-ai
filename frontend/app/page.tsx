@@ -19,7 +19,23 @@ export default function Home() {
             Đăng nhập
           </Link>
         </div>
+
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <OnboardingStep step="1" title="Hoàn thiện hồ sơ" description="Nhập target role, kỹ năng hiện có, kinh nghiệm và timeline để hệ thống hiểu mục tiêu của bạn." />
+          <OnboardingStep step="2" title="Thêm CV và JD" description="Upload CV PDF, paste hoặc upload JD mục tiêu để CareerOS AI có dữ liệu matching." />
+          <OnboardingStep step="3" title="Chạy AI MVP" description="Xem matching, skill gap, Roadmap và luyện Mock Interview theo đúng vị trí bạn đang nhắm tới." />
+        </div>
       </section>
     </main>
+  );
+}
+
+function OnboardingStep({ step, title, description }: { step: string; title: string; description: string }) {
+  return (
+    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5">
+      <p className="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-300 text-sm font-bold text-slate-950">{step}</p>
+      <h2 className="mt-4 text-base font-semibold text-slate-100">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
+    </article>
   );
 }

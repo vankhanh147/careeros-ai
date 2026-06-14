@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const canSubmit = email.trim().length > 0 && password.length >= 8 && !isSubmitting;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -26,7 +27,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login({ email: email.trim(), password });
       router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đăng nhập không thành công. Vui lòng kiểm tra email, mật khẩu hoặc kết nối backend.");
@@ -48,16 +49,18 @@ export default function LoginPage() {
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-200">Email</label>
             <input id="email" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" placeholder="you@example.com" />
+            <p className="mt-2 text-xs text-slate-500">Dùng email bạn đã đăng ký CareerOS AI.</p>
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-200">Mật khẩu</label>
             <input id="password" type="password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" placeholder="Ít nhất 8 ký tự" />
+            <p className="mt-2 text-xs text-slate-500">Mật khẩu tối thiểu 8 ký tự.</p>
           </div>
 
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
 
-          <button type="submit" disabled={isSubmitting} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+          <button type="submit" disabled={!canSubmit} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
             {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>

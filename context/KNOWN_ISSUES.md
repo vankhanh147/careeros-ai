@@ -116,3 +116,12 @@ Known production deployment caveats:
 ## Error Handling Limitation
 
 Phase 5.2 adds consistent `{detail, code}` error responses. Existing frontend remains compatible because `detail` is still a string. Error messages are intentionally short English strings for backend consistency. Full i18n of backend error messages is not implemented.
+
+## Phase 6.2 UX Notes
+
+No new known backend or schema issues were introduced in Phase 6.2.
+
+Remaining UX/testing limitations:
+
+- There is still no automated frontend E2E/browser test suite.
+- Phase 6.2 polish was verified through `npm run lint` and `npm run build`; full user-path validation should still be done manually with the production smoke checklist.

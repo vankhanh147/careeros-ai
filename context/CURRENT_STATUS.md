@@ -251,3 +251,30 @@ Current phase:
 - Current: Phase 6 - Beta Launch & Real User Feedback.
 - Completed: Phase 6.1 Beta Instrumentation & Feedback Foundation.
 - Next recommended: Phase 6.2 - run beta smoke tests with real users, review feedback signals and fix highest-impact friction.
+
+## Phase 6.2 Update: UX Polish Based on Local Beta Testing - Completed
+
+Date: 2026-06-14
+
+Phase 6.2 focused on frontend UX polish only. No backend logic, API contract, AI feature or database schema was changed.
+
+Completed polish:
+
+- Landing page now explains the first 3 user steps: complete profile, add CV/JD, run AI MVP.
+- Login/register forms trim input, show small hints and disable submit until required input is valid.
+- Dashboard next actions now include a clear `Làm ngay` CTA mapped to the right product page.
+- Profile page shows an onboarding hint when empty, adds field hints and disables save until the user enters at least one profile field.
+- Documents page disables upload/save buttons until required file/content exists and adds file/JD input hints.
+- Analysis, Roadmap and Interview pages have safer submit disabling while actions are running or required input is missing.
+- Feedback block is less intrusive, explains why feedback matters and prevents repeated spam submissions after a successful feedback send.
+
+Checks:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
+Current phase:
+
+- Current: Phase 6 - Beta Launch & Real User Feedback.
+- Completed: Phase 6.2 UX Polish Based on Local Beta Testing.
+- Next recommended: run local/production smoke test with a fresh beta user account and fix any observed friction.

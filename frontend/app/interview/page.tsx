@@ -90,6 +90,7 @@ export default function InterviewPage() {
   );
 
   const answeredCount = currentSession?.answers.filter((answer) => answer.user_answer).length ?? 0;
+  const canStartInterview = !isStarting;
 
   async function handleStartInterview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -243,7 +244,7 @@ export default function InterviewPage() {
 
             <button
               type="submit"
-              disabled={isStarting}
+              disabled={!canStartInterview}
               className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isStarting ? "Đang tạo phiên phỏng vấn..." : "Bắt đầu phỏng vấn"}
@@ -368,7 +369,7 @@ function InterviewSessionPanel({
           </label>
           <button
             type="submit"
-            disabled={isAnswering}
+            disabled={answerText.trim().length === 0 || isAnswering}
             className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isAnswering ? "Đang chấm câu trả lời..." : "Gửi câu trả lời"}

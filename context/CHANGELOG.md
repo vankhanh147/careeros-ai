@@ -175,3 +175,14 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `GET /api/dashboard/usage-summary`.
 - Added compact frontend feedback UI after analysis, roadmap and completed interview outputs.
 - Added backend tests for feedback creation, unauthorized feedback, usage summary and tracking flow.
+
+## Phase 6.2: UX Polish Based on Local Beta Testing
+
+- Polished landing onboarding with a clear 3-step first-use path.
+- Improved auth form hints and disabled states.
+- Added clear CTA links to dashboard recommended next actions.
+- Improved profile empty/onboarding state and save button behavior.
+- Improved documents upload/JD form hints and disabled states.
+- Improved action button disabled states on analysis, roadmap and interview flows.
+- Reduced feedback block intrusiveness and prevented repeated feedback submissions after success.
+- Frontend checks passed: `npm run lint`, `npm run build`.

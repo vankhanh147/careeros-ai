@@ -44,6 +44,9 @@ export default function DocumentsPage() {
   const [isSavingJd, setIsSavingJd] = useState(false);
   const [deletingResumeId, setDeletingResumeId] = useState<number | null>(null);
   const [deletingJobDescriptionId, setDeletingJobDescriptionId] = useState<number | null>(null);
+  const canUploadResume = Boolean(selectedResumeFile) && !isUploadingResume;
+  const canUploadJd = Boolean(selectedJdFile) && !isUploadingJd;
+  const canSaveJd = jdTitle.trim().length > 0 && jdContent.trim().length > 0 && !isSavingJd;
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -319,7 +322,8 @@ export default function DocumentsPage() {
               onChange={(event) => setSelectedResumeFile(event.target.files?.[0] ?? null)}
               className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
             />
-            <button type="submit" disabled={isUploadingResume} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+            <p className="text-xs leading-5 text-slate-500">Chỉ nhận PDF tối đa 5MB. File này sẽ được dùng để trích xuất text khi chạy analysis.</p>
+            <button type="submit" disabled={!canUploadResume} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
               {isUploadingResume ? "Đang upload CV..." : "Upload CV"}
             </button>
           </form>
@@ -364,7 +368,8 @@ export default function DocumentsPage() {
                 onChange={(event) => setSelectedJdFile(event.target.files?.[0] ?? null)}
                 className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
               />
-              <button type="submit" disabled={isUploadingJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+              <p className="text-xs leading-5 text-slate-500">Upload JD khi bạn có file từ nhà tuyển dụng. Nếu không, paste JD ở form bên dưới.</p>
+              <button type="submit" disabled={!canUploadJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
                 {isUploadingJd ? "Đang đọc JD..." : "Upload JD"}
               </button>
             </form>
@@ -392,7 +397,7 @@ export default function DocumentsPage() {
                 Nội dung JD
                 <textarea required rows={8} value={jdContent} onChange={(event) => setJdContent(event.target.value)} placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..." className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
               </label>
-              <button type="submit" disabled={isSavingJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+              <button type="submit" disabled={!canSaveJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
                 {isSavingJd ? "Đang lưu JD..." : editingJobDescriptionId ? "Lưu cập nhật" : "Lưu JD"}
               </button>
             </form>
