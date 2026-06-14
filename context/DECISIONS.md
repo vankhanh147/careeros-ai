@@ -89,3 +89,11 @@ Do not add unless explicitly requested:
 - Do not store CV/JD full content, file bytes, JWT tokens, secrets or unnecessary PII in usage metadata.
 - Feedback uses a simple useful/not useful boolean, not 1-5 star ratings.
 - Founder metrics remain simple counters through `GET /api/dashboard/usage-summary`; no analytics dashboard/charts yet.
+
+## Phase 6.5 Matching Decisions
+
+- Matching V2 remains deterministic and explainable; no LLM API, fine-tuning or new AI module was added.
+- Role mismatch and stack mismatch are handled as scoring signals, not as hard rejection gates.
+- Semantic similarity remains optional and must not be loaded at import or startup when disabled.
+- Critical skill weighting should prioritize role-specific JD requirements over generic overlap.
+- Confidence is a product trust signal and can cap low-information matches.

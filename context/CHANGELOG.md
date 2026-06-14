@@ -186,3 +186,14 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Improved action button disabled states on analysis, roadmap and interview flows.
 - Reduced feedback block intrusiveness and prevented repeated feedback submissions after success.
 - Frontend checks passed: `npm run lint`, `npm run build`.
+
+## Phase 6.5: Matching Scoring V2
+
+- Added role-family detection for CV and JD.
+- Added stack group detection and stack mismatch penalty.
+- Added critical JD skill weighting.
+- Added evidence-aware scoring for project/experience signals.
+- Added confidence signal for analysis quality.
+- Expanded scoring breakdown with role alignment, evidence score, confidence and debug signals.
+- Updated `/analysis` debug preview to display V2 scoring signals.
+- Added backend regression tests for beta-inspired mismatch and fit cases.

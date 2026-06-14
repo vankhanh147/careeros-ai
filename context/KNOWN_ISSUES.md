@@ -125,3 +125,11 @@ Remaining UX/testing limitations:
 
 - There is still no automated frontend E2E/browser test suite.
 - Phase 6.2 polish was verified through `npm run lint` and `npm run build`; full user-path validation should still be done manually with the production smoke checklist.
+
+## Phase 6.5 Matching V2 Limitations
+
+- Role-family and stack detection are heuristic and dictionary-based, so unusual titles or uncommon technologies can still be misclassified.
+- Evidence-aware scoring uses text-window heuristics around project/experience terms; it is not a true semantic proof of real experience.
+- Thresholds for role alignment, stack penalty and confidence were calibrated pragmatically from beta patterns, not from a labeled dataset.
+- `MatchAnalysis` still stores only base fields, so V2 debug fields are recomputed for history from current matcher logic.
+- Frontend debug labels for new V2 technical scoring fields intentionally use short English technical labels to avoid encoding regressions in the current source state.

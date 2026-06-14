@@ -141,3 +141,17 @@ Chức năng:
 - Luôn actionable: output cần có bước cải thiện cụ thể.
 - Không tuyệt đối hóa score; score là tín hiệu hỗ trợ quyết định.
 - Ưu tiên fallback an toàn hơn là làm app crash khi model semantic lỗi.
+
+## Phase 6.5 Matching Scoring V2
+
+Resume/JD matching now adds deterministic, explainable V2 signals on top of the existing rule-based matcher:
+
+- Role-family detection for both CV and JD: backend, frontend, fullstack, ai/data, mobile, devops and general software.
+- Stack group detection, for example python_backend, dotnet_backend, react_frontend, angular_frontend, mobile and cloud/devops groups.
+- Role alignment scoring to penalize obvious frontend/backend mismatch and partially penalize same-role different-stack mismatch.
+- Critical JD skill weighting so role-critical skills such as Python/FastAPI in a Python backend JD matter more than generic skills such as Git.
+- Evidence-aware scoring that rewards matched skills appearing near project/experience/action evidence more than one-off keyword mentions.
+- Confidence signal: high, medium or low based on CV length, JD length, detected skills and evidence richness.
+- Semantic similarity remains optional through Sentence Transformers and is still disabled safely when `SENTENCE_TRANSFORMERS_ENABLED=false`.
+
+Current scoring breakdown includes `skill_score`, `keyword_score`, `semantic_score`, `role_alignment_score`, `evidence_score`, `length_sanity`, `confidence` and `final_score`, plus debug fields for detected role families, role signals, stack groups, critical skills and scoring notes.

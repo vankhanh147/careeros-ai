@@ -344,13 +344,40 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
         <SkillList title="Kỹ năng phát hiện trong JD" items={analysis.jd_detected_skills} emptyText="Chưa phát hiện kỹ năng trong JD." tone="warning" />
       </div>
 
-      <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <ScoreItem label="Điểm kỹ năng" value={analysis.scoring_breakdown.skill_score} />
-        <ScoreItem label="Điểm keyword" value={analysis.scoring_breakdown.keyword_score} />
-        <ScoreItem label="Điểm semantic" value={analysis.scoring_breakdown.semantic_score} />
-        <ScoreItem label="Độ đủ dữ liệu" value={analysis.scoring_breakdown.length_sanity} />
-        <ScoreItem label="Điểm cuối" value={analysis.scoring_breakdown.final_score} />
+      <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ScoreItem label="Skill score" value={analysis.scoring_breakdown.skill_score} />
+        <ScoreItem label="Keyword score" value={analysis.scoring_breakdown.keyword_score} />
+        <ScoreItem label="Semantic score" value={analysis.scoring_breakdown.semantic_score} />
+        <ScoreItem label="Role alignment" value={analysis.scoring_breakdown.role_alignment_score} />
+        <ScoreItem label="Evidence score" value={analysis.scoring_breakdown.evidence_score} />
+        <ScoreItem label="Data completeness" value={analysis.scoring_breakdown.length_sanity} />
+        <TextItem label="Confidence" value={formatConfidence(analysis.scoring_breakdown.confidence)} />
+        <ScoreItem label="Final score" value={analysis.scoring_breakdown.final_score} />
       </dl>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <InfoBlock
+          title="Role & stack detected"
+          lines={[
+            `CV: ${analysis.scoring_breakdown.resume_role_family ?? "general software"}`,
+            `JD: ${analysis.scoring_breakdown.jd_role_family ?? "general software"}`,
+            `CV stack: ${(analysis.scoring_breakdown.resume_stack_groups ?? []).join(", ") || "Not clear"}`,
+            `JD stack: ${(analysis.scoring_breakdown.jd_stack_groups ?? []).join(", ") || "Not clear"}`
+          ]}
+        />
+        <InfoBlock
+          title="Scoring V2 explanation"
+          lines={[
+            ...((analysis.scoring_breakdown.role_alignment_notes ?? []).slice(0, 4)),
+            ...((analysis.scoring_breakdown.evidence_notes ?? []).slice(0, 4))
+          ]}
+        />
+      </div>
+
+      <div className="mt-5">
+        <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Critical skills trong JD</h5>
+        <TagList items={analysis.scoring_breakdown.critical_skills ?? []} emptyText="No clear critical skill detected." />
+      </div>
     </div>
   );
 }
@@ -373,6 +400,40 @@ function ScoreItem({ label, value }: { label: string; value: number }) {
       <dd className="mt-2 text-lg font-semibold text-slate-100">{value}</dd>
     </div>
   );
+}
+
+
+function TextItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/70 p-3">
+      <dt className="break-words text-xs uppercase tracking-[0.16em] text-slate-500">{label}</dt>
+      <dd className="mt-2 break-words text-lg font-semibold text-slate-100">{value}</dd>
+    </div>
+  );
+}
+
+function InfoBlock({ title, lines }: { title: string; lines: string[] }) {
+  const visibleLines = lines.filter(Boolean);
+  return (
+    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/70 p-4">
+      <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{title}</h5>
+      {visibleLines.length === 0 ? (
+        <p className="mt-3 text-sm text-slate-500">No clear signal yet.</p>
+      ) : (
+        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+          {visibleLines.map((line) => (
+            <li key={line} className="break-words">{line}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function formatConfidence(confidence: string) {
+  if (confidence === "high") return "High";
+  if (confidence === "low") return "Low";
+  return "Medium";
 }
 
 function SkillList({ title, items, emptyText, tone }: { title: string; items: string[]; emptyText: string; tone: "positive" | "warning" }) {

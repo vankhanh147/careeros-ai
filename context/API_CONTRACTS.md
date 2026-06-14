@@ -494,3 +494,22 @@ The following existing endpoints now insert minimal usage events after successfu
 - `POST /api/interviews/start` -> `interview_started`
 - `POST /api/interviews/{session_id}/finish` -> `interview_completed`
 - `POST /api/feedback` -> `feedback_submitted`
+
+## Phase 6.5 Analysis Response Additions
+
+`POST /api/analysis/resume-job-match` and `GET /api/analysis/history` keep the existing response shape and add fields inside `scoring_breakdown`:
+
+- `role_alignment_score`
+- `evidence_score`
+- `confidence` (`high`, `medium`, `low`)
+- `resume_role_family`
+- `jd_role_family`
+- `resume_role_signals`
+- `jd_role_signals`
+- `resume_stack_groups`
+- `jd_stack_groups`
+- `critical_skills`
+- `role_alignment_notes`
+- `evidence_notes`
+
+Existing fields remain available: `skill_score`, `keyword_score`, `semantic_score`, `length_sanity` and `final_score`. This is an additive API change for frontend compatibility.

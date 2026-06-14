@@ -4,8 +4,20 @@ export type ScoringBreakdown = {
   skill_score: number;
   keyword_score: number;
   semantic_score: number;
+  role_alignment_score: number;
+  evidence_score: number;
   length_sanity: number;
+  confidence: "high" | "medium" | "low" | string;
   final_score: number;
+  resume_role_family?: string;
+  jd_role_family?: string;
+  resume_role_signals?: Record<string, string[]>;
+  jd_role_signals?: Record<string, string[]>;
+  resume_stack_groups?: string[];
+  jd_stack_groups?: string[];
+  critical_skills?: string[];
+  role_alignment_notes?: string[];
+  evidence_notes?: string[];
 };
 
 export type PrioritizedMissingSkills = {

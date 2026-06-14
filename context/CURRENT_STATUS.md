@@ -278,3 +278,25 @@ Current phase:
 - Current: Phase 6 - Beta Launch & Real User Feedback.
 - Completed: Phase 6.2 UX Polish Based on Local Beta Testing.
 - Next recommended: run local/production smoke test with a fresh beta user account and fix any observed friction.
+
+## Phase 6.5 Update: Matching Scoring V2 - Completed
+
+Date: 2026-06-14
+
+Phase 6.5 improves Resume/JD Matching quality based on internal beta review without adding a new AI module, LLM API, fine-tuning or architecture changes.
+
+Completed:
+
+- Added role-family detection for CV and JD: backend, frontend, fullstack, ai/data, mobile, devops and general software.
+- Added stack group detection and stack mismatch penalty.
+- Added role alignment scoring so obvious role mismatch is penalized strongly.
+- Added weighted critical JD skills so role-critical stack requirements count more than generic keywords.
+- Added evidence-aware scoring for project/experience usage versus shallow keyword mentions.
+- Added confidence signal: high, medium, low.
+- Updated frontend analysis debug preview to show V2 scoring signals.
+- Added backend tests for frontend/backend mismatch, same-role different-stack, exact backend fit and short-CV low confidence.
+
+Checks passed: compileall, pytest, pip check, frontend lint and frontend build.
+
+Current: Phase 6 - Beta Launch & Real User Feedback.
+Next recommended: use production beta feedback to calibrate thresholds and collect exact expected/actual scores for future Matching V3.

@@ -12,8 +12,20 @@ class ScoringBreakdown(BaseModel):
     skill_score: float
     keyword_score: float
     semantic_score: float
+    role_alignment_score: float = 0
+    evidence_score: float = 0
     length_sanity: float
+    confidence: str = "medium"
     final_score: float
+    resume_role_family: str = "general software"
+    jd_role_family: str = "general software"
+    resume_role_signals: dict[str, list[str]] = Field(default_factory=dict)
+    jd_role_signals: dict[str, list[str]] = Field(default_factory=dict)
+    resume_stack_groups: list[str] = Field(default_factory=list)
+    jd_stack_groups: list[str] = Field(default_factory=list)
+    critical_skills: list[str] = Field(default_factory=list)
+    role_alignment_notes: list[str] = Field(default_factory=list)
+    evidence_notes: list[str] = Field(default_factory=list)
 
 
 class PrioritizedMissingSkills(BaseModel):
@@ -45,3 +57,4 @@ class MatchAnalysisResponse(BaseModel):
     improvement_plan: list[str]
     created_at: datetime
     updated_at: datetime
+
