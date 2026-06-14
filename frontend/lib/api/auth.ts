@@ -1,4 +1,5 @@
 import { API_URL } from "./config";
+import { apiFetch } from "./errors";
 
 export type AuthUser = {
   id: number;
@@ -27,19 +28,13 @@ export type TokenResponse = {
 };
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await apiFetch(`${API_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...init.headers
     }
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    const message = typeof error?.detail === "string" ? error.detail : "Không thể kết nối tới CareerOS AI. Vui lòng thử lại.";
-    throw new Error(message);
-  }
+  }, "Kh\u00f4ng th\u1ec3 k\u1ebft n\u1ed1i t\u1edbi CareerOS AI.");
 
   return response.json() as Promise<T>;
 }

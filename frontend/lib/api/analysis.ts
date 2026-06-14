@@ -1,4 +1,5 @@
 import { API_URL } from "./config";
+import { apiFetch } from "./errors";
 
 export type ScoringBreakdown = {
   skill_score: number;
@@ -55,20 +56,14 @@ export type ResumeJobMatchPayload = {
 };
 
 async function analysisRequest<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await apiFetch(`${API_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       ...init.headers
     }
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý phân tích CV và JD. Vui lòng thử lại.";
-    throw new Error(message);
-  }
+  }, "Kh\u00f4ng th\u1ec3 x\u1eed l\u00fd ph\u00e2n t\u00edch CV v\u00e0 JD.");
 
   return response.json() as Promise<T>;
 }

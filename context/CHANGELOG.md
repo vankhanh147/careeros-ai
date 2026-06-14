@@ -197,3 +197,29 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Expanded scoring breakdown with role alignment, evidence score, confidence and debug signals.
 - Updated `/analysis` debug preview to display V2 scoring signals.
 - Added backend regression tests for beta-inspired mismatch and fit cases.
+
+## Phase 6.6: CareerOS Benchmark V1
+
+- Added `docs/benchmark-v1/` with official internal matcher benchmark documentation.
+- Recorded 10 beta-inspired benchmark cases U01-U10 with V1 baseline scores and expected V2 behavior.
+- Defined acceptable target ranges for exact fit, same-role different-stack, role mismatch, cross-domain transferable and non-IT mismatch cases.
+- Added manual matcher evaluation rules and release guardrails.
+- Added `backend/scripts/run_benchmark_notes.py` for a no-dependency manual rerun checklist.
+- No application logic, API contract or database schema was changed.
+
+## Phase 6.7: Final Beta Stabilization
+
+- Added shared frontend API error handling helper for friendlier network/API errors.
+- Updated frontend API clients to use the shared error handling path.
+- Polished `/dashboard` with progress hierarchy, refresh CTA and dynamic next actions.
+- Added `context/BETA_RELEASE_CHECKLIST.md` for final production beta readiness review.
+- No backend feature, API contract or database schema was changed.
+
+## Phase 7.1: Production Beta Validation & Data Cleanup
+
+- Audited the current beta flow across auth, profile, CV/JD documents, analysis, roadmap, mock interview, dashboard and feedback.
+- Fixed frontend API error/fallback messages that had lost Vietnamese accents.
+- Fixed corrupted Vietnamese examples in `context/BETA_RELEASE_CHECKLIST.md`.
+- Added `context/PHASE_7_1_VALIDATION_REPORT.md`.
+- No backend logic, API contract, database schema or product feature was changed.
+

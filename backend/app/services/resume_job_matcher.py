@@ -44,41 +44,10 @@ TECH_SKILLS = sorted(
 )
 
 STOPWORDS = {
-    "and",
-    "are",
-    "for",
-    "from",
-    "the",
-    "this",
-    "that",
-    "with",
-    "you",
-    "your",
-    "will",
-    "have",
-    "has",
-    "can",
-    "our",
-    "their",
-    "job",
-    "role",
-    "team",
-    "work",
-    "experience",
-    "skills",
-    "candidate",
-    "developer",
-    "engineer",
-    "chÃºng",
-    "tÃ´i",
-    "báº¡n",
-    "cÃ¡c",
-    "vá»›i",
-    "cho",
-    "cá»§a",
-    "trong",
-    "kinh",
-    "nghiá»‡m",
+    "and", "are", "for", "from", "the", "this", "that", "with", "you", "your",
+    "will", "have", "has", "can", "our", "their", "job", "role", "team", "work",
+    "experience", "skills", "candidate", "developer", "engineer",
+    "ch\u00fang", "t\u00f4i", "b\u1ea1n", "c\u00e1c", "v\u1edbi", "cho", "c\u1ee7a", "trong", "kinh", "nghi\u1ec7m",
 }
 
 PREVIEW_LENGTH = 1200
@@ -241,6 +210,8 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
             "evidence_notes": evidence_notes,
         },
     }
+
+
 def build_text_preview(text: str, limit: int = PREVIEW_LENGTH) -> str:
     cleaned = re.sub(r"\s+", " ", (text or "")).strip()
     if len(cleaned) <= limit:
@@ -268,6 +239,8 @@ def _normalize(text: str) -> str:
     normalized = normalized.replace("asp net", "asp.net")
     normalized = normalized.replace("ci cd", "ci/cd").replace("k8s", "kubernetes")
     return normalized
+
+
 def _contains_skill(normalized_text: str, skill: str) -> bool:
     normalized_skill = _normalize(skill)
     pattern = rf"(?<![a-z0-9+#.]){re.escape(normalized_skill)}(?![a-z0-9+#.])"
@@ -564,23 +537,22 @@ def _build_summary(
     semantic_available: bool,
 ) -> str:
     if match_score >= 80:
-        level = "má»©c Ä‘á»™ phÃ¹ há»£p cao"
+        level = "m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p cao"
     elif match_score >= 60:
-        level = "má»©c Ä‘á»™ phÃ¹ há»£p khÃ¡"
+        level = "m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p kh\u00e1"
     elif match_score >= 40:
-        level = "má»©c Ä‘á»™ phÃ¹ há»£p trung bÃ¬nh"
+        level = "m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p trung b\u00ecnh"
     else:
-        level = "má»©c Ä‘á»™ phÃ¹ há»£p cÃ²n tháº¥p"
+        level = "m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p c\u00f2n th\u1ea5p"
 
-    matched_text = ", ".join(matched_skills[:5]) if matched_skills else "chÆ°a phÃ¡t hiá»‡n ká»¹ nÄƒng trÃ¹ng khá»›p rÃµ rÃ ng"
-    missing_text = ", ".join(missing_skills[:5]) if missing_skills else "khÃ´ng cÃ³ skill gap lá»›n trong danh sÃ¡ch ká»¹ nÄƒng hiá»‡n táº¡i"
+    matched_text = ", ".join(matched_skills[:5]) if matched_skills else "ch\u01b0a ph\u00e1t hi\u1ec7n k\u1ef9 n\u0103ng tr\u00f9ng kh\u1edbp r\u00f5 r\u00e0ng"
+    missing_text = ", ".join(missing_skills[:5]) if missing_skills else "kh\u00f4ng c\u00f3 skill gap l\u1edbn trong danh s\u00e1ch k\u1ef9 n\u0103ng hi\u1ec7n t\u1ea1i"
     semantic_text = (
-        f"Semantic score hiá»‡n lÃ  {semantic_score}/15."
+        f"Semantic score hi\u1ec7n l\u00e0 {semantic_score}/15."
         if semantic_available
-        else "Semantic score chÆ°a kháº£ dá»¥ng, há»‡ thá»‘ng Ä‘ang fallback vá» rule-based scoring."
+        else "Semantic score ch\u01b0a kh\u1ea3 d\u1ee5ng, h\u1ec7 th\u1ed1ng \u0111ang fallback v\u1ec1 rule-based scoring."
     )
-    return f"CV cÃ³ {level} vá»›i JD. Äiá»ƒm máº¡nh chÃ­nh: {matched_text}. Khoáº£ng trá»‘ng cáº§n chÃº Ã½: {missing_text}. {semantic_text}"
-
+    return f"CV c\u00f3 {level} v\u1edbi JD. \u0110i\u1ec3m m\u1ea1nh ch\u00ednh: {matched_text}. Kho\u1ea3ng tr\u1ed1ng c\u1ea7n ch\u00fa \u00fd: {missing_text}. {semantic_text}"
 
 def _build_suggestions(
     missing_skills: list[str],
@@ -592,29 +564,31 @@ def _build_suggestions(
     suggestions = []
     if len(missing_skills) >= 4:
         top_missing = ", ".join(missing_skills[:8])
-        suggestions.append(f"JD Ä‘ang yÃªu cáº§u nhiá»u ká»¹ nÄƒng CV chÆ°a thá»ƒ hiá»‡n rÃµ. Æ¯u tiÃªn bá»• sung hoáº·c chá»©ng minh kinh nghiá»‡m vá»›i: {top_missing}.")
+        suggestions.append(f"JD \u0111ang y\u00eau c\u1ea7u nhi\u1ec1u k\u1ef9 n\u0103ng CV ch\u01b0a th\u1ec3 hi\u1ec7n r\u00f5. \u01afu ti\u00ean b\u1ed5 sung ho\u1eb7c ch\u1ee9ng minh kinh nghi\u1ec7m v\u1edbi: {top_missing}.")
     elif missing_skills:
         top_missing = ", ".join(missing_skills[:5])
-        suggestions.append(f"Bá»• sung hoáº·c lÃ m rÃµ kinh nghiá»‡m liÃªn quan Ä‘áº¿n: {top_missing}.")
+        suggestions.append(f"B\u1ed5 sung ho\u1eb7c l\u00e0m r\u00f5 kinh nghi\u1ec7m li\u00ean quan \u0111\u1ebfn: {top_missing}.")
 
     if semantic_available and semantic_score < 10:
-        suggestions.append("Semantic score tháº¥p: nÃªn viáº¿t láº¡i pháº§n project/experience sÃ¡t JD hÆ¡n, dÃ¹ng mÃ´ táº£ trÃ¡ch nhiá»‡m, domain vÃ  impact gáº§n vá»›i vá»‹ trÃ­ má»¥c tiÃªu.")
+        suggestions.append("Semantic score th\u1ea5p: n\u00ean vi\u1ebft l\u1ea1i ph\u1ea7n project/experience s\u00e1t JD h\u01a1n, d\u00f9ng m\u00f4 t\u1ea3 tr\u00e1ch nhi\u1ec7m, domain v\u00e0 impact g\u1ea7n v\u1edbi v\u1ecb tr\u00ed m\u1ee5c ti\u00eau.")
     elif semantic_available and semantic_score < 16:
-        suggestions.append("Semantic score á»Ÿ má»©c trung bÃ¬nh: hÃ£y lÃ m rÃµ project nÃ o liÃªn quan trá»±c tiáº¿p Ä‘áº¿n trÃ¡ch nhiá»‡m trong JD thay vÃ¬ chá»‰ liá»‡t kÃª tech stack.")
+        suggestions.append("Semantic score \u1edf m\u1ee9c trung b\u00ecnh: h\u00e3y l\u00e0m r\u00f5 project n\u00e0o li\u00ean quan tr\u1ef1c ti\u1ebfp \u0111\u1ebfn tr\u00e1ch nhi\u1ec7m trong JD thay v\u00ec ch\u1ec9 li\u1ec7t k\u00ea tech stack.")
     elif not semantic_available:
-        suggestions.append("Semantic score chÆ°a kháº£ dá»¥ng trong láº§n phÃ¢n tÃ­ch nÃ y; hÃ£y dá»±a vÃ o skill gap, keyword overlap vÃ  text preview Ä‘á»ƒ kiá»ƒm chá»©ng káº¿t quáº£.")
+        suggestions.append("Semantic score ch\u01b0a kh\u1ea3 d\u1ee5ng trong l\u1ea7n ph\u00e2n t\u00edch n\u00e0y; h\u00e3y d\u1ef1a v\u00e0o skill gap, keyword overlap v\u00e0 text preview \u0111\u1ec3 ki\u1ec3m ch\u1ee9ng k\u1ebft qu\u1ea3.")
 
-    suggestions.append("Äiá»u chá»‰nh CV theo JD báº±ng cÃ¡ch Ä‘Æ°a cÃ¡c keyword quan trá»ng vÃ o pháº§n project, experience vÃ  skills náº¿u pháº£n Ã¡nh Ä‘Ãºng nÄƒng lá»±c tháº­t.")
+    suggestions.append("\u0110i\u1ec1u ch\u1ec9nh CV theo JD b\u1eb1ng c\u00e1ch \u0111\u01b0a c\u00e1c keyword quan tr\u1ecdng v\u00e0o ph\u1ea7n project, experience v\u00e0 skills n\u1ebfu ph\u1ea3n \u00e1nh \u0111\u00fang n\u0103ng l\u1ef1c th\u1eadt.")
     if len(resume_text.strip()) < 800:
-        suggestions.append("CV Ä‘ang khÃ¡ ngáº¯n sau khi trÃ­ch xuáº¥t text; nÃªn mÃ´ táº£ project báº±ng impact, tech stack, vai trÃ² cÃ¡ nhÃ¢n vÃ  káº¿t quáº£ cá»¥ thá»ƒ.")
+        suggestions.append("CV \u0111ang kh\u00e1 ng\u1eafn sau khi tr\u00edch xu\u1ea5t text; n\u00ean m\u00f4 t\u1ea3 project b\u1eb1ng impact, tech stack, vai tr\u00f2 c\u00e1 nh\u00e2n v\u00e0 k\u1ebft qu\u1ea3 c\u1ee5 th\u1ec3.")
     if len(job_description_text.strip()) < 300:
-        suggestions.append("JD Ä‘ang khÃ¡ ngáº¯n; káº¿t quáº£ matching sáº½ tá»‘t hÆ¡n náº¿u JD cÃ³ Ä‘á»§ trÃ¡ch nhiá»‡m, yÃªu cáº§u ká»¹ nÄƒng vÃ  tiÃªu chÃ­ Æ°u tiÃªn.")
-    suggestions.append("Æ¯u tiÃªn cáº£i thiá»‡n cÃ¡c skill gap xuáº¥t hiá»‡n trá»±c tiáº¿p trong JD trÆ°á»›c khi má»Ÿ rá»™ng sang ká»¹ nÄƒng ngoÃ i pháº¡m vi vá»‹ trÃ­ nÃ y.")
+        suggestions.append("JD \u0111ang kh\u00e1 ng\u1eafn; k\u1ebft qu\u1ea3 matching s\u1ebd t\u1ed1t h\u01a1n n\u1ebfu JD c\u00f3 \u0111\u1ee7 tr\u00e1ch nhi\u1ec7m, y\u00eau c\u1ea7u k\u1ef9 n\u0103ng v\u00e0 ti\u00eau ch\u00ed \u01b0u ti\u00ean.")
+    suggestions.append("\u01afu ti\u00ean c\u1ea3i thi\u1ec7n c\u00e1c skill gap xu\u1ea5t hi\u1ec7n tr\u1ef1c ti\u1ebfp trong JD tr\u01b0\u1edbc khi m\u1edf r\u1ed9ng sang k\u1ef9 n\u0103ng ngo\u00e0i ph\u1ea1m vi v\u1ecb tr\u00ed n\u00e0y.")
     return suggestions
 
 def _detect_role_context(job_description_text: str) -> list[str]:
     role_info = _detect_role_family(job_description_text, extract_skills(job_description_text))
     return role_info["detected"] or ["general software"]
+
+
 def _prioritize_missing_skills(
     missing_skills: list[str], role_context: list[str], job_description_text: str
 ) -> dict[str, list[str]]:
@@ -651,16 +625,15 @@ def _build_skill_gap_summary(prioritized_missing_skills: dict[str, list[str]], r
     medium_count = len(prioritized_missing_skills["medium_priority"])
     low_count = len(prioritized_missing_skills["low_priority"])
     total_missing = high_count + medium_count + low_count
-    role_text = ", ".join(role_context) if role_context != ["general"] else "vai trÃ² má»¥c tiÃªu"
+    role_text = ", ".join(role_context) if role_context != ["general"] else "vai tr\u00f2 m\u1ee5c ti\u00eau"
 
     if total_missing == 0:
-        return "ChÆ°a phÃ¡t hiá»‡n skill gap rÃµ rÃ ng so vá»›i JD. CV Ä‘ang bao phá»§ tá»‘t cÃ¡c ká»¹ nÄƒng há»‡ thá»‘ng nháº­n diá»‡n Ä‘Æ°á»£c, nÃªn Æ°u tiÃªn cáº£i thiá»‡n cÃ¡ch trÃ¬nh bÃ y cho sÃ¡t JD hÆ¡n."
+        return "Ch\u01b0a ph\u00e1t hi\u1ec7n skill gap r\u00f5 r\u00e0ng so v\u1edbi JD. CV \u0111ang bao ph\u1ee7 t\u1ed1t c\u00e1c k\u1ef9 n\u0103ng h\u1ec7 th\u1ed1ng nh\u1eadn di\u1ec7n \u0111\u01b0\u1ee3c, n\u00ean \u01b0u ti\u00ean c\u1ea3i thi\u1ec7n c\u00e1ch tr\u00ecnh b\u00e0y cho s\u00e1t JD h\u01a1n."
     if high_count > 0:
-        return f"PhÃ¡t hiá»‡n {total_missing} ká»¹ nÄƒng cÃ²n thiáº¿u cho {role_text}, trong Ä‘Ã³ {high_count} ká»¹ nÄƒng thuá»™c nhÃ³m Æ°u tiÃªn cao cáº§n xá»­ lÃ½ trÆ°á»›c."
+        return f"Ph\u00e1t hi\u1ec7n {total_missing} k\u1ef9 n\u0103ng c\u00f2n thi\u1ebfu cho {role_text}, trong \u0111\u00f3 {high_count} k\u1ef9 n\u0103ng thu\u1ed9c nh\u00f3m \u01b0u ti\u00ean cao c\u1ea7n x\u1eed l\u00fd tr\u01b0\u1edbc."
     if medium_count > 0:
-        return f"PhÃ¡t hiá»‡n {total_missing} ká»¹ nÄƒng cÃ²n thiáº¿u cho {role_text}. ChÆ°a cÃ³ gap Æ°u tiÃªn cao, nhÆ°ng cÃ³ {medium_count} ká»¹ nÄƒng nÃªn lÃ m rÃµ hoáº·c bá»• sung."
-    return f"PhÃ¡t hiá»‡n {total_missing} ká»¹ nÄƒng cÃ²n thiáº¿u, chá»§ yáº¿u á»Ÿ má»©c Æ°u tiÃªn tháº¥p. CV cÃ³ thá»ƒ cáº£i thiá»‡n báº±ng cÃ¡ch alignment tá»‘t hÆ¡n vá»›i JD."
-
+        return f"Ph\u00e1t hi\u1ec7n {total_missing} k\u1ef9 n\u0103ng c\u00f2n thi\u1ebfu cho {role_text}. Ch\u01b0a c\u00f3 gap \u01b0u ti\u00ean cao, nh\u01b0ng c\u00f3 {medium_count} k\u1ef9 n\u0103ng n\u00ean l\u00e0m r\u00f5 ho\u1eb7c b\u1ed5 sung."
+    return f"Ph\u00e1t hi\u1ec7n {total_missing} k\u1ef9 n\u0103ng c\u00f2n thi\u1ebfu, ch\u1ee7 y\u1ebfu \u1edf m\u1ee9c \u01b0u ti\u00ean th\u1ea5p. CV c\u00f3 th\u1ec3 c\u1ea3i thi\u1ec7n b\u1eb1ng c\u00e1ch alignment t\u1ed1t h\u01a1n v\u1edbi JD."
 
 def _build_improvement_plan(
     prioritized_missing_skills: dict[str, list[str]], resume_text: str, job_description_text: str
@@ -676,37 +649,35 @@ def _build_improvement_plan(
         plan.append(_skill_action(skill, urgent=False))
 
     if not high_priority and not medium_priority and low_priority:
-        plan.append(f"CÃ¡c ká»¹ nÄƒng cÃ²n thiáº¿u Ä‘ang á»Ÿ má»©c Æ°u tiÃªn tháº¥p ({', '.join(low_priority[:5])}). Chá»‰ bá»• sung vÃ o CV náº¿u báº¡n thá»±c sá»± Ä‘Ã£ dÃ¹ng trong project hoáº·c kinh nghiá»‡m thá»±c táº¿.")
+        plan.append(f"C\u00e1c k\u1ef9 n\u0103ng c\u00f2n thi\u1ebfu \u0111ang \u1edf m\u1ee9c \u01b0u ti\u00ean th\u1ea5p ({', '.join(low_priority[:5])}). Ch\u1ec9 b\u1ed5 sung v\u00e0o CV n\u1ebfu b\u1ea1n th\u1ef1c s\u1ef1 \u0111\u00e3 d\u00f9ng trong project ho\u1eb7c kinh nghi\u1ec7m th\u1ef1c t\u1ebf.")
 
     if not high_priority and not medium_priority and not low_priority:
-        plan.append("Giá»¯ nguyÃªn skill set chÃ­nh, nhÆ°ng viáº¿t láº¡i pháº§n project/experience Ä‘á»ƒ bÃ¡m sÃ¡t ngÃ´n ngá»¯ trong JD hÆ¡n.")
+        plan.append("Gi\u1eef nguy\u00ean skill set ch\u00ednh, nh\u01b0ng vi\u1ebft l\u1ea1i ph\u1ea7n project/experience \u0111\u1ec3 b\u00e1m s\u00e1t ng\u00f4n ng\u1eef trong JD h\u01a1n.")
 
     if any(skill in high_priority + medium_priority for skill in ("rest api", "api", "database", "postgresql", "sql", "authentication", "jwt")):
-        plan.append("Viáº¿t láº¡i pháº§n project Ä‘á»ƒ thá»ƒ hiá»‡n rÃµ REST API, database, authentication, vai trÃ² cÃ¡ nhÃ¢n vÃ  káº¿t quáº£ Ä‘áº¡t Ä‘Æ°á»£c.")
+        plan.append("Vi\u1ebft l\u1ea1i ph\u1ea7n project \u0111\u1ec3 th\u1ec3 hi\u1ec7n r\u00f5 REST API, database, authentication, vai tr\u00f2 c\u00e1 nh\u00e2n v\u00e0 k\u1ebft qu\u1ea3 \u0111\u1ea1t \u0111\u01b0\u1ee3c.")
     if len(resume_text.strip()) < 800:
-        plan.append("CV text Ä‘ang ngáº¯n; bá»• sung mÃ´ táº£ project theo cáº¥u trÃºc: váº¥n Ä‘á», tech stack, pháº§n báº¡n lÃ m, káº¿t quáº£ hoáº·c impact.")
+        plan.append("CV text \u0111ang ng\u1eafn; b\u1ed5 sung m\u00f4 t\u1ea3 project theo c\u1ea5u tr\u00fac: v\u1ea5n \u0111\u1ec1, tech stack, ph\u1ea7n b\u1ea1n l\u00e0m, k\u1ebft qu\u1ea3 ho\u1eb7c impact.")
     if len(job_description_text.strip()) < 300:
-        plan.append("JD Ä‘ang ngáº¯n; náº¿u cÃ³ thá»ƒ, dÃ¹ng JD Ä‘áº§y Ä‘á»§ hÆ¡n Ä‘á»ƒ há»‡ thá»‘ng phÃ¢n tÃ­ch skill gap chÃ­nh xÃ¡c hÆ¡n.")
+        plan.append("JD \u0111ang ng\u1eafn; n\u1ebfu c\u00f3 th\u1ec3, d\u00f9ng JD \u0111\u1ea7y \u0111\u1ee7 h\u01a1n \u0111\u1ec3 h\u1ec7 th\u1ed1ng ph\u00e2n t\u00edch skill gap ch\u00ednh x\u00e1c h\u01a1n.")
 
     return _dedupe_preserve_order(plan)[:8]
 
-
 def _skill_action(skill: str, urgent: bool) -> str:
-    prefix = "Æ¯u tiÃªn cao" if urgent else "Æ¯u tiÃªn trung bÃ¬nh"
+    prefix = "\u01afu ti\u00ean cao" if urgent else "\u01afu ti\u00ean trung b\u00ecnh"
     if skill == "docker":
-        return f"{prefix}: Náº¿u Ä‘Ã£ dÃ¹ng Docker, bá»• sung project hoáº·c kinh nghiá»‡m liÃªn quan. Náº¿u chÆ°a biáº¿t Docker, há»c Docker cÆ¡ báº£n trÆ°á»›c khi apply vá»‹ trÃ­ nÃ y."
+        return f"{prefix}: N\u1ebfu \u0111\u00e3 d\u00f9ng Docker, b\u1ed5 sung project ho\u1eb7c kinh nghi\u1ec7m li\u00ean quan. N\u1ebfu ch\u01b0a bi\u1ebft Docker, h\u1ecdc Docker c\u01a1 b\u1ea3n tr\u01b0\u1edbc khi apply v\u1ecb tr\u00ed n\u00e0y."
     if skill in {"rest api", "api"}:
-        return f"{prefix}: LÃ m rÃµ kinh nghiá»‡m thiáº¿t káº¿ REST API, endpoint CRUD, validation, error handling vÃ  authentication trong project."
+        return f"{prefix}: L\u00e0m r\u00f5 kinh nghi\u1ec7m thi\u1ebft k\u1ebf REST API, endpoint CRUD, validation, error handling v\u00e0 authentication trong project."
     if skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
-        return f"{prefix}: Bá»• sung pháº§n database: schema, query, relationship, migration hoáº·c tá»‘i Æ°u truy váº¥n náº¿u báº¡n Ä‘Ã£ lÃ m."
+        return f"{prefix}: B\u1ed5 sung ph\u1ea7n database: schema, query, relationship, migration ho\u1eb7c t\u1ed1i \u01b0u truy v\u1ea5n n\u1ebfu b\u1ea1n \u0111\u00e3 l\u00e0m."
     if skill in {"authentication", "jwt", "oauth"}:
-        return f"{prefix}: Thá»ƒ hiá»‡n rÃµ kinh nghiá»‡m authentication, JWT/token flow, báº£o vá»‡ endpoint vÃ  xá»­ lÃ½ quyá»n truy cáº­p."
+        return f"{prefix}: Th\u1ec3 hi\u1ec7n r\u00f5 kinh nghi\u1ec7m authentication, JWT/token flow, b\u1ea3o v\u1ec7 endpoint v\u00e0 x\u1eed l\u00fd quy\u1ec1n truy c\u1eadp."
     if skill in {"react", "next.js", "typescript", "javascript", "html", "css", "tailwind"}:
-        return f"{prefix}: Bá»• sung vÃ­ dá»¥ frontend liÃªn quan Ä‘áº¿n {skill}, nháº¥t lÃ  component, state, form, API integration vÃ  UI production-ready."
+        return f"{prefix}: B\u1ed5 sung v\u00ed d\u1ee5 frontend li\u00ean quan \u0111\u1ebfn {skill}, nh\u1ea5t l\u00e0 component, state, form, API integration v\u00e0 UI production-ready."
     if skill in {"machine learning", "ai", "nlp", "scikit-learn", "pytorch", "tensorflow", "sentence transformers"}:
-        return f"{prefix}: Bá»• sung project AI/ML liÃªn quan Ä‘áº¿n {skill}, nÃªu rÃµ dá»¯ liá»‡u Ä‘áº§u vÃ o, cÃ¡ch Ä‘Ã¡nh giÃ¡ vÃ  káº¿t quáº£."
-    return f"{prefix}: Bá»• sung hoáº·c há»c ná»n táº£ng {skill}; chá»‰ Ä‘Æ°a vÃ o CV khi báº¡n cÃ³ project, bÃ i lab hoáº·c kinh nghiá»‡m Ä‘á»§ chá»©ng minh."
-
+        return f"{prefix}: B\u1ed5 sung project AI/ML li\u00ean quan \u0111\u1ebfn {skill}, n\u00eau r\u00f5 d\u1eef li\u1ec7u \u0111\u1ea7u v\u00e0o, c\u00e1ch \u0111\u00e1nh gi\u00e1 v\u00e0 k\u1ebft qu\u1ea3."
+    return f"{prefix}: B\u1ed5 sung ho\u1eb7c h\u1ecdc n\u1ec1n t\u1ea3ng {skill}; ch\u1ec9 \u0111\u01b0a v\u00e0o CV khi b\u1ea1n c\u00f3 project, b\u00e0i lab ho\u1eb7c kinh nghi\u1ec7m \u0111\u1ee7 ch\u1ee9ng minh."
 
 def _dedupe_preserve_order(items: list[str]) -> list[str]:
     seen = set()

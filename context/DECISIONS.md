@@ -97,3 +97,12 @@ Do not add unless explicitly requested:
 - Semantic similarity remains optional and must not be loaded at import or startup when disabled.
 - Critical skill weighting should prioritize role-specific JD requirements over generic overlap.
 - Confidence is a product trust signal and can cap low-information matches.
+
+## Phase 6.6 Benchmark Decisions
+
+- `docs/benchmark-v1/` is the official internal benchmark source for Resume/JD Matching changes.
+- Future matcher changes should be checked against U01-U10 before shipping.
+- V2 target ranges are broad product guardrails, not strict ML labels.
+- Exact-fit cases should stay high, role mismatch and non-IT mismatch should stay lower, and same-role different-stack cases should remain in a realistic middle range.
+- Benchmarking remains manual for now; no API automation, database schema change or new analytics system was added in Phase 6.6.
+

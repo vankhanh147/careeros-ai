@@ -122,3 +122,12 @@ After local beta polish, keep these additional rules:
 - Feedback UI should be compact and should disable repeated submission after a successful send.
 - Hints should be short and practical, not long instructions.
 - Keep empty states actionable with links or clear next steps.
+
+## Phase 6.7 UI/UX Rules Update
+
+- Dashboard should show MVP flow progress across profile, CV/JD, analysis, roadmap and completed interview.
+- Dashboard next actions should be computed from current user state, not only from backend action text.
+- Pages that depend on backend data should provide a retry CTA when loading fails.
+- Frontend API errors should be translated to friendly Vietnamese whenever possible.
+- Beta release requires manual validation with `context/BETA_RELEASE_CHECKLIST.md`.
+

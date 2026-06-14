@@ -1,4 +1,5 @@
 import { API_URL } from "./config";
+import { apiFetch } from "./errors";
 
 export type FeedbackType = "analysis" | "roadmap" | "interview";
 
@@ -18,20 +19,14 @@ export type FeedbackResponse = {
 };
 
 export async function submitFeedback(token: string, payload: SubmitFeedbackPayload): Promise<FeedbackResponse> {
-  const response = await fetch(`${API_URL}/api/feedback`, {
+  const response = await apiFetch(`${API_URL}/api/feedback`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
     body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    const message = typeof error?.detail === "string" ? error.detail : "Không thể gửi góp ý. Vui lòng thử lại.";
-    throw new Error(message);
-  }
+  }, "Kh\u00f4ng th\u1ec3 g\u1eedi g\u00f3p \u00fd.");
 
   return response.json() as Promise<FeedbackResponse>;
 }

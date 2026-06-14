@@ -1,4 +1,5 @@
 import { API_URL } from "./config";
+import { apiFetch } from "./errors";
 
 export type DashboardUserInfo = {
   id: number;
@@ -39,17 +40,11 @@ export type DashboardSummary = {
 };
 
 export async function getDashboardSummary(token: string): Promise<DashboardSummary> {
-  const response = await fetch(`${API_URL}/api/dashboard/summary`, {
+  const response = await apiFetch(`${API_URL}/api/dashboard/summary`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    const message = typeof error?.detail === "string" ? error.detail : "Không thể tải dashboard summary. Vui lòng thử lại.";
-    throw new Error(message);
-  }
+  }, "Kh\u00f4ng th\u1ec3 t\u1ea3i dashboard.");
 
   return response.json() as Promise<DashboardSummary>;
 }

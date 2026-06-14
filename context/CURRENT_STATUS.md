@@ -300,3 +300,52 @@ Checks passed: compileall, pytest, pip check, frontend lint and frontend build.
 
 Current: Phase 6 - Beta Launch & Real User Feedback.
 Next recommended: use production beta feedback to calibrate thresholds and collect exact expected/actual scores for future Matching V3.
+
+## Phase 6.6 Update: CareerOS Benchmark V1 - Completed
+
+Date: 2026-06-15
+
+Phase 6.6 created the official internal benchmark documentation for Resume/JD Matching regression review. No backend feature, frontend feature, API contract, database schema or matcher logic was changed.
+
+Completed:
+
+- Added `docs/benchmark-v1/` as the internal benchmark source for U01-U10 beta cases.
+- Recorded V1 scores and V2 target ranges for exact fit, same-role different-stack, role mismatch, cross-domain transferable and non-IT mismatch cases.
+- Added manual evaluation rules for future matcher changes.
+- Added `backend/scripts/run_benchmark_notes.py` to print the manual rerun checklist without calling API/database.
+
+Current: Phase 6 - Beta Launch & Real User Feedback.
+Next recommended: rerun U01-U10 with current production-like data and fill exact V2 scores before Matching V3 calibration.
+
+## Phase 6.7 Update: Final Beta Stabilization - Completed
+
+Date: 2026-06-15
+
+Phase 6.7 focused on beta stabilization without adding a major feature, changing API contracts or changing the database schema.
+
+Completed:
+
+- Audited the core user flow from auth, profile, documents, analysis, roadmap, interview and dashboard.
+- Added a shared frontend API error helper so network/API failures show friendlier messages across product flows.
+- Polished dashboard hierarchy with MVP flow progress, refresh CTA and dynamic next actions based on actual user state.
+- Reduced dashboard dependence on backend recommendation text matching for routing.
+- Added `context/BETA_RELEASE_CHECKLIST.md` as the final manual beta release gate.
+
+Current: Phase 6 - Beta Launch & Real User Feedback.
+Next recommended: run the beta release checklist on production Render + Vercel with a fresh user account.
+
+## Phase 7.1 Update: Production Beta Validation & Data Cleanup - Completed
+
+Date: 2026-06-15
+
+Phase 7.1 focused on production beta validation and small defensive cleanup. No new feature, database schema change, API contract change or backend logic change was introduced.
+
+Completed:
+
+- Audited the beta workflow across auth, profile, documents, analysis, roadmap, interview, dashboard and feedback.
+- Fixed corrupted Vietnamese frontend API error/fallback messages by rewriting them with Unicode-safe strings.
+- Fixed corrupted Vietnamese examples in `context/BETA_RELEASE_CHECKLIST.md`.
+- Added `context/PHASE_7_1_VALIDATION_REPORT.md`.
+
+Current readiness: beta-ready for a controlled production smoke test. Next recommended: run the production beta checklist with a fresh user, then continue to Phase 7.2 benchmark rerun and Matching V2.1 calibration.
+

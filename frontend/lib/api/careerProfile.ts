@@ -1,4 +1,5 @@
 import { API_URL } from "./config";
+import { apiFetch } from "./errors";
 
 export type CareerProfile = {
   id: number;
@@ -25,20 +26,14 @@ export type CareerProfilePayload = {
 };
 
 async function request<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await apiFetch(`${API_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       ...init.headers
     }
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    const message = typeof error?.detail === "string" ? error.detail : "Không thể xử lý hồ sơ nghề nghiệp. Vui lòng thử lại.";
-    throw new Error(message);
-  }
+  }, "Kh\u00f4ng th\u1ec3 x\u1eed l\u00fd h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p.");
 
   return response.json() as Promise<T>;
 }

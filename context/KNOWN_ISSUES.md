@@ -133,3 +133,15 @@ Remaining UX/testing limitations:
 - Thresholds for role alignment, stack penalty and confidence were calibrated pragmatically from beta patterns, not from a labeled dataset.
 - `MatchAnalysis` still stores only base fields, so V2 debug fields are recomputed for history from current matcher logic.
 - Frontend debug labels for new V2 technical scoring fields intentionally use short English technical labels to avoid encoding regressions in the current source state.
+
+## Phase 6.7 Remaining Beta Limitations
+
+- Phase 6.7 improved frontend API error messages, but there is still no automated browser/E2E suite.
+- Dashboard has a retry CTA; other data-heavy pages still rely mostly on page reload/navigation after a failed initial load.
+- Production beta release still requires manual validation using `context/BETA_RELEASE_CHECKLIST.md`.
+- No new monitoring or external error tracking was added.
+
+## Phase 7.1 Validation Notes
+
+Phase 7.1 fixed frontend API error message encoding and beta checklist encoding. Remaining beta limitations are unchanged: no automated E2E suite, no Alembic migration system, manual production smoke test still required, and some backend-generated Vietnamese strings may still need a dedicated cleanup pass.
+
