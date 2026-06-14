@@ -365,6 +365,8 @@ def _semantic_score(resume_text: str, job_description_text: str) -> tuple[float,
 def _get_semantic_model() -> Any | None:
     global SEMANTIC_MODEL, SEMANTIC_MODEL_LOAD_ERROR
 
+    if not _sentence_transformers_enabled():
+        return None
     if SEMANTIC_MODEL is not None:
         return SEMANTIC_MODEL
     if SEMANTIC_MODEL_LOAD_ERROR is not None:
@@ -379,6 +381,10 @@ def _get_semantic_model() -> Any | None:
     except Exception as exc:
         SEMANTIC_MODEL_LOAD_ERROR = str(exc)
         return None
+
+
+def _sentence_transformers_enabled() -> bool:
+    return os.getenv("SENTENCE_TRANSFORMERS_ENABLED", "false").strip().lower() == "true"
 
 
 def _build_summary(

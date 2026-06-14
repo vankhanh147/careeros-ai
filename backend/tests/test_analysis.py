@@ -1,4 +1,7 @@
+import builtins
+
 from conftest import auth_headers, create_analysis, upload_resume
+from app.services import resume_job_matcher
 
 
 def test_create_resume_and_jd_then_run_analysis(client):
@@ -45,3 +48,25 @@ def test_analysis_missing_job_description_returns_404(client):
 
     assert response.status_code == 404
     assert response.json()["code"] == "JOB_DESCRIPTION_NOT_FOUND"
+
+
+def test_sentence_transformers_disabled_uses_rule_based_scoring(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    resume_job_matcher.SEMANTIC_MODEL = None
+    resume_job_matcher.SEMANTIC_MODEL_LOAD_ERROR = None
+    original_import = builtins.__import__
+
+    def fail_on_sentence_transformers(name, *args, **kwargs):
+        if name.startswith("sentence_transformers"):
+            raise AssertionError("sentence_transformers should not be imported when disabled")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", fail_on_sentence_transformers)
+
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Python FastAPI PostgreSQL REST API JWT backend project with authentication and SQL database.",
+        "Backend role requiring Python FastAPI PostgreSQL Docker REST API JWT authentication.",
+    )
+
+    assert result["scoring_breakdown"]["semantic_score"] == 0.0
+    assert result["match_score"] > 0

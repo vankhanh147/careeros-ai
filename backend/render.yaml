@@ -22,6 +22,8 @@ services:
         sync: false
       - key: SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY
         value: "true"
+      - key: SENTENCE_TRANSFORMERS_ENABLED
+        value: "false"
       - key: LOG_LEVEL
         value: INFO
       - key: SUPABASE_URL

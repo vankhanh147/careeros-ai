@@ -46,9 +46,10 @@ Debug fields, semantic breakdown, prioritized skill gaps and improvement plan ar
 
 - `sentence-transformers` dependency exists.
 - Model: `all-MiniLM-L6-v2`.
-- Default env is `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true`.
-- If the model is not cached locally, semantic score is unavailable and system falls back to rule-based scoring.
-- This is intentional for deploy stability, but matching quality depends on model availability.
+- Default production env should keep `SENTENCE_TRANSFORMERS_ENABLED=false` on Render Free to avoid importing/loading torch and the semantic model before the app can open its port.
+- `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` prevents runtime model downloads when semantic matching is enabled.
+- If semantic matching is disabled or unavailable, semantic score is unavailable and the system falls back to rule-based scoring.
+- This is intentional for deploy stability, but matching quality depends on model availability when semantic matching is enabled.
 
 ## PDF/Text Extraction Limits
 

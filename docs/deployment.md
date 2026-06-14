@@ -52,6 +52,7 @@ JWT_SECRET_KEY=<strong-random-secret>
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 BACKEND_CORS_ORIGINS=https://your-vercel-app.vercel.app,http://localhost:3000
+SENTENCE_TRANSFORMERS_ENABLED=false
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 LOG_LEVEL=INFO
 SUPABASE_URL=https://your-project.supabase.co
@@ -84,12 +85,13 @@ CareerOS AI uses rule-based matching plus optional Sentence Transformers semanti
 For Render free or small instances, keep:
 
 ```text
+SENTENCE_TRANSFORMERS_ENABLED=false
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 ```
 
-With this setting, the backend does not try to download `all-MiniLM-L6-v2` at runtime. If the model is not cached, matching falls back to rule-based scoring and the app remains usable.
+With `SENTENCE_TRANSFORMERS_ENABLED=false`, the backend does not import or load `sentence-transformers` at startup or during matching. Matching falls back to rule-based scoring and the app can open its Render port quickly.
 
-Only set `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=false` if the deployment environment has enough resources and network access for model download.
+Only set `SENTENCE_TRANSFORMERS_ENABLED=true` when the deployment environment has enough memory/CPU for model load. If enabled, keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` unless you intentionally allow runtime model download.
 
 ### Supabase Storage
 
@@ -154,7 +156,8 @@ Backend:
 - `DATABASE_URL` points to PostgreSQL/Supabase.
 - `JWT_SECRET_KEY` is strong and not committed.
 - `BACKEND_CORS_ORIGINS` includes the Vercel production URL.
-- `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` for stable MVP deploy unless model hosting is prepared.
+- `SENTENCE_TRANSFORMERS_ENABLED=false` for stable Render Free deploy unless model hosting is prepared.
+- `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` to avoid runtime model downloads when semantic matching is enabled.
 - Supabase Storage env vars point to the private `career-documents` bucket.
 
 Frontend:

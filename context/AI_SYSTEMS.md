@@ -51,8 +51,9 @@ Scoring hiện tại:
 Semantic similarity:
 
 - Model name: `all-MiniLM-L6-v2`.
-- Env `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY` mặc định true.
-- Nếu model không có trong local cache hoặc import/load lỗi, service fallback về rule-based scoring.
+- Env `SENTENCE_TRANSFORMERS_ENABLED` controls whether semantic matching is allowed. Keep it `false` on Render Free so the backend does not import/load `sentence-transformers` or torch before opening its port.
+- Env `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY` mặc định true and only matters when semantic matching is enabled.
+- Nếu semantic matching disabled, model không có trong local cache hoặc import/load lỗi, service fallback về rule-based scoring.
 - Không download model mặc định trong production/runtime nếu local-only true.
 
 Skill gap priority:

@@ -27,7 +27,7 @@ DATABASE_URL="postgresql://postgres:<password>@<host>:5432/postgres"
 
 Set a strong `JWT_SECRET_KEY` before using the backend beyond local development.
 
-Semantic matching uses `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` by default so local development does not hang when Hugging Face is blocked. Set it to `"false"` in an environment with internet access if you want the backend to download `all-MiniLM-L6-v2` automatically on first use.
+Semantic matching is optional. Keep `SENTENCE_TRANSFORMERS_ENABLED="false"` on Render Free or any small instance so the app does not import/load `sentence-transformers` during runtime unless explicitly enabled. When disabled, CareerOS AI falls back to rule-based matching. If you enable semantic matching, keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` unless the environment has enough resources and network access to download `all-MiniLM-L6-v2`.
 
 
 ## Error handling and logging
@@ -96,6 +96,7 @@ JWT_SECRET_KEY="<strong-random-secret>"
 JWT_ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES="60"
 BACKEND_CORS_ORIGINS="https://your-vercel-app.vercel.app,http://localhost:3000"
+SENTENCE_TRANSFORMERS_ENABLED="false"
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"
 LOG_LEVEL="INFO"
 SUPABASE_URL="https://your-project.supabase.co"
@@ -107,7 +108,7 @@ SUPABASE_STORAGE_BUCKET="career-documents"
 
 Do not commit `.env`. Keep production secrets in Render environment variables.
 
-`sentence-transformers` can be heavy on Render free instances. Keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` for stable MVP deploys; if the model is not available locally, CareerOS AI falls back to rule-based matching.
+`sentence-transformers` can be heavy on Render free instances. Keep `SENTENCE_TRANSFORMERS_ENABLED="false"` for stable MVP deploys; this prevents importing/loading the semantic model and uses rule-based scoring. Only set it to `"true"` when model hosting/resources are prepared. `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY="true"` prevents runtime model downloads when semantic matching is enabled.
 
 File uploads use Supabase Storage when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured. The bucket should be private; the backend uses the service role key server-side only. If Supabase Storage env vars are missing, local development falls back to `backend/uploads`.
 
@@ -161,7 +162,7 @@ Uploaded CV/JD files are stored in Supabase Storage when configured, using paths
 - `POST /api/analysis/resume-job-match`
 - `GET /api/analysis/history`
 
-Resume ↔ Job Matching extracts PDF text with `pypdf`, keeps rule-based technology skill matching, and adds optional semantic similarity through `sentence-transformers` using the lightweight `all-MiniLM-L6-v2` model. If the model/library cannot load, the matcher automatically falls back to rule-based scoring. The response includes `resume_text_preview`, `jd_text_preview`, detected skills and `scoring_breakdown` with `skill_score`, `keyword_score`, `semantic_score`, `length_sanity` and `final_score`. It does not use an LLM API in this phase.
+Resume ↔ Job Matching extracts PDF text with `pypdf`, keeps rule-based technology skill matching, and optionally adds semantic similarity through `sentence-transformers` using `all-MiniLM-L6-v2`. Semantic matching is lazy-loaded only when `SENTENCE_TRANSFORMERS_ENABLED="true"`. If disabled or unavailable, the matcher falls back to rule-based scoring. The response includes `resume_text_preview`, `jd_text_preview`, detected skills and `scoring_breakdown` with `skill_score`, `keyword_score`, `semantic_score`, `length_sanity` and `final_score`. It does not use an LLM API in this phase.
 
 ## Manual test with curl
 
