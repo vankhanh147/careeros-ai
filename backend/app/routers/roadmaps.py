@@ -15,6 +15,7 @@ from app.schemas.roadmap import LearningRoadmapResponse, RoadmapGenerateRequest
 from app.services.resume_job_matcher import analyze_resume_job_match
 from app.services.roadmap_generator import build_roadmap_from_analysis, build_roadmap_from_profile
 from app.services.security import get_current_user
+from app.services.usage_tracking import EVENT_ROADMAP_GENERATED, track_usage_event
 
 router = APIRouter(prefix="/api/roadmaps", tags=["roadmaps"])
 logger = logging.getLogger("careeros_api.roadmaps")
@@ -72,6 +73,12 @@ def generate_learning_roadmap(
         db.commit()
         db.refresh(roadmap)
         logger.info("Roadmap generated", extra={"user_id": current_user.id, "roadmap_id": roadmap.id})
+        track_usage_event(
+            db,
+            user_id=current_user.id,
+            event_type=EVENT_ROADMAP_GENERATED,
+            metadata={"roadmap_id": roadmap.id, "analysis_id": roadmap.analysis_id, "timeline": roadmap.timeline},
+        )
         return _to_response(roadmap)
     except AppError:
         raise

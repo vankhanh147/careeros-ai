@@ -16,9 +16,9 @@ os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"] = "60"
 os.environ["BACKEND_CORS_ORIGINS"] = "http://localhost:3000"
 os.environ["SENTENCE_TRANSFORMERS_ENABLED"] = "false"
 os.environ["SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY"] = "true"
-os.environ.pop("SUPABASE_URL", None)
-os.environ.pop("SUPABASE_SERVICE_ROLE_KEY", None)
-os.environ.pop("SUPABASE_STORAGE_BUCKET", None)
+os.environ["SUPABASE_URL"] = ""
+os.environ["SUPABASE_SERVICE_ROLE_KEY"] = ""
+os.environ["SUPABASE_STORAGE_BUCKET"] = ""
 
 from app.database import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402

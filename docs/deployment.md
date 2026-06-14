@@ -5,7 +5,9 @@ This guide prepares the current MVP for Render backend deployment and Vercel fro
 ## Deployment Targets
 
 - Backend: Render Web Service
+- Backend production URL: `https://careeros-ai-backend.onrender.com`
 - Frontend: Vercel
+- Frontend production URL: `https://careeros-ai-bay.vercel.app`
 - Database: PostgreSQL / Supabase
 - Storage: Supabase Storage private bucket, with local filesystem fallback for development
 
@@ -41,6 +43,18 @@ python-3.11.9
 
 The repository includes `backend/runtime.txt` and `backend/render.yaml` as a baseline Render configuration. Manual setup in the Render dashboard is also fine.
 
+Current production backend:
+
+```text
+https://careeros-ai-backend.onrender.com
+```
+
+Render should expose the app on:
+
+```text
+PORT=10000
+```
+
 ### Backend Environment Variables
 
 Set these variables in Render:
@@ -51,13 +65,15 @@ DATABASE_URL=postgresql://...
 JWT_SECRET_KEY=<strong-random-secret>
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
-BACKEND_CORS_ORIGINS=https://your-vercel-app.vercel.app,http://localhost:3000
+BACKEND_CORS_ORIGINS=https://careeros-ai-bay.vercel.app,http://localhost:3000
 SENTENCE_TRANSFORMERS_ENABLED=false
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 LOG_LEVEL=INFO
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 SUPABASE_STORAGE_BUCKET=career-documents
+PYTHON_VERSION=3.11.9
+PORT=10000
 ```
 
 Do not commit `.env`. Keep secrets only in Render environment variables.
@@ -73,7 +89,7 @@ http://localhost:3000
 Production frontend origin:
 
 ```text
-https://your-vercel-app.vercel.app
+https://careeros-ai-bay.vercel.app
 ```
 
 `BACKEND_CORS_ORIGINS` supports multiple comma-separated origins. Avoid `*` in production because authenticated requests use JWT and should be limited to known frontend domains.
@@ -140,10 +156,87 @@ npm run build
 Set this environment variable in Vercel:
 
 ```text
-NEXT_PUBLIC_API_URL=https://your-render-backend-url.onrender.com
+NEXT_PUBLIC_API_URL=https://careeros-ai-backend.onrender.com
 ```
 
 Do not use `http://localhost:8000` in production. The frontend API clients read the backend URL from `NEXT_PUBLIC_API_URL`.
+
+Current production frontend:
+
+```text
+https://careeros-ai-bay.vercel.app
+```
+
+## Production CORS Setup
+
+Render `BACKEND_CORS_ORIGINS` must include the deployed Vercel domain:
+
+```text
+https://careeros-ai-bay.vercel.app
+```
+
+For local development, keep:
+
+```text
+http://localhost:3000
+```
+
+Recommended production value while still allowing local debugging:
+
+```text
+BACKEND_CORS_ORIGINS=https://careeros-ai-bay.vercel.app,http://localhost:3000
+```
+
+If the frontend can load but authenticated API calls fail in production, check this value first.
+
+## Production Troubleshooting Notes
+
+### Render Python 3.14 issue
+
+Render may select a too-new Python version if runtime is not pinned. CareerOS AI should use:
+
+```text
+PYTHON_VERSION=3.11.9
+```
+
+The backend also includes `backend/runtime.txt` with:
+
+```text
+python-3.11.9
+```
+
+### Render port scan timeout
+
+Render expects the app to bind to the configured port quickly. Use:
+
+```text
+PORT=10000
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+If Render reports port scan timeout, confirm the start command uses `$PORT` and that startup is not blocked by heavy model loading.
+
+### Sentence Transformers on Render Free
+
+Render Free can be too small for eager `sentence-transformers` or `torch` loading. Keep semantic matching disabled in production Free deployments:
+
+```text
+SENTENCE_TRANSFORMERS_ENABLED=false
+SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
+```
+
+With this setup, the app does not import/load Sentence Transformers at startup. Resume/JD matching falls back to rule-based scoring.
+
+### CORS with Vercel
+
+If login/register works locally but fails on Vercel, verify:
+
+```text
+BACKEND_CORS_ORIGINS=https://careeros-ai-bay.vercel.app,http://localhost:3000
+NEXT_PUBLIC_API_URL=https://careeros-ai-backend.onrender.com
+```
+
+After changing Vercel env vars, redeploy the frontend.
 
 ## Deployment Checklist
 
@@ -153,6 +246,7 @@ Backend:
 - Build command is `pip install -r requirements.txt`.
 - Start command is `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
 - `/health` returns ok after deploy.
+- Production health check works at `https://careeros-ai-backend.onrender.com/health`.
 - `DATABASE_URL` points to PostgreSQL/Supabase.
 - `JWT_SECRET_KEY` is strong and not committed.
 - `BACKEND_CORS_ORIGINS` includes the Vercel production URL.
@@ -163,9 +257,15 @@ Backend:
 Frontend:
 
 - Vercel project root is `frontend/`.
-- `NEXT_PUBLIC_API_URL` points to Render backend URL.
+- `NEXT_PUBLIC_API_URL=https://careeros-ai-backend.onrender.com`.
 - `npm run build` passes locally before deploy.
 - Login/register/dashboard calls work against deployed backend.
+
+Production smoke test checklist lives in:
+
+```text
+docs/production-smoke-test.md
+```
 
 Before real beta:
 

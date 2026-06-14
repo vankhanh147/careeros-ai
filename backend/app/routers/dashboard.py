@@ -8,7 +8,9 @@ from app.models.job_description import JobDescription
 from app.models.learning_roadmap import LearningRoadmap
 from app.models.match_analysis import MatchAnalysis
 from app.models.resume import Resume
+from app.models.usage_event import UsageEvent
 from app.models.user import User
+from app.models.user_feedback import UserFeedback
 from app.schemas.dashboard import (
     DashboardLatestAnalysis,
     DashboardLatestInterview,
@@ -16,8 +18,15 @@ from app.schemas.dashboard import (
     DashboardSummaryResponse,
     DashboardUserInfo,
 )
+from app.schemas.usage import UsageSummaryResponse
 from app.services.resume_job_matcher import analyze_resume_job_match
 from app.services.security import get_current_user
+from app.services.usage_tracking import (
+    EVENT_ANALYSIS_GENERATED,
+    EVENT_INTERVIEW_STARTED,
+    EVENT_RESUME_UPLOADED,
+    EVENT_ROADMAP_GENERATED,
+)
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
@@ -72,6 +81,23 @@ def get_dashboard_summary(
             has_interview=latest_interview is not None,
         ),
     )
+
+
+@router.get("/usage-summary", response_model=UsageSummaryResponse)
+def get_usage_summary(
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+) -> UsageSummaryResponse:
+    return UsageSummaryResponse(
+        total_resume_uploads=_count_usage_events(db, current_user.id, EVENT_RESUME_UPLOADED),
+        total_analysis=_count_usage_events(db, current_user.id, EVENT_ANALYSIS_GENERATED),
+        total_roadmaps=_count_usage_events(db, current_user.id, EVENT_ROADMAP_GENERATED),
+        total_interviews=_count_usage_events(db, current_user.id, EVENT_INTERVIEW_STARTED),
+        total_feedback=db.query(UserFeedback).filter(UserFeedback.user_id == current_user.id).count(),
+    )
+
+
+def _count_usage_events(db: Session, user_id: int, event_type: str) -> int:
+    return db.query(UsageEvent).filter(UsageEvent.user_id == user_id, UsageEvent.event_type == event_type).count()
 
 
 def _has_profile_data(profile: CareerProfile | None) -> bool:

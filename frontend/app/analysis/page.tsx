@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { getAnalysisHistory, runResumeJobMatch, type MatchAnalysis } from "@/lib/api/analysis";
 import { getMyJobDescriptions, getMyResumes, type JobDescription, type Resume } from "@/lib/api/documents";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { FeedbackBlock } from "@/components/FeedbackBlock";
 
 export default function AnalysisPage() {
   const router = useRouter();
@@ -201,7 +202,12 @@ export default function AnalysisPage() {
         <div className="min-w-0 space-y-6">
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
           {statusMessage ? <p className="rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
-          {currentResult ? <AnalysisResultCard analysis={currentResult} title="Kết quả vừa tạo" /> : <EmptyResult />}
+          {currentResult ? (
+            <>
+              <AnalysisResultCard analysis={currentResult} title="Kết quả vừa tạo" />
+              <FeedbackBlock token={token} feedbackType="analysis" />
+            </>
+          ) : <EmptyResult />}
         </div>
       </section>
 

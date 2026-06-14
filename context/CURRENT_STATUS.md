@@ -205,15 +205,23 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Added nullable `JobDescription.storage_path` for uploaded JD file tracking.
 - Added mocked storage tests; pytest does not require real Supabase.
 
+### Phase 5.6: Production Smoke Test & Deploy Notes - Completed
+
+- Documented production backend URL: `https://careeros-ai-backend.onrender.com`.
+- Documented production frontend URL: `https://careeros-ai-bay.vercel.app`.
+- Updated deployment notes for Render env, Vercel env, production CORS and troubleshooting.
+- Added production smoke test checklist in `docs/production-smoke-test.md`.
+- Recorded known deployment caveats: Render Python runtime pin, `PORT=10000`, Sentence Transformers disabled on Render Free and Vercel CORS origin.
+
 ## Current Phase
 
-Current phase: Phase 5 - Production Readiness. Phase 5.5 Supabase Storage migration is complete.
+Current phase: Phase 5 - Production Readiness. Phase 5.6 production smoke test and deploy notes are complete.
 
 Đã hoàn thành UI/UX polish, backend validation/error/logging foundation, backend automated test foundation, deployment preparation và Supabase Storage migration. Các phần production readiness còn lại chưa hoàn thành đầy đủ: security review sâu hơn, monitoring/logging nâng cao, migration system và test coverage mở rộng cho edge cases.
 
 ## Next Recommended Phase
 
-Recommended next: Phase 5.6 - Security review, migration system and beta deployment verification.
+Recommended next: Phase 5.7 - Security review, migration system, monitoring and beta hardening.
 
 Ưu tiên tiếp theo:
 
@@ -223,3 +231,23 @@ Recommended next: Phase 5.6 - Security review, migration system and beta deploym
 - Rà file upload security và storage cleanup.
 - Verify deploy thật trên Render/Vercel với Supabase PostgreSQL.
 - Thêm migration system như Alembic trước khi schema thay đổi thường xuyên.
+
+## Phase 6.1 Update: Beta Instrumentation & Feedback Foundation - Completed
+
+Date: 2026-06-14
+
+Phase 6.1 is complete.
+
+- Added minimal PostgreSQL-backed usage tracking with `UsageEvent`.
+- Tracked only core beta events: `resume_uploaded`, `jd_uploaded`, `analysis_generated`, `roadmap_generated`, `interview_started`, `interview_completed`, `feedback_submitted`.
+- Added simple feedback storage with `UserFeedback`.
+- Added `POST /api/feedback`.
+- Added `GET /api/dashboard/usage-summary`.
+- Added compact frontend feedback blocks after analysis result, roadmap generation and completed interview.
+- No external analytics service, websocket, background queue or complex analytics dashboard was added.
+
+Current phase:
+
+- Current: Phase 6 - Beta Launch & Real User Feedback.
+- Completed: Phase 6.1 Beta Instrumentation & Feedback Foundation.
+- Next recommended: Phase 6.2 - run beta smoke tests with real users, review feedback signals and fix highest-impact friction.

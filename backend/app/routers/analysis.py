@@ -14,6 +14,7 @@ from app.schemas.analysis import MatchAnalysisResponse, ResumeJobMatchRequest
 from app.services.resume_job_matcher import analyze_resume_job_match, extract_pdf_text
 from app.services.security import get_current_user
 from app.services.storage import readable_file_path
+from app.services.usage_tracking import EVENT_ANALYSIS_GENERATED, track_usage_event
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 logger = logging.getLogger("careeros_api.analysis")
@@ -60,6 +61,12 @@ def run_resume_job_match(
         db.commit()
         db.refresh(analysis)
         logger.info("Analysis completed", extra={"user_id": current_user.id, "analysis_id": analysis.id})
+        track_usage_event(
+            db,
+            user_id=current_user.id,
+            event_type=EVENT_ANALYSIS_GENERATED,
+            metadata={"resume_id": resume.id, "jd_id": job_description.id, "score": analysis.match_score},
+        )
         return _to_response(analysis, result)
     except FileNotFoundError as exc:
         logger.warning("Analysis failed: resume file missing", extra={"user_id": current_user.id, "resume_id": resume.id})

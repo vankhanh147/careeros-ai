@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import { generateRoadmap, getMyRoadmaps, type LearningRoadmap } from "@/lib/api/roadmaps";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { FeedbackBlock } from "@/components/FeedbackBlock";
 
 export default function RoadmapPage() {
   const router = useRouter();
@@ -188,7 +189,12 @@ export default function RoadmapPage() {
         </div>
 
         <div className="min-w-0 space-y-6">
-          {currentRoadmap ? <RoadmapCard roadmap={currentRoadmap} title="Roadmap hiện tại" /> : <EmptyRoadmap />}
+          {currentRoadmap ? (
+            <>
+              <RoadmapCard roadmap={currentRoadmap} title="Roadmap hiện tại" />
+              <FeedbackBlock token={token} feedbackType="roadmap" />
+            </>
+          ) : <EmptyRoadmap />}
         </div>
       </section>
 

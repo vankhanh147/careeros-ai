@@ -168,3 +168,41 @@ API clients:
 - AI logic stays in `backend/app/services`, not in routers or frontend.
 - DB models stay in `backend/app/models`; Pydantic schemas stay in `backend/app/schemas`.
 - No repository pattern currently; routers use SQLAlchemy Session directly for MVP simplicity.
+
+## Phase 6.1 Beta Instrumentation Architecture
+
+CareerOS AI now has minimal beta instrumentation using the existing FastAPI + SQLAlchemy + PostgreSQL stack.
+
+Backend additions:
+
+- `backend/app/models/usage_event.py`
+- `backend/app/models/user_feedback.py`
+- `backend/app/schemas/feedback.py`
+- `backend/app/schemas/usage.py`
+- `backend/app/services/usage_tracking.py`
+- `backend/app/routers/feedback.py`
+
+Frontend additions:
+
+- `frontend/lib/api/feedback.ts`
+- `frontend/components/FeedbackBlock.tsx`
+
+Tracking flow:
+
+1. Backend tracks core product events only after successful user actions.
+2. Events are stored in `usage_events` with `user_id`, `event_type`, small JSON metadata and `created_at`.
+3. Tracked events are limited to resume upload, JD upload, analysis generation, roadmap generation, interview start, interview completion and feedback submission.
+4. `GET /api/dashboard/usage-summary` returns simple founder metrics for the current user.
+
+Feedback flow:
+
+1. Frontend shows a compact feedback block after analysis result, roadmap result and completed interview.
+2. User selects useful/not useful and can optionally add a short comment.
+3. Frontend calls `POST /api/feedback`.
+4. Backend stores `UserFeedback` and tracks `feedback_submitted`.
+
+Safety boundary:
+
+- No external analytics service.
+- No websocket or queue.
+- No CV/JD full content, file bytes, JWT token, secrets or unnecessary PII in usage metadata.

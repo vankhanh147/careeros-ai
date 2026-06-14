@@ -78,3 +78,14 @@ Do not add unless explicitly requested:
 
 - `context/*.md` is the long-term memory and single source of truth for future phases.
 - Agents should read `AGENTS.md`, `README.md`, `roadmap.md` and all relevant `context/*.md` before implementing new features.
+
+## Phase 6.1 Beta Instrumentation Decisions
+
+- Use existing PostgreSQL/Supabase database for beta instrumentation.
+- Do not add external analytics services such as Mixpanel, PostHog, Google Analytics or Segment at this stage.
+- Do not add websockets, background queues or event streaming for MVP beta tracking.
+- Track only the agreed core events: `resume_uploaded`, `jd_uploaded`, `analysis_generated`, `roadmap_generated`, `interview_started`, `interview_completed`, `feedback_submitted`.
+- Store only minimal metadata such as resource IDs, scores, timeline, target role and question count.
+- Do not store CV/JD full content, file bytes, JWT tokens, secrets or unnecessary PII in usage metadata.
+- Feedback uses a simple useful/not useful boolean, not 1-5 star ratings.
+- Founder metrics remain simple counters through `GET /api/dashboard/usage-summary`; no analytics dashboard/charts yet.

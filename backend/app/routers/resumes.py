@@ -12,6 +12,7 @@ from app.models.user import User
 from app.schemas.resume import ResumeResponse
 from app.services.security import get_current_user
 from app.services.storage import build_resume_storage_path, get_storage_service
+from app.services.usage_tracking import EVENT_RESUME_UPLOADED, track_usage_event
 
 router = APIRouter(prefix="/api/resumes", tags=["resumes"])
 logger = logging.getLogger("careeros_api.resumes")
@@ -71,6 +72,7 @@ async def upload_resume(
     db.commit()
     db.refresh(resume)
     logger.info("Resume uploaded", extra={"user_id": current_user.id, "resume_id": resume.id})
+    track_usage_event(db, user_id=current_user.id, event_type=EVENT_RESUME_UPLOADED, metadata={"resume_id": resume.id})
     return resume
 
 

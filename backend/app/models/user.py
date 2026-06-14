@@ -35,3 +35,5 @@ class User(Base):
     match_analyses = relationship("MatchAnalysis", back_populates="user", cascade="all, delete-orphan")
     learning_roadmaps = relationship("LearningRoadmap", back_populates="user", cascade="all, delete-orphan")
     interview_sessions = relationship("InterviewSession", back_populates="user", cascade="all, delete-orphan")
+    usage_events = relationship("UsageEvent", back_populates="user", cascade="all, delete-orphan")
+    feedback = relationship("UserFeedback", back_populates="user", cascade="all, delete-orphan")

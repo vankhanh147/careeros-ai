@@ -15,6 +15,7 @@ from app.schemas.interview import InterviewAnswerRequest, InterviewSessionRespon
 from app.services.interview_evaluator import build_session_summary, evaluate_interview_answer
 from app.services.interview_generator import generate_interview_questions, infer_target_role
 from app.services.security import get_current_user
+from app.services.usage_tracking import EVENT_INTERVIEW_COMPLETED, EVENT_INTERVIEW_STARTED, track_usage_event
 
 router = APIRouter(prefix="/api/interviews", tags=["interviews"])
 logger = logging.getLogger("careeros_api.interviews")
@@ -49,6 +50,12 @@ def start_interview_session(
         db.commit()
         db.refresh(session)
         logger.info("Interview session started", extra={"user_id": current_user.id, "session_id": session.id})
+        track_usage_event(
+            db,
+            user_id=current_user.id,
+            event_type=EVENT_INTERVIEW_STARTED,
+            metadata={"session_id": session.id, "analysis_id": session.analysis_id, "target_role": session.target_role},
+        )
         return _to_response(session)
     except Exception as exc:
         logger.exception("Interview start failed", extra={"user_id": current_user.id, "analysis_id": payload.analysis_id})
@@ -112,6 +119,12 @@ def finish_interview_session(session_id: int, current_user: User = Depends(get_c
         db.commit()
         db.refresh(session)
         logger.info("Interview session finished", extra={"user_id": current_user.id, "session_id": session.id})
+        track_usage_event(
+            db,
+            user_id=current_user.id,
+            event_type=EVENT_INTERVIEW_COMPLETED,
+            metadata={"session_id": session.id, "question_count": len(session.answers), "score": session.score},
+        )
         return _to_response(session)
     except Exception as exc:
         logger.exception("Interview finish failed", extra={"user_id": current_user.id, "session_id": session.id})

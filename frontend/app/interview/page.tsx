@@ -14,6 +14,7 @@ import {
   type InterviewSession
 } from "@/lib/api/interviews";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { FeedbackBlock } from "@/components/FeedbackBlock";
 
 export default function InterviewPage() {
   const router = useRouter();
@@ -252,17 +253,20 @@ export default function InterviewPage() {
 
         <div className="min-w-0 space-y-6">
           {currentSession ? (
-            <InterviewSessionPanel
-              session={currentSession}
-              currentQuestion={currentQuestion}
-              answeredCount={answeredCount}
-              answerText={answerText}
-              setAnswerText={setAnswerText}
-              isAnswering={isAnswering}
-              isFinishing={isFinishing}
-              onAnswer={handleAnswerQuestion}
-              onFinish={() => void handleFinishInterview()}
-            />
+            <>
+              <InterviewSessionPanel
+                session={currentSession}
+                currentQuestion={currentQuestion}
+                answeredCount={answeredCount}
+                answerText={answerText}
+                setAnswerText={setAnswerText}
+                isAnswering={isAnswering}
+                isFinishing={isFinishing}
+                onAnswer={handleAnswerQuestion}
+                onFinish={() => void handleFinishInterview()}
+              />
+              {currentSession.status === "finished" ? <FeedbackBlock token={token} feedbackType="interview" /> : null}
+            </>
           ) : (
             <EmptyInterview />
           )}

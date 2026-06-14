@@ -241,3 +241,59 @@ Relationships:
 - No migration system yet; adding/changing columns currently relies on `create_all`, which does not handle migrations for existing databases.
 - Supabase Storage is wired for Resume and uploaded JD files. Local upload folders are fallback only.
 - Existing databases from before Phase 5.5 need `ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS storage_path VARCHAR(500);`.
+
+## Phase 6.1 Database Additions
+
+### `UsageEvent`
+
+File: `backend/app/models/usage_event.py`
+
+Table: `usage_events`
+
+Fields:
+
+- `id`: primary key, indexed.
+- `user_id`: FK `users.id`, indexed, cascade delete, required.
+- `event_type`: string(100), indexed, required.
+- `metadata`: text, nullable, JSON-encoded metadata.
+- `created_at`: timezone DateTime, server default now.
+
+Tracked event types:
+
+- `resume_uploaded`
+- `jd_uploaded`
+- `analysis_generated`
+- `roadmap_generated`
+- `interview_started`
+- `interview_completed`
+- `feedback_submitted`
+
+Notes:
+
+- Python model attribute is `metadata_json` because `metadata` is reserved by SQLAlchemy, but the database column name is `metadata`.
+- Metadata intentionally stores only minimal IDs, score, timeline, target role or question count.
+- CV/JD full content, file bytes, JWT tokens and secrets are not tracked.
+
+### `UserFeedback`
+
+File: `backend/app/models/user_feedback.py`
+
+Table: `user_feedback`
+
+Fields:
+
+- `id`: primary key, indexed.
+- `user_id`: FK `users.id`, indexed, cascade delete, required.
+- `feedback_type`: string(50), indexed, required. Allowed API values: `analysis`, `roadmap`, `interview`.
+- `useful`: boolean, required.
+- `comment`: text, nullable.
+- `created_at`: timezone DateTime, server default now.
+
+Relationship update:
+
+- `User` now has one-to-many `usage_events`.
+- `User` now has one-to-many `feedback`.
+
+Migration note:
+
+- Existing production databases from before Phase 6.1 need new `usage_events` and `user_feedback` tables.

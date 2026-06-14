@@ -13,6 +13,7 @@ from app.schemas.job_description import JobDescriptionCreateRequest, JobDescript
 from app.services.resume_job_matcher import extract_pdf_text, extract_txt_text
 from app.services.security import get_current_user
 from app.services.storage import build_job_description_storage_path, get_storage_service
+from app.services.usage_tracking import EVENT_JD_UPLOADED, track_usage_event
 
 router = APIRouter(prefix="/api/job-descriptions", tags=["job-descriptions"])
 logger = logging.getLogger("careeros_api.job_descriptions")
@@ -131,6 +132,12 @@ async def upload_job_description(
     db.commit()
     db.refresh(job_description)
     logger.info("Job description uploaded", extra={"user_id": current_user.id, "job_description_id": job_description.id})
+    track_usage_event(
+        db,
+        user_id=current_user.id,
+        event_type=EVENT_JD_UPLOADED,
+        metadata={"job_description_id": job_description.id, "file_type": extension.lstrip(".")},
+    )
     return job_description
 
 

@@ -99,7 +99,20 @@ Phase 5.2 added Python standard logging for startup, auth, upload, analysis, roa
 
 ## Deployment Limitations
 
-Phase 5.4 adds deployment documentation and baseline Render/Vercel configuration. A real production deploy still needs environment variables set in Render/Vercel, Supabase PostgreSQL credentials, production CORS origins, and a decision for durable upload storage.
+Phase 5.4 adds deployment documentation and baseline Render/Vercel configuration. Phase 5.6 records the current production endpoints and smoke test checklist.
+
+Current production endpoints:
+
+- Backend: `https://careeros-ai-backend.onrender.com`
+- Frontend: `https://careeros-ai-bay.vercel.app`
+
+Known production deployment caveats:
+
+- Render should pin Python with `PYTHON_VERSION=3.11.9` or `backend/runtime.txt` containing `python-3.11.9`; newer Python such as 3.14 can break dependency compatibility.
+- Render should use `PORT=10000` and start with `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+- Render Free should keep `SENTENCE_TRANSFORMERS_ENABLED=false` to avoid port scan timeout from heavy model/torch loading.
+- Production CORS must include `https://careeros-ai-bay.vercel.app`; otherwise Vercel frontend calls can fail even when backend health check passes.
+- `docs/production-smoke-test.md` is currently a manual checklist; there is no automated production E2E smoke suite yet.
 ## Error Handling Limitation
 
 Phase 5.2 adds consistent `{detail, code}` error responses. Existing frontend remains compatible because `detail` is still a string. Error messages are intentionally short English strings for backend consistency. Full i18n of backend error messages is not implemented.

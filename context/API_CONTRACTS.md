@@ -411,3 +411,86 @@ Common codes include:
 - `INTERVIEW_SESSION_NOT_FOUND`
 - `INTERVIEW_NO_ANSWERS`
 - `INTERNAL_SERVER_ERROR`
+
+## Phase 6.1 API Additions
+
+## Feedback
+
+Router: `backend/app/routers/feedback.py`
+
+### `POST /api/feedback`
+
+JWT protected.
+
+Request:
+
+```json
+{
+  "feedback_type": "analysis",
+  "useful": true,
+  "comment": "Optional short comment"
+}
+```
+
+Allowed `feedback_type` values:
+
+- `analysis`
+- `roadmap`
+- `interview`
+
+Behavior:
+
+- Stores simple useful/not useful feedback for current user.
+- Optional `comment` is trimmed and limited to 2000 characters.
+- Tracks `feedback_submitted`.
+- Does not store CV/JD content or extra PII.
+
+Response includes:
+
+- `id`
+- `user_id`
+- `feedback_type`
+- `useful`
+- `comment`
+- `created_at`
+
+## Usage Summary
+
+Router: `backend/app/routers/dashboard.py`
+
+### `GET /api/dashboard/usage-summary`
+
+JWT protected.
+
+Response:
+
+```json
+{
+  "total_resume_uploads": 1,
+  "total_analysis": 1,
+  "total_roadmaps": 1,
+  "total_interviews": 1,
+  "total_feedback": 1
+}
+```
+
+Behavior:
+
+- Counts only the current user's usage events and feedback rows.
+- `total_resume_uploads` counts `resume_uploaded`.
+- `total_analysis` counts `analysis_generated`.
+- `total_roadmaps` counts `roadmap_generated`.
+- `total_interviews` counts `interview_started`.
+- `total_feedback` counts rows in `user_feedback`.
+
+## Usage Tracking Side Effects
+
+The following existing endpoints now insert minimal usage events after successful action:
+
+- `POST /api/resumes/upload` -> `resume_uploaded`
+- `POST /api/job-descriptions/upload` -> `jd_uploaded`
+- `POST /api/analysis/resume-job-match` -> `analysis_generated`
+- `POST /api/roadmaps/generate` -> `roadmap_generated`
+- `POST /api/interviews/start` -> `interview_started`
+- `POST /api/interviews/{session_id}/finish` -> `interview_completed`
+- `POST /api/feedback` -> `feedback_submitted`

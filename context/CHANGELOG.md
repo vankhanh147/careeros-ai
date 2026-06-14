@@ -157,3 +157,21 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Analysis can download resume PDFs from Supabase Storage when local file paths do not exist.
 - Delete Resume/JD removes the Supabase object when a storage path exists.
 - Added mocked storage tests so pytest does not depend on real Supabase.
+
+## Phase 5.6: Production Smoke Test & Deploy Notes
+
+- Documented production backend URL: `https://careeros-ai-backend.onrender.com`.
+- Documented production frontend URL: `https://careeros-ai-bay.vercel.app`.
+- Updated `docs/deployment.md` with Render env, Vercel env, production CORS and deployment troubleshooting.
+- Added `docs/production-smoke-test.md` with checklist for Register/Login, Profile, Upload CV/JD, Analysis, Roadmap, Mock Interview, Dashboard, Delete CV/JD and Supabase Storage upload/delete.
+- Recorded troubleshooting notes for Render Python 3.14 issue, `PYTHON_VERSION=3.11.9`, `PORT=10000`, Sentence Transformers disabled on Render Free and Vercel CORS origin.
+
+## Phase 6.1: Beta Instrumentation & Feedback Foundation
+
+- Added `UsageEvent` model for minimal event tracking in PostgreSQL.
+- Added `UserFeedback` model for useful/not useful feedback.
+- Tracked core beta events for resume upload, JD upload, analysis generation, roadmap generation, interview start, interview completion and feedback submission.
+- Added `POST /api/feedback`.
+- Added `GET /api/dashboard/usage-summary`.
+- Added compact frontend feedback UI after analysis, roadmap and completed interview outputs.
+- Added backend tests for feedback creation, unauthorized feedback, usage summary and tracking flow.
