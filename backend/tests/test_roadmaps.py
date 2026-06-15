@@ -90,7 +90,7 @@ def test_roadmap_v2_profile_fallback_is_lower_personalization(client):
 
     assert response.status_code == 201, response.text
     roadmap = response.json()
-    assert "profile only" in roadmap["summary"].lower()
+    assert "h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p" in roadmap["summary"].lower()
     assert len(roadmap["items"]) == 2
     assert all(item["practice_task"] for item in roadmap["items"])
     assert all(item["cv_evidence_output"] for item in roadmap["items"])
