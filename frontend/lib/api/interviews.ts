@@ -6,9 +6,14 @@ export type InterviewAnswer = {
   session_id: number;
   question: string;
   expected_keywords: string[];
+  question_reason?: string | null;
+  related_skills?: string[];
+  question_category?: string | null;
+  better_answer_hint?: string | null;
   user_answer: string | null;
   score: number | null;
   feedback: string | null;
+  feedback_category?: string | null;
   created_at: string;
 };
 

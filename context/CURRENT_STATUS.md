@@ -395,3 +395,18 @@ Completed:
 - Frontend `/roadmap` displays the new item fields with a priority badge.
 - Added/updated tests for Roadmap V2 item fields, priority and fallback behavior.
 - Added `context/PHASE_7_4_ROADMAP_V2_REPORT.md`.
+
+## Phase 7.5 Update: Mock Interview Question Bank V2 - Completed
+
+Date: 2026-06-16
+
+Phase 7.5 improves Mock Interview quality without LLM API, voice/video, database schema change or breaking API contract.
+
+Completed:
+
+- Expanded deterministic question bank for Backend .NET, Backend Node.js, Backend Python/FastAPI, Frontend React, AI/Data, Mobile Flutter and General software intern.
+- Added adaptive question selection from missing/critical skills, latest roadmap interview prep, target role and stack context.
+- Added additive response metadata for question reason, related skills, category and better answer hints.
+- Improved answer feedback with categories such as `thi?u concept`, `thi?u v? d? project`, `thi?u tradeoff`, `tr? l?i qu? chung` and `c? d?u hi?u hi?u ??ng`.
+- Polished frontend `/interview` to show role/stack context, why a question is asked, related skills and feedback category.
+- Added `context/PHASE_7_5_INTERVIEW_V2_REPORT.md`.

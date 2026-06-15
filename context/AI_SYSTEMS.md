@@ -209,3 +209,17 @@ Each roadmap item can include:
 When generated from analysis, the roadmap uses prioritized missing skills, critical skills, confidence, resume feedback hints, role family and stack groups. Profile-only roadmap remains supported but is labeled as lower personalization.
 
 Safety remains explicit: no fake metrics, no claim that the user already has a missing skill, no hiring promise and no long curriculum generation.
+
+## Phase 7.5 Mock Interview Question Bank V2
+
+Mock Interview is now an adaptive deterministic question system.
+
+Current behavior:
+
+- Uses role/stack question banks for Backend .NET, Backend Node.js, Backend Python/FastAPI, Frontend React, AI/Data, Mobile Flutter and General software intern.
+- Prioritizes missing or critical skills from analysis when available.
+- Can use latest roadmap `interview_prep` questions as practice prompts.
+- Adds question metadata: reason, related skills, category and better answer hint.
+- Feedback classifies answers as too short, missing concept, missing project example, missing tradeoff, too generic or showing correct understanding.
+
+Still not used: LLM API, voice/video interview, fine-tuning or conversational agent workflow.

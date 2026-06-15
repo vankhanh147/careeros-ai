@@ -36,9 +36,14 @@ class InterviewAnswerResponse(BaseModel):
     session_id: int
     question: str
     expected_keywords: list[str]
+    question_reason: str | None = None
+    related_skills: list[str] = Field(default_factory=list)
+    question_category: str | None = None
+    better_answer_hint: str | None = None
     user_answer: str | None
     score: float | None
     feedback: str | None
+    feedback_category: str | None = None
     created_at: datetime
 
 

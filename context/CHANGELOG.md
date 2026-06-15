@@ -250,3 +250,10 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Updated frontend `/roadmap` to display priority badge, practice task, CV evidence and interview prep.
 - Added Roadmap V2 tests for practical output fields, priority handling and profile-only fallback.
 - Added `context/PHASE_7_4_ROADMAP_V2_REPORT.md`.
+
+## 2026-06-16 - Phase 7.5 Mock Interview Question Bank V2
+
+- Expanded Mock Interview question bank by role/stack: Backend .NET, Backend Node.js, Backend Python/FastAPI, Frontend React, AI/Data, Mobile Flutter and General software intern.
+- Added adaptive question selection using missing skills, analysis context and latest roadmap interview prep.
+- Added additive interview answer metadata in API responses without database schema changes.
+- Improved feedback classification and frontend `/interview` display.

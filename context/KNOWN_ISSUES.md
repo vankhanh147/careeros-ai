@@ -160,3 +160,10 @@ Phase 7.1 fixed frontend API error message encoding and beta checklist encoding.
 - Roadmap does not yet track completion/progress.
 - Roadmap cannot verify whether the user completed practice tasks after generation.
 - Roadmap quality depends on analysis quality, resume feedback quality and extracted CV/JD text quality.
+
+## Phase 7.5 Mock Interview V2 Limitations
+
+- Interview Question Bank V2 is still deterministic and template-based.
+- Question selection quality depends on existing analysis, roadmap and extracted CV/JD text quality.
+- Feedback classification is heuristic and should be treated as coaching signal, not a final interview grade.
+- No voice/video, follow-up questions or conversational memory is implemented.
