@@ -349,3 +349,17 @@ Completed:
 
 Current readiness: beta-ready for a controlled production smoke test. Next recommended: run the production beta checklist with a fresh user, then continue to Phase 7.2 benchmark rerun and Matching V2.1 calibration.
 
+## Phase 7.2 Update: Benchmark Rerun & Matching Calibration V2.1 - Completed
+
+Date: 2026-06-15
+
+Phase 7.2 reran CareerOS Benchmark U01-U10 against the current deterministic matcher using canonical benchmark texts derived from the documented beta cases. Sentence Transformers was disabled to match the Render Free production setting.
+
+Completed:
+
+- Filled V2.1 benchmark scores for U01-U10 in `docs/benchmark-v1/expected_results_v2.md`.
+- Added `context/PHASE_7_2_CALIBRATION_REPORT.md`.
+- Applied small matcher calibration only: negation-aware skill/evidence detection and specialized mobile/ai-data role selection when backend signals are only generic.
+- Added regression tests for negated skill mentions and mobile cross-domain role detection.
+
+Current readiness: Matching V2.1 is acceptable for controlled beta. Next recommended: collect real production disagreement cases before any further matcher tuning.

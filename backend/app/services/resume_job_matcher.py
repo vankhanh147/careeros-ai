@@ -105,6 +105,10 @@ STACK_GROUPS = {
 
 GENERIC_SKILLS = {"git", "github", "api", "rest api", "database", "testing", "unit testing", "html", "css"}
 EVIDENCE_TERMS = {"project", "projects", "experience", "internship", "built", "developed", "implemented", "deployed", "designed", "maintained", "integrated", "production", "system", "platform", "du an", "kinh nghiem", "xay dung", "trien khai"}
+NEGATION_TERMS = {
+    "no", "not", "without", "lack", "lacks", "missing",
+    "khong", "kh?ng", "chua", "ch?a", "khong co", "kh?ng c?",
+}
 
 def extract_pdf_text(storage_path: str) -> str:
     file_path = Path(storage_path)
@@ -244,7 +248,19 @@ def _normalize(text: str) -> str:
 def _contains_skill(normalized_text: str, skill: str) -> bool:
     normalized_skill = _normalize(skill)
     pattern = rf"(?<![a-z0-9+#.]){re.escape(normalized_skill)}(?![a-z0-9+#.])"
-    return re.search(pattern, normalized_text) is not None
+    return any(not _is_negated_match(normalized_text, match.start()) for match in re.finditer(pattern, normalized_text))
+
+
+def _is_negated_match(normalized_text: str, start_index: int) -> bool:
+    prefix = normalized_text[max(0, start_index - 70):start_index]
+    sentence_breaks = [prefix.rfind(";"), prefix.rfind("\n"), prefix.rfind(". ")]
+    clause_start = max(sentence_breaks)
+    clause = prefix[clause_start + 1:] if clause_start >= 0 else prefix
+    tokens = re.findall(r"[a-zA-Z?-?0-9]+", clause.lower())
+    if not tokens:
+        return False
+    joined = " ".join(tokens[-8:])
+    return any(term in joined for term in NEGATION_TERMS)
 
 
 def _keywords(text: str) -> Counter[str]:
@@ -323,6 +339,13 @@ def _detect_role_family(text: str, skills: list[str]) -> dict[str, Any]:
     if not scores:
         return {"primary": "general software", "detected": ["general software"], "signals": {"general software": []}}
     primary = sorted(scores.items(), key=lambda item: item[1], reverse=True)[0][0]
+    strong_backend_signals = {"backend", "server", "fastapi", "django", "flask", "node.js", "express", "spring", ".net", "asp.net core", "java", "c#"}
+    has_strong_backend = any(_contains_skill(normalized, signal) for signal in strong_backend_signals)
+    if primary == "backend" and not has_strong_backend:
+        if scores.get("mobile", 0) >= 2:
+            primary = "mobile"
+        elif scores.get("ai/data", 0) >= 2:
+            primary = "ai/data"
     detected = [role for role, score in sorted(scores.items(), key=lambda item: item[1], reverse=True) if score > 0]
     return {"primary": primary, "detected": detected, "signals": signals}
 
@@ -424,7 +447,11 @@ def _evidence_score(resume_text: str, matched_skills: list[str]) -> tuple[float,
 
 def _skill_evidence_level(text: str, skill: str) -> tuple[str, int]:
     normalized = _normalize(text)
-    occurrences = list(re.finditer(re.escape(_normalize(skill)), normalized))
+    occurrences = [
+        occurrence
+        for occurrence in re.finditer(re.escape(_normalize(skill)), normalized)
+        if not _is_negated_match(normalized, occurrence.start())
+    ]
     if not occurrences:
         return "weak", 0
     evidence_hits = 0

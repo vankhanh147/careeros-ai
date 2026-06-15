@@ -130,3 +130,30 @@ def test_matching_v2_short_cv_has_low_confidence(monkeypatch):
     assert result["match_score"] <= 65
 
 
+def test_matching_v21_ignores_negated_skills(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Marketing resume with campaign planning. No backend, no API implementation, no C#, no .NET and no authentication experience.",
+        "Backend role requiring C# .NET ASP.NET Core REST API JWT authentication PostgreSQL SQL Docker.",
+    )
+
+    breakdown = result["scoring_breakdown"]
+    assert breakdown["resume_role_family"] == "general software"
+    assert breakdown["confidence"] == "low"
+    assert "c#" not in result["matched_skills"]
+    assert ".net" not in result["matched_skills"]
+    assert result["match_score"] < 25
+
+
+def test_matching_v21_detects_mobile_cross_domain(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Mobile developer resume. Projects: built Flutter mobile app with Firebase authentication and REST API integration.",
+        "AI intern role requiring Python machine learning NLP pandas numpy scikit-learn and model evaluation.",
+    )
+
+    breakdown = result["scoring_breakdown"]
+    assert breakdown["resume_role_family"] == "mobile"
+    assert breakdown["jd_role_family"] == "ai/data"
+    assert result["match_score"] < 60
+

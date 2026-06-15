@@ -223,3 +223,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `context/PHASE_7_1_VALIDATION_REPORT.md`.
 - No backend logic, API contract, database schema or product feature was changed.
 
+## Phase 7.2: Benchmark Rerun & Matching Calibration V2.1
+
+- Reran U01-U10 benchmark using canonical benchmark texts and production-like semantic-disabled matcher mode.
+- Updated `docs/benchmark-v1/expected_results_v2.md` with V2.1 scores, confidence, role families, stack groups, critical skills and notes.
+- Updated `docs/benchmark-v1/benchmark_cases.md` with known V2.1 scores.
+- Added `context/PHASE_7_2_CALIBRATION_REPORT.md`.
+- Calibrated matcher lightly to ignore negated skill mentions such as `no C#`, `no React`, `without Docker` and `kh?ng c? backend`.
+- Adjusted role-family detection so mobile and ai/data profiles are not mislabeled as backend when backend evidence is only generic API/auth/data overlap.
+- Added backend regression tests for negation handling and mobile cross-domain matching.

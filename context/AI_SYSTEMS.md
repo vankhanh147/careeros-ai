@@ -170,3 +170,12 @@ Before changing `backend/app/services/resume_job_matcher.py`, future agents shou
 
 This benchmark does not add a new AI module, does not use LLM APIs and does not require fine-tuning. It is a product regression guardrail for the existing deterministic matcher.
 
+## Phase 7.2 Matching Scoring V2.1
+
+Matching V2.1 is the current benchmarked matcher baseline. It keeps the Phase 6.5 deterministic architecture and adds only small calibration:
+
+- Negation-aware skill detection: skill mentions inside short negated clauses such as `no C#`, `no React`, `without Docker` or `kh?ng c? backend` do not count as matched skills.
+- Negation-aware evidence scoring: negated skill mentions do not increase evidence score.
+- Specialized role-family correction: mobile and ai/data profiles can become primary role family when backend signals are only generic API/auth/data overlap and no strong backend stack signal exists.
+
+Benchmark U01-U10 now has V2.1 scores recorded in `docs/benchmark-v1/expected_results_v2.md`. Semantic similarity remains optional and was disabled for the V2.1 benchmark rerun to mirror Render Free production settings.

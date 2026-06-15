@@ -106,3 +106,10 @@ Do not add unless explicitly requested:
 - Exact-fit cases should stay high, role mismatch and non-IT mismatch should stay lower, and same-role different-stack cases should remain in a realistic middle range.
 - Benchmarking remains manual for now; no API automation, database schema change or new analytics system was added in Phase 6.6.
 
+## Phase 7.2 Matching Calibration Decisions
+
+- Matching V2.1 becomes the current benchmark baseline for Resume/JD Matching.
+- Keep calibration pragmatic and deterministic; do not add a new model or LLM API to solve benchmark drift.
+- Negated skill mentions should not count as skill evidence.
+- Generic API/auth/database overlap should not automatically make mobile or data profiles look like backend profiles.
+- Future matcher changes must compare against the V2.1 U01-U10 scores in `docs/benchmark-v1/expected_results_v2.md`.
