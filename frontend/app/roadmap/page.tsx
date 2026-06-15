@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { FeedbackBlock } from "@/components/FeedbackBlock";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
-import { generateRoadmap, getMyRoadmaps, type LearningRoadmap } from "@/lib/api/roadmaps";
+import { generateRoadmap, getMyRoadmaps, updateLatestRoadmapItemCompletion, type LearningRoadmap } from "@/lib/api/roadmaps";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 const TEXT = {
@@ -47,7 +47,15 @@ const TEXT = {
   actions: "H\u00e0nh \u0111\u1ed9ng",
   interviewPrep: "Chu\u1ea9n b\u1ecb ph\u1ecfng v\u1ea5n",
   interviewFallback: "B\u1ea1n \u0111\u00e3 x\u00e2y d\u1ef1ng g\u00ec v\u00e0 c\u00f3 tradeoff k\u1ef9 thu\u1eadt n\u00e0o c\u00f3 th\u1ec3 gi\u1ea3i th\u00edch?",
-  expectedOutput: "K\u1ebft qu\u1ea3 mong \u0111\u1ee3i"
+  expectedOutput: "K\u1ebft qu\u1ea3 mong \u0111\u1ee3i",
+  progressSummary: "\u0110\u00e3 ho\u00e0n th\u00e0nh",
+  roadmapItems: "m\u1ee5c roadmap",
+  completedBadge: "\u0110\u00e3 ho\u00e0n th\u00e0nh",
+  incompleteBadge: "Ch\u01b0a ho\u00e0n th\u00e0nh",
+  markComplete: "\u0110\u00e1nh d\u1ea5u ho\u00e0n th\u00e0nh",
+  markIncomplete: "\u0110\u00e1nh d\u1ea5u ch\u01b0a ho\u00e0n th\u00e0nh",
+  updatingProgress: "\u0110ang c\u1eadp nh\u1eadt...",
+  progressUpdateError: "Kh\u00f4ng th\u1ec3 c\u1eadp nh\u1eadt tr\u1ea1ng th\u00e1i roadmap. Vui l\u00f2ng th\u1eed l\u1ea1i."
 };
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -68,6 +76,7 @@ export default function RoadmapPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [isFetching, setIsFetching] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [updatingItemIndex, setUpdatingItemIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -146,6 +155,27 @@ export default function RoadmapPage() {
       setError(err instanceof Error ? err.message : TEXT.createError);
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function handleToggleRoadmapItem(itemIndex: number, completed: boolean) {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setUpdatingItemIndex(itemIndex);
+
+    try {
+      const updatedRoadmap = await updateLatestRoadmapItemCompletion(token, itemIndex, completed);
+      setCurrentRoadmap(updatedRoadmap);
+      setRoadmaps((current) => current.map((roadmap) => (roadmap.id === updatedRoadmap.id ? updatedRoadmap : roadmap)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : TEXT.progressUpdateError);
+    } finally {
+      setUpdatingItemIndex(null);
     }
   }
 
@@ -237,7 +267,12 @@ export default function RoadmapPage() {
         <div className="min-w-0 space-y-6">
           {currentRoadmap ? (
             <>
-              <RoadmapCard roadmap={currentRoadmap} title={TEXT.currentRoadmap} />
+              <RoadmapCard
+                roadmap={currentRoadmap}
+                title={TEXT.currentRoadmap}
+                onToggleItem={currentRoadmap.id === roadmaps[0]?.id ? handleToggleRoadmapItem : undefined}
+                updatingItemIndex={updatingItemIndex}
+              />
               <FeedbackBlock token={token} feedbackType="roadmap" />
             </>
           ) : <EmptyRoadmap />}
@@ -271,7 +306,9 @@ function EmptyRoadmap() {
   );
 }
 
-function RoadmapCard({ roadmap, title, compact = false, onSelect }: { roadmap: LearningRoadmap; title?: string; compact?: boolean; onSelect?: () => void }) {
+function RoadmapCard({ roadmap, title, compact = false, onSelect, onToggleItem, updatingItemIndex }: { roadmap: LearningRoadmap; title?: string; compact?: boolean; onSelect?: () => void; onToggleItem?: (itemIndex: number, completed: boolean) => void; updatingItemIndex?: number | null }) {
+  const completedCount = roadmap.items.filter((item) => item.completed === true).length;
+
   return (
     <article className="min-w-0 rounded-lg border border-white/10 bg-slate-950/60 p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -287,11 +324,22 @@ function RoadmapCard({ roadmap, title, compact = false, onSelect }: { roadmap: L
       </div>
 
       <p className="mt-4 break-words text-sm leading-6 text-slate-300">{roadmap.summary}</p>
+      {roadmap.items.length > 0 ? (
+        <p className="mt-3 rounded-md border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100">
+          {TEXT.progressSummary} {completedCount}/{roadmap.items.length} {TEXT.roadmapItems}
+        </p>
+      ) : null}
 
       {!compact ? (
         <div className="mt-5 space-y-4">
-          {roadmap.items.map((item) => (
-            <RoadmapItemCard key={`${roadmap.id}-${item.week}-${item.focus}`} item={item} />
+          {roadmap.items.map((item, itemIndex) => (
+            <RoadmapItemCard
+              key={`${roadmap.id}-${item.week}-${item.focus}-${itemIndex}`}
+              item={item}
+              itemIndex={itemIndex}
+              onToggleItem={onToggleItem}
+              isUpdating={updatingItemIndex === itemIndex}
+            />
           ))}
         </div>
       ) : (
@@ -306,8 +354,9 @@ function RoadmapCard({ roadmap, title, compact = false, onSelect }: { roadmap: L
   );
 }
 
-function RoadmapItemCard({ item }: { item: LearningRoadmap["items"][number] }) {
+function RoadmapItemCard({ item, itemIndex, onToggleItem, isUpdating = false }: { item: LearningRoadmap["items"][number]; itemIndex: number; onToggleItem?: (itemIndex: number, completed: boolean) => void; isUpdating?: boolean }) {
   const priority = item.priority ?? "medium";
+  const isCompleted = item.completed === true;
   const priorityClass = {
     high: "border-red-300/30 bg-red-300/10 text-red-100",
     medium: "border-amber-300/30 bg-amber-300/10 text-amber-100",
@@ -321,9 +370,14 @@ function RoadmapItemCard({ item }: { item: LearningRoadmap["items"][number] }) {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{item.week}</p>
           <h4 className="mt-1 break-words text-base font-semibold text-slate-100">{item.learning_focus ?? item.focus}</h4>
         </div>
-        <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] ${priorityClass}`}>
-          {PRIORITY_LABELS[priority] ?? priority}
-        </span>
+        <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+          <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] ${priorityClass}`}>
+            {PRIORITY_LABELS[priority] ?? priority}
+          </span>
+          <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold ${isCompleted ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-100" : "border-slate-300/20 bg-slate-300/10 text-slate-300"}`}>
+            {isCompleted ? TEXT.completedBadge : TEXT.incompleteBadge}
+          </span>
+        </div>
       </div>
 
       <div className="mt-4">
@@ -365,6 +419,17 @@ function RoadmapItemCard({ item }: { item: LearningRoadmap["items"][number] }) {
       <div className="mt-4 rounded-md border border-emerald-300/20 bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">
         <span className="font-semibold">{TEXT.expectedOutput}:</span> {item.expected_output}
       </div>
+
+      {onToggleItem ? (
+        <button
+          type="button"
+          disabled={isUpdating}
+          onClick={() => onToggleItem(itemIndex, !isCompleted)}
+          className="mt-4 w-full rounded-md border border-cyan-300/30 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        >
+          {isUpdating ? TEXT.updatingProgress : isCompleted ? TEXT.markIncomplete : TEXT.markComplete}
+        </button>
+      ) : null}
     </section>
   );
 }

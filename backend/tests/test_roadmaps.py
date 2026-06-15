@@ -96,3 +96,43 @@ def test_roadmap_v2_profile_fallback_is_lower_personalization(client):
     assert all(item["cv_evidence_output"] for item in roadmap["items"])
     assert all(item["interview_prep"] for item in roadmap["items"])
 
+
+def test_update_latest_roadmap_item_completion(client):
+    headers = auth_headers(client)
+    create_profile(client, headers)
+    analysis = create_analysis(client, headers)
+    response = client.post(
+        "/api/roadmaps/generate",
+        json={"analysis_id": analysis["id"], "timeline": "2 tuan"},
+        headers=headers,
+    )
+    assert response.status_code == 201, response.text
+    roadmap = response.json()
+    assert roadmap["items"][0]["completed"] is False
+
+    update_response = client.patch(
+        "/api/roadmaps/latest/items/0/completion",
+        json={"completed": True},
+        headers=headers,
+    )
+
+    assert update_response.status_code == 200, update_response.text
+    updated = update_response.json()
+    assert updated["id"] == roadmap["id"]
+    assert updated["items"][0]["completed"] is True
+
+
+def test_update_latest_roadmap_item_completion_rejects_missing_item(client):
+    headers = auth_headers(client)
+    create_profile(client, headers)
+    response = client.post("/api/roadmaps/generate", json={"timeline": "1 tuan"}, headers=headers)
+    assert response.status_code == 201, response.text
+
+    update_response = client.patch(
+        "/api/roadmaps/latest/items/99/completion",
+        json={"completed": True},
+        headers=headers,
+    )
+
+    assert update_response.status_code == 404
+

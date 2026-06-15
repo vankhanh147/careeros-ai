@@ -19,6 +19,8 @@ export type DashboardLatestRoadmap = {
   title: string;
   timeline: string;
   created_at: string;
+  completed_items: number;
+  total_items: number;
 };
 
 export type DashboardLatestInterview = {
@@ -37,6 +39,9 @@ export type DashboardSummary = {
   latest_roadmap: DashboardLatestRoadmap | null;
   latest_interview: DashboardLatestInterview | null;
   recommended_next_actions: string[];
+  has_new_resume_after_analysis: boolean;
+  should_rerun_analysis: boolean;
+  learning_loop_summary: string | null;
 };
 
 export async function getDashboardSummary(token: string): Promise<DashboardSummary> {

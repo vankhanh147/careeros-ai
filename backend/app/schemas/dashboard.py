@@ -21,6 +21,8 @@ class DashboardLatestRoadmap(BaseModel):
     title: str
     timeline: str
     created_at: datetime
+    completed_items: int = 0
+    total_items: int = 0
 
 
 class DashboardLatestInterview(BaseModel):
@@ -39,3 +41,6 @@ class DashboardSummaryResponse(BaseModel):
     latest_roadmap: DashboardLatestRoadmap | None
     latest_interview: DashboardLatestInterview | None
     recommended_next_actions: list[str]
+    has_new_resume_after_analysis: bool = False
+    should_rerun_analysis: bool = False
+    learning_loop_summary: str | None = None

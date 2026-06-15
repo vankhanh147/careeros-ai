@@ -1,4 +1,4 @@
-# CURRENT_STATUS.md
+﻿# CURRENT_STATUS.md
 
 Tài liệu này là snapshot trạng thái thật của CareerOS AI sau Phase 5.1. Future agents phải đọc file này cùng các file context khác trước khi làm feature mới.
 
@@ -410,3 +410,20 @@ Completed:
 - Improved answer feedback with categories such as `thi?u concept`, `thi?u v? d? project`, `thi?u tradeoff`, `tr? l?i qu? chung` and `c? d?u hi?u hi?u ??ng`.
 - Polished frontend `/interview` to show role/stack context, why a question is asked, related skills and feedback category.
 - Added `context/PHASE_7_5_INTERVIEW_V2_REPORT.md`.
+
+## Phase 7.6 Update: User Learning Loop & Progress Tracking Lite - Completed
+
+Date: 2026-06-16
+
+Phase 7.6 adds a lightweight learning loop without turning CareerOS AI into a task manager and without changing the database schema.
+
+Completed:
+
+- Added roadmap item completion using the existing `LearningRoadmap.items` JSON payload.
+- Added `PATCH /api/roadmaps/latest/items/{item_index}/completion` for the latest roadmap only.
+- Frontend `/roadmap` now lets users mark current roadmap items complete/incomplete and shows a simple `?? ho?n th?nh X/Y m?c roadmap` summary.
+- Dashboard summary now includes learning-loop signals: latest roadmap progress, `has_new_resume_after_analysis`, `should_rerun_analysis` and `learning_loop_summary`.
+- Dashboard next actions now suggest rerunning analysis after a new CV upload or after roadmap progress, and suggest Mock Interview after roadmap creation.
+- Added backend tests for completion updates and dashboard learning-loop signals.
+
+Current readiness: CareerOS AI now has a simple return loop for beta users: learn from roadmap, update CV, rerun matching and practice interview.

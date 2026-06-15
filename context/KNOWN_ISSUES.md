@@ -167,3 +167,10 @@ Phase 7.1 fixed frontend API error message encoding and beta checklist encoding.
 - Question selection quality depends on existing analysis, roadmap and extracted CV/JD text quality.
 - Feedback classification is heuristic and should be treated as coaching signal, not a final interview grade.
 - No voice/video, follow-up questions or conversational memory is implemented.
+
+## Phase 7.6 Learning Loop Limitations
+
+- Roadmap progress is intentionally Lite and stored inside existing roadmap item JSON.
+- Only the latest roadmap can be updated; older roadmap history is read-only in the UI.
+- Completion is self-reported by the user and is not verified against actual CV changes or project artifacts.
+- There is no progress table, streak, badge, notification or complex productivity system.

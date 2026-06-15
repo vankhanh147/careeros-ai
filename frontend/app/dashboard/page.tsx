@@ -70,7 +70,15 @@ const TEXT = {
   inProgress: "\u0110ang luy\u1ec7n",
   finished: "Ho\u00e0n t\u1ea5t",
   none: "Ch\u01b0a c\u00f3",
-  unfinished: "Ch\u01b0a ho\u00e0n th\u00e0nh"
+  unfinished: "Ch\u01b0a ho\u00e0n th\u00e0nh",
+  roadmapProgress: "Ti\u1ebfn \u0111\u1ed9 roadmap",
+  rerunAnalysis: "Ph\u00e2n t\u00edch l\u1ea1i",
+  cvUpdatedTitle: "B\u1ea1n \u0111\u00e3 c\u1eadp nh\u1eadt CV m\u1edbi",
+  cvUpdatedDescription: "N\u00ean ch\u1ea1y l\u1ea1i ph\u00e2n t\u00edch CV \u2194 JD \u0111\u1ec3 k\u1ebft qu\u1ea3 matching ph\u1ea3n \u00e1nh CV m\u1edbi nh\u1ea5t.",
+  roadmapCompletedTitle: "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh m\u1ed9t ph\u1ea7n roadmap",
+  roadmapCompletedDescription: "H\u00e3y c\u1eadp nh\u1eadt CV v\u00e0 ch\u1ea1y l\u1ea1i matching \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9.",
+  interviewAfterRoadmapTitle: "Luy\u1ec7n Mock Interview \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9",
+  interviewAfterRoadmapDescription: "B\u1ea1n \u0111\u00e3 c\u00f3 analysis v\u00e0 roadmap. H\u00e3y luy\u1ec7n ph\u1ecfng v\u1ea5n \u0111\u1ec3 test c\u00e1c skill \u0111ang c\u1ea3i thi\u1ec7n."
 };
 
 export default function DashboardPage() {
@@ -223,10 +231,16 @@ export default function DashboardPage() {
 
         <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
           <DashboardFeatureCard title={TEXT.careerProfile} status={summary.has_career_profile ? TEXT.profileReady : TEXT.profileIncomplete} description={TEXT.profileCardDescription} href="/profile" cta={TEXT.updateProfile} />
-          <DashboardFeatureCard title="CV & JD" status={`${summary.resume_count} CV ? ${summary.job_description_count} JD`} description={TEXT.cvJdCardDescription} href="/documents" cta={TEXT.manageCvJd} />
-          <DashboardFeatureCard title="Resume ? JD Matching" status={summary.latest_analysis ? `${TEXT.matchScore} ${summary.latest_analysis.match_score}%` : TEXT.noAnalysis} description={summary.latest_analysis?.skill_gap_summary ?? TEXT.analysisCardDescription} href="/analysis" cta={TEXT.analyzeCvJd} />
-          <DashboardFeatureCard title="Roadmap" status={summary.latest_roadmap ? summary.latest_roadmap.timeline : TEXT.noRoadmap} description={summary.latest_roadmap?.title ?? TEXT.roadmapCardDescription} href="/roadmap" cta={TEXT.createRoadmap} />
-          <DashboardFeatureCard title="Mock Interview" status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} ? ${formatInterviewScore(summary.latest_interview.score)}` : TEXT.noInterview} description={summary.latest_interview ? `${TEXT.latest}: ${summary.latest_interview.target_role}` : TEXT.interviewCardDescription} href="/interview" cta={TEXT.practiceInterview} />
+          <DashboardFeatureCard title="CV & JD" status={`${summary.resume_count} CV \u00b7 ${summary.job_description_count} JD`} description={TEXT.cvJdCardDescription} href="/documents" cta={TEXT.manageCvJd} />
+          <DashboardFeatureCard title="Resume ↔ JD Matching" status={summary.latest_analysis ? `${TEXT.matchScore} ${summary.latest_analysis.match_score}%` : TEXT.noAnalysis} description={summary.latest_analysis?.skill_gap_summary ?? TEXT.analysisCardDescription} href="/analysis" cta={TEXT.analyzeCvJd} />
+          <DashboardFeatureCard
+            title="Roadmap"
+            status={summary.latest_roadmap ? summary.latest_roadmap.timeline : TEXT.noRoadmap}
+            description={summary.learning_loop_summary ?? summary.latest_roadmap?.title ?? TEXT.roadmapCardDescription}
+            href="/roadmap"
+            cta={TEXT.createRoadmap}
+          />
+          <DashboardFeatureCard title="Mock Interview" status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} \u00b7 ${formatInterviewScore(summary.latest_interview.score)}` : TEXT.noInterview} description={summary.latest_interview ? `${TEXT.latest}: ${summary.latest_interview.target_role}` : TEXT.interviewCardDescription} href="/interview" cta={TEXT.practiceInterview} />
         </div>
 
         <section className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -245,6 +259,11 @@ export default function DashboardPage() {
               <>
                 <h3 className="break-words text-lg font-semibold text-slate-100">{summary.latest_roadmap.title}</h3>
                 <p className="mt-2 text-sm text-cyan-200">{TEXT.timeline}: {summary.latest_roadmap.timeline}</p>
+                {summary.latest_roadmap.total_items > 0 ? (
+                  <p className="mt-2 text-sm text-slate-300">
+                    {TEXT.roadmapProgress}: {summary.latest_roadmap.completed_items}/{summary.latest_roadmap.total_items}
+                  </p>
+                ) : null}
                 <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_roadmap.created_at)}</p>
               </>
             ) : null}
@@ -327,9 +346,21 @@ function buildNextActions(summary: DashboardSummary): NextAction[] {
       { title: "Xem l\u1ea1i ph\u00e2n t\u00edch g\u1ea7n nh\u1ea5t", description: "Ki\u1ec3m tra preview CV/JD v\u00e0 breakdown \u0111\u1ec3 ch\u1eafc h\u1ec7 th\u1ed1ng \u0111\u1ecdc \u0111\u00fang d\u1eef li\u1ec7u.", href: "/analysis", cta: "Xem analysis", tone: "secondary" }
     ];
   }
+  if (summary.has_new_resume_after_analysis) {
+    return [
+      { title: TEXT.cvUpdatedTitle, description: TEXT.cvUpdatedDescription, href: "/analysis", cta: TEXT.rerunAnalysis, tone: "primary" },
+      { title: "Ki\u1ec3m tra CV/JD", description: "Xem l\u1ea1i CV v\u00e0 JD \u0111ang l\u01b0u tr\u01b0\u1edbc khi ph\u00e2n t\u00edch l\u1ea1i.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
+    ];
+  }
+  if (summary.latest_roadmap.completed_items > 0) {
+    return [
+      { title: TEXT.roadmapCompletedTitle, description: TEXT.roadmapCompletedDescription, href: "/analysis", cta: TEXT.rerunAnalysis, tone: "primary" },
+      { title: "C\u1eadp nh\u1eadt CV", description: "Th\u00eam minh ch\u1ee9ng m\u1edbi t\u1eeb roadmap v\u00e0o CV n\u1ebfu b\u1ea1n th\u1ef1c s\u1ef1 \u0111\u00e3 ho\u00e0n th\u00e0nh.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
+    ];
+  }
   if (!summary.latest_interview || summary.latest_interview.status !== "finished") {
     return [
-      { title: "Luy\u1ec7n Mock Interview", description: "D\u00f9ng target role v\u00e0 skill gap \u0111\u1ec3 luy\u1ec7n c\u00e1c c\u00e2u h\u1ecfi k\u1ef9 thu\u1eadt \u0111\u1ea7u ti\u00ean.", href: "/interview", cta: TEXT.practiceInterview, tone: "primary" },
+      { title: TEXT.interviewAfterRoadmapTitle, description: TEXT.interviewAfterRoadmapDescription, href: "/interview", cta: TEXT.practiceInterview, tone: "primary" },
       { title: "Theo roadmap", description: "D\u00e0nh th\u1eddi gian ho\u00e0n th\u00e0nh output c\u1ee7a t\u1eebng b\u01b0\u1edbc tr\u01b0\u1edbc khi apply.", href: "/roadmap", cta: "Xem roadmap", tone: "secondary" }
     ];
   }

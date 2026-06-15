@@ -513,3 +513,30 @@ The following existing endpoints now insert minimal usage events after successfu
 - `evidence_notes`
 
 Existing fields remain available: `skill_score`, `keyword_score`, `semantic_score`, `length_sanity` and `final_score`. This is an additive API change for frontend compatibility.
+
+## Phase 7.6 Additive API Notes
+
+### Roadmaps
+
+- `PATCH /api/roadmaps/latest/items/{item_index}/completion`
+  - Auth: JWT required.
+  - Scope: updates only the latest roadmap for the current user.
+  - Request: `{ "completed": true | false }`.
+  - Response: `LearningRoadmapResponse` with item `completed` booleans.
+  - Errors: 404 when no roadmap or item index is found.
+
+`LearningRoadmapResponse.items[]` now includes optional/default field:
+
+- `completed: boolean` default `false`.
+
+### Dashboard Summary
+
+`GET /api/dashboard/summary` now includes additive fields:
+
+- `latest_roadmap.completed_items`
+- `latest_roadmap.total_items`
+- `has_new_resume_after_analysis`
+- `should_rerun_analysis`
+- `learning_loop_summary`
+
+Existing frontend/API consumers remain compatible because these are additive fields.

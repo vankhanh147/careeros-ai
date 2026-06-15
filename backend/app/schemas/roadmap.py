@@ -28,6 +28,11 @@ class RoadmapItem(BaseModel):
     cv_evidence_output: str | None = None
     interview_prep: list[str] = Field(default_factory=list)
     priority: str = "medium"
+    completed: bool = False
+
+
+class RoadmapItemCompletionRequest(BaseModel):
+    completed: bool
 
 
 class LearningRoadmapResponse(BaseModel):

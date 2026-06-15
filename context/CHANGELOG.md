@@ -257,3 +257,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added adaptive question selection using missing skills, analysis context and latest roadmap interview prep.
 - Added additive interview answer metadata in API responses without database schema changes.
 - Improved feedback classification and frontend `/interview` display.
+
+## 2026-06-16 - Phase 7.6 User Learning Loop & Progress Tracking Lite
+
+- Added lightweight roadmap item completion stored in existing roadmap JSON items.
+- Added latest-roadmap-only completion endpoint: `PATCH /api/roadmaps/latest/items/{item_index}/completion`.
+- Added roadmap progress summary on `/roadmap` and `/dashboard`.
+- Added dashboard rerun signals for new CV uploads after analysis and partial roadmap completion.
+- Added backend regression tests for roadmap completion and dashboard learning-loop signals.
+- No database schema change, no new progress table and no gamification system were added.

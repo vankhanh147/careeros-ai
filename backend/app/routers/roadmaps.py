@@ -11,7 +11,7 @@ from app.models.career_profile import CareerProfile
 from app.models.learning_roadmap import LearningRoadmap
 from app.models.match_analysis import MatchAnalysis
 from app.models.user import User
-from app.schemas.roadmap import LearningRoadmapResponse, RoadmapGenerateRequest
+from app.schemas.roadmap import LearningRoadmapResponse, RoadmapGenerateRequest, RoadmapItemCompletionRequest
 from app.services.resume_job_matcher import analyze_resume_job_match
 from app.services.roadmap_generator import build_roadmap_from_analysis, build_roadmap_from_profile
 from app.services.security import get_current_user
@@ -97,6 +97,38 @@ def generate_learning_roadmap(
 def get_my_roadmaps(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> list[LearningRoadmapResponse]:
     roadmaps = db.query(LearningRoadmap).filter(LearningRoadmap.user_id == current_user.id).order_by(LearningRoadmap.created_at.desc()).limit(20).all()
     return [_to_response(roadmap) for roadmap in roadmaps]
+
+
+@router.patch("/latest/items/{item_index}/completion", response_model=LearningRoadmapResponse)
+def update_latest_roadmap_item_completion(
+    item_index: int,
+    payload: RoadmapItemCompletionRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> LearningRoadmapResponse:
+    roadmap = (
+        db.query(LearningRoadmap)
+        .filter(LearningRoadmap.user_id == current_user.id)
+        .order_by(LearningRoadmap.created_at.desc())
+        .first()
+    )
+    if roadmap is None:
+        raise_app_error(status.HTTP_404_NOT_FOUND, "Roadmap not found", "ROADMAP_NOT_FOUND")
+
+    items = _load_items(roadmap.items)
+    if item_index < 0 or item_index >= len(items):
+        raise_app_error(status.HTTP_404_NOT_FOUND, "Roadmap item not found", "ROADMAP_ITEM_NOT_FOUND")
+
+    items[item_index]["completed"] = payload.completed
+    roadmap.items = json.dumps(items, ensure_ascii=False)
+    db.add(roadmap)
+    db.commit()
+    db.refresh(roadmap)
+    logger.info(
+        "Roadmap item completion updated",
+        extra={"user_id": current_user.id, "roadmap_id": roadmap.id, "item_index": item_index, "completed": payload.completed},
+    )
+    return _to_response(roadmap)
 
 
 @router.get("/{roadmap_id}", response_model=LearningRoadmapResponse)

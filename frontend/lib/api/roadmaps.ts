@@ -12,6 +12,7 @@ export type RoadmapItem = {
   cv_evidence_output?: string | null;
   interview_prep?: string[];
   priority?: "high" | "medium" | "low" | string;
+  completed?: boolean;
 };
 
 export type LearningRoadmap = {
@@ -58,4 +59,11 @@ export function getMyRoadmaps(token: string): Promise<LearningRoadmap[]> {
 
 export function getRoadmap(token: string, id: number): Promise<LearningRoadmap> {
   return roadmapRequest<LearningRoadmap>(`/api/roadmaps/${id}`, token);
+}
+
+export function updateLatestRoadmapItemCompletion(token: string, itemIndex: number, completed: boolean): Promise<LearningRoadmap> {
+  return roadmapRequest<LearningRoadmap>(`/api/roadmaps/latest/items/${itemIndex}/completion`, token, {
+    method: "PATCH",
+    body: JSON.stringify({ completed })
+  });
 }
