@@ -152,3 +152,11 @@ Phase 7.1 fixed frontend API error message encoding and beta checklist encoding.
 - The engine does not yet point to exact original CV bullet lines.
 - The engine avoids hallucination by using conditional wording for missing skills, but users must still verify suggestions against their real experience.
 - `resume_feedback` is recomputed like other analysis debug fields because `MatchAnalysis` still stores only base analysis fields.
+
+## Phase 7.4 Roadmap V2 Limitations
+
+- Roadmap V2 is still template-based and heuristic.
+- Existing roadmap history generated before Phase 7.4 may not contain new item fields, so frontend treats them as optional.
+- Roadmap does not yet track completion/progress.
+- Roadmap cannot verify whether the user completed practice tasks after generation.
+- Roadmap quality depends on analysis quality, resume feedback quality and extracted CV/JD text quality.

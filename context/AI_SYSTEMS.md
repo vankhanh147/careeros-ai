@@ -193,3 +193,19 @@ Current behavior:
 - Uses conditional wording such as `If you actually used X...` when evidence is missing or uncertain.
 
 Output groups are `critical_gaps`, `cv_wording_improvements`, `suggested_bullet_rewrites`, `missing_evidence_areas` and `recommended_next_edits`. The system remains rule-based, explainable and deterministic.
+
+## Phase 7.4 Roadmap Quality V2
+
+Personalized Roadmap is now an action-plan generator, not only a skill list. It remains deterministic and rule-based.
+
+Each roadmap item can include:
+
+- `learning_focus`
+- `practice_task`
+- `cv_evidence_output`
+- `interview_prep`
+- `priority`
+
+When generated from analysis, the roadmap uses prioritized missing skills, critical skills, confidence, resume feedback hints, role family and stack groups. Profile-only roadmap remains supported but is labeled as lower personalization.
+
+Safety remains explicit: no fake metrics, no claim that the user already has a missing skill, no hiring promise and no long curriculum generation.

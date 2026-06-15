@@ -264,19 +264,29 @@ function RoadmapCard({ roadmap, title, compact = false, onSelect }: { roadmap: L
 }
 
 function RoadmapItemCard({ item }: { item: LearningRoadmap["items"][number] }) {
+  const priority = item.priority ?? "medium";
+  const priorityClass = {
+    high: "border-red-300/30 bg-red-300/10 text-red-100",
+    medium: "border-amber-300/30 bg-amber-300/10 text-amber-100",
+    low: "border-slate-300/20 bg-slate-300/10 text-slate-100"
+  }[priority] ?? "border-slate-300/20 bg-slate-300/10 text-slate-100";
+
   return (
     <section className="min-w-0 rounded-md border border-white/10 bg-white/5 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{item.week}</p>
-          <h4 className="mt-1 break-words text-base font-semibold text-slate-100">{item.focus}</h4>
+          <h4 className="mt-1 break-words text-base font-semibold text-slate-100">{item.learning_focus ?? item.focus}</h4>
         </div>
+        <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] ${priorityClass}`}>
+          {priority}
+        </span>
       </div>
 
       <div className="mt-4">
-        <p className="text-sm font-semibold text-slate-200">Kỹ năng cần học</p>
+        <p className="text-sm font-semibold text-slate-200">Skills</p>
         {item.skills.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-500">Tập trung vào CV alignment và project evidence.</p>
+          <p className="mt-2 text-sm text-slate-500">Focus on CV alignment and project evidence.</p>
         ) : (
           <div className="mt-2 flex flex-wrap gap-2">
             {item.skills.map((skill) => (
@@ -288,18 +298,41 @@ function RoadmapItemCard({ item }: { item: LearningRoadmap["items"][number] }) {
         )}
       </div>
 
+      <InfoPanel title="Practice task" value={item.practice_task ?? item.actions[0] ?? "Create one small artifact that proves this week's focus."} />
+      <InfoPanel title="CV evidence output" value={item.cv_evidence_output ?? item.expected_output} tone="emerald" />
+
       <div className="mt-4">
-        <p className="text-sm font-semibold text-slate-200">Hành động</p>
+        <p className="text-sm font-semibold text-slate-200">Actions</p>
         <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
-          {item.actions.map((action) => (
-            <li key={action} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{action}</li>
+          {item.actions.map((action, actionIndex) => (
+            <li key={`${item.week}-action-${actionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{action}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-4">
+        <p className="text-sm font-semibold text-slate-200">Interview prep</p>
+        <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
+          {(item.interview_prep?.length ? item.interview_prep : ["What did you build and what tradeoff can you explain?"]).map((question, questionIndex) => (
+            <li key={`${item.week}-question-${questionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{question}</li>
           ))}
         </ul>
       </div>
 
       <div className="mt-4 rounded-md border border-emerald-300/20 bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">
-        <span className="font-semibold">Kết quả kỳ vọng:</span> {item.expected_output}
+        <span className="font-semibold">Expected output:</span> {item.expected_output}
       </div>
     </section>
   );
 }
+
+function InfoPanel({ title, value, tone = "slate" }: { title: string; value: string; tone?: "slate" | "emerald" }) {
+  const toneClass = tone === "emerald" ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-slate-950/70 text-slate-300";
+  return (
+    <div className={`mt-4 rounded-md border p-3 text-sm leading-6 ${toneClass}`}>
+      <p className="font-semibold text-slate-100">{title}</p>
+      <p className="mt-1 break-words">{value}</p>
+    </div>
+  );
+}
+

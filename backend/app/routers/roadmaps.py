@@ -47,12 +47,18 @@ def generate_learning_roadmap(
             jd_text = analysis.job_description.content if analysis.job_description else ""
             analysis_result = analyze_resume_job_match(resume_text or "", jd_text or "")
             target_role = (profile.target_role if profile else "") or (analysis.job_description.title if analysis.job_description else "")
+            scoring_breakdown = analysis_result.get("scoring_breakdown", {})
             roadmap_data = build_roadmap_from_analysis(
                 target_role=target_role,
                 current_level=profile.current_level if profile else "",
                 timeline=timeline,
                 prioritized_missing_skills=_as_priority_dict(analysis_result["prioritized_missing_skills"]),
                 improvement_plan=[str(item) for item in analysis_result["improvement_plan"]],
+                critical_skills=[str(item) for item in scoring_breakdown.get("critical_skills", [])] if isinstance(scoring_breakdown, dict) else [],
+                confidence=str(scoring_breakdown.get("confidence", "medium")) if isinstance(scoring_breakdown, dict) else "medium",
+                resume_feedback=analysis_result.get("resume_feedback") if isinstance(analysis_result.get("resume_feedback"), dict) else None,
+                role_family=str(scoring_breakdown.get("jd_role_family", "")) if isinstance(scoring_breakdown, dict) else "",
+                stack_groups=[str(item) for item in scoring_breakdown.get("jd_stack_groups", [])] if isinstance(scoring_breakdown, dict) else [],
             )
         else:
             if _is_empty_profile(profile):

@@ -23,6 +23,11 @@ class RoadmapItem(BaseModel):
     skills: list[str]
     actions: list[str]
     expected_output: str
+    learning_focus: str | None = None
+    practice_task: str | None = None
+    cv_evidence_output: str | None = None
+    interview_prep: list[str] = Field(default_factory=list)
+    priority: str = "medium"
 
 
 class LearningRoadmapResponse(BaseModel):

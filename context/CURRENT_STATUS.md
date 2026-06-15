@@ -379,3 +379,19 @@ Completed:
 - Added `context/PHASE_7_3_RESUME_FEEDBACK_REPORT.md`.
 
 Current readiness: useful for controlled beta as safe CV edit guidance, not an automatic CV rewrite system.
+
+## Phase 7.4 Update: Roadmap Quality V2 - Completed
+
+Date: 2026-06-15
+
+Phase 7.4 improves Personalized Roadmap quality while keeping the system rule-based, deterministic and schema-compatible. No LLM API, fine-tuning, database schema change or breaking API contract was introduced.
+
+Completed:
+
+- Roadmap items now include learning focus, practice task, CV evidence output, interview prep and priority.
+- Roadmap generation from analysis now uses critical skills, confidence, resume feedback hints, role family and stack groups when available.
+- Profile-only roadmap still works and clearly states lower personalization.
+- Timeline parsing is more robust to Vietnamese and previously mojibake timeline strings.
+- Frontend `/roadmap` displays the new item fields with a priority badge.
+- Added/updated tests for Roadmap V2 item fields, priority and fallback behavior.
+- Added `context/PHASE_7_4_ROADMAP_V2_REPORT.md`.

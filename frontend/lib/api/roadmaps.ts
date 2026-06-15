@@ -7,6 +7,11 @@ export type RoadmapItem = {
   skills: string[];
   actions: string[];
   expected_output: string;
+  learning_focus?: string | null;
+  practice_task?: string | null;
+  cv_evidence_output?: string | null;
+  interview_prep?: string[];
+  priority?: "high" | "medium" | "low" | string;
 };
 
 export type LearningRoadmap = {

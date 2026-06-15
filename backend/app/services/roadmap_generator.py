@@ -1,22 +1,37 @@
 import re
+import unicodedata
+from typing import Any
 
 from app.models.career_profile import CareerProfile
 from app.services.resume_job_matcher import ROLE_CORE_SKILLS, extract_skills
 
-DEFAULT_TARGET_ROLE = "vai trò công nghệ mục tiêu"
+DEFAULT_TARGET_ROLE = "target technology role"
 
 
 def infer_week_count(timeline: str | None) -> int:
-    normalized = (timeline or "").strip().lower()
-    week_match = re.search(r"(\d+)\s*(tuần|tuan|week|weeks)", normalized)
-    if week_match:
-        return max(1, int(week_match.group(1)))
+    raw = (timeline or "").strip().lower()
+    normalized = unicodedata.normalize("NFKD", raw).encode("ascii", "ignore").decode("ascii")
+    number_match = re.search(r"(\d+)", normalized)
+    if not number_match:
+        return 6
 
-    month_match = re.search(r"(\d+)\s*(tháng|thang|month|months)", normalized)
-    if month_match:
-        return max(1, int(month_match.group(1)) * 4)
-
+    value = max(1, int(number_match.group(1)))
+    if any(token in normalized for token in ("tuan", "week", "weeks")) or "tu" in raw:
+        return value
+    if any(token in normalized for token in ("thang", "month", "months")) or "th" in raw:
+        return value * 4
     return 6
+
+
+def _item_count_for_timeline(week_count: int) -> int:
+    if week_count <= 2:
+        return week_count
+    if week_count <= 4:
+        return week_count
+    if week_count >= 8:
+        return min(8, max(6, week_count))
+    return week_count
+
 
 def build_roadmap_from_analysis(
     *,
@@ -25,38 +40,52 @@ def build_roadmap_from_analysis(
     timeline: str,
     prioritized_missing_skills: dict[str, list[str]],
     improvement_plan: list[str],
+    critical_skills: list[str] | None = None,
+    confidence: str = "medium",
+    resume_feedback: dict[str, Any] | None = None,
+    role_family: str = "",
+    stack_groups: list[str] | None = None,
 ) -> dict[str, object]:
     week_count = infer_week_count(timeline)
+    item_count = _item_count_for_timeline(week_count)
     target_role = target_role.strip() or DEFAULT_TARGET_ROLE
-    current_level = current_level.strip() or "chưa xác định"
+    current_level = current_level.strip() or "not specified"
     high = prioritized_missing_skills.get("high_priority", [])
     medium = prioritized_missing_skills.get("medium_priority", [])
     low = prioritized_missing_skills.get("low_priority", [])
-    skill_queue = _dedupe(high + medium + low)
+    critical = critical_skills or []
+    skill_queue = _dedupe([skill for skill in critical if skill in high + medium + low] + high + medium + low)
 
+    feedback_hints = _feedback_hints(resume_feedback)
     items = _build_items(
-        week_count=week_count,
+        item_count=item_count,
         target_role=target_role,
         current_level=current_level,
         skill_queue=skill_queue,
-        high_priority=set(high),
+        high_priority=set(high).union(critical),
+        medium_priority=set(medium),
         improvement_plan=improvement_plan,
+        personalized=True,
+        feedback_hints=feedback_hints,
     )
     gap_text = _gap_summary(high, medium, low)
+    stack_text = f" Stack focus: {', '.join(stack_groups or [])}." if stack_groups else ""
+    confidence_text = " Personalization confidence is lower, so verify the CV/JD preview before following every step." if confidence == "low" else ""
     return {
-        "title": f"Roadmap {week_count} tuần cho {target_role}",
+        "title": f"Roadmap {week_count} tu?n cho {target_role}",
         "target_role": target_role,
-        "timeline": timeline or f"{week_count} tuần",
+        "timeline": timeline or f"{week_count} tu?n",
         "items": items,
-        "summary": f"Roadmap tập trung vào {gap_text}. Mục tiêu là tạo bằng chứng năng lực rõ ràng hơn cho {target_role}, dựa trên skill gap từ phân tích CV và Job Description gần nhất.",
+        "summary": f"Roadmap V2 focuses on {gap_text}. It is designed to help you learn the right skill gaps, create CV evidence and prepare interview answers for {target_role}.{stack_text}{confidence_text}",
     }
 
 
 def build_roadmap_from_profile(profile: CareerProfile, timeline: str | None = None) -> dict[str, object]:
     selected_timeline = (timeline or profile.timeline or "").strip()
     week_count = infer_week_count(selected_timeline)
+    item_count = _item_count_for_timeline(week_count)
     target_role = profile.target_role.strip() or DEFAULT_TARGET_ROLE
-    current_level = profile.current_level.strip() or "chưa xác định"
+    current_level = profile.current_level.strip() or "not specified"
     profile_text = " ".join(
         [
             profile.skills or "",
@@ -78,58 +107,79 @@ def build_roadmap_from_profile(profile: CareerProfile, timeline: str | None = No
     improvement_plan = [_generic_skill_action(skill) for skill in missing_skills[:6]]
     if not improvement_plan:
         improvement_plan = [
-            "Rà soát lại CV/profile để mô tả rõ project, vai trò cá nhân, tech stack và kết quả đạt được.",
-            "Chọn một project gần với target role và viết lại thành case study ngắn có input, xử lý, output và impact.",
+            "Review your CV/profile and clarify project scope, personal responsibility, tech stack and real output.",
+            "Pick one project close to your target role and rewrite it as a short case study: problem, implementation, output and lessons learned.",
         ]
 
     items = _build_items(
-        week_count=week_count,
+        item_count=item_count,
         target_role=target_role,
         current_level=current_level,
         skill_queue=missing_skills,
         high_priority=high_priority,
+        medium_priority=set(missing_skills[3:6]),
         improvement_plan=improvement_plan,
+        personalized=False,
+        feedback_hints=[],
     )
     return {
-        "title": f"Roadmap {week_count} tuần cho {target_role}",
+        "title": f"Roadmap {week_count} tu?n cho {target_role}",
         "target_role": target_role,
-        "timeline": selected_timeline or f"{week_count} tuần",
+        "timeline": selected_timeline or f"{week_count} tu?n",
         "items": items,
-        "summary": f"Roadmap basic được tạo từ career profile hiện có. Trọng tâm là đưa người dùng từ level {current_level} tiến gần hơn tới {target_role} bằng các bước học và bằng chứng project ngắn hạn.",
+        "summary": f"Basic roadmap generated from career profile only. Personalization is lower because no Resume/JD analysis was selected. Focus: move from {current_level} toward {target_role} through practical tasks, CV evidence and interview preparation.",
     }
 
 
 def _build_items(
     *,
-    week_count: int,
+    item_count: int,
     target_role: str,
     current_level: str,
     skill_queue: list[str],
     high_priority: set[str],
+    medium_priority: set[str],
     improvement_plan: list[str],
+    personalized: bool,
+    feedback_hints: list[str],
 ) -> list[dict[str, object]]:
     items = []
     clean_skills = skill_queue or []
     actions = improvement_plan or []
 
-    for index in range(week_count):
+    for index in range(item_count):
         week_number = index + 1
-        focus_skills = _skills_for_week(clean_skills, index, week_count)
+        focus_skills = _skills_for_week(clean_skills, index, item_count)
+        priority = _priority_for_skills(focus_skills, high_priority, medium_priority)
         if focus_skills:
-            focus = _focus_for_skills(focus_skills, high_priority)
+            learning_focus = _learning_focus_for_skills(focus_skills, target_role, priority)
             item_actions = _actions_for_week(focus_skills, actions, target_role, current_level)
+            practice_task = _practice_task_for_skills(focus_skills, target_role)
+            cv_evidence_output = _cv_evidence_for_skills(focus_skills, target_role)
+            interview_prep = _interview_questions_for_skills(focus_skills, target_role)
             expected_output = _expected_output_for_skills(focus_skills, target_role)
         else:
-            focus = _fallback_focus(week_number, week_count, target_role)
+            learning_focus = _fallback_focus(week_number, item_count, target_role, personalized)
             item_actions = _fallback_actions(week_number, target_role)
-            expected_output = _fallback_expected_output(week_number, week_count, target_role)
+            practice_task = _fallback_practice_task(week_number, target_role)
+            cv_evidence_output = _fallback_cv_evidence(week_number, target_role)
+            interview_prep = _fallback_interview_questions(target_role)
+            expected_output = _fallback_expected_output(week_number, item_count, target_role)
+
+        if feedback_hints and week_number == 1:
+            item_actions = _dedupe(item_actions + feedback_hints[:2])[:4]
 
         items.append(
             {
-                "week": f"Tuần {week_number}",
-                "focus": focus,
+                "week": f"Tu?n {week_number}",
+                "focus": learning_focus,
+                "learning_focus": learning_focus,
                 "skills": focus_skills,
                 "actions": item_actions,
+                "practice_task": practice_task,
+                "cv_evidence_output": cv_evidence_output,
+                "interview_prep": interview_prep,
+                "priority": priority,
                 "expected_output": expected_output,
             }
         )
@@ -137,20 +187,31 @@ def _build_items(
     return items
 
 
-def _skills_for_week(skills: list[str], index: int, week_count: int) -> list[str]:
+def _skills_for_week(skills: list[str], index: int, item_count: int) -> list[str]:
     if not skills:
         return []
-    if len(skills) <= week_count:
+    if len(skills) <= item_count:
         return [skills[index]] if index < len(skills) else []
-    chunk_size = max(1, (len(skills) + week_count - 1) // week_count)
+    chunk_size = max(1, (len(skills) + item_count - 1) // item_count)
     start = index * chunk_size
     return skills[start : start + chunk_size]
 
 
-def _focus_for_skills(skills: list[str], high_priority: set[str]) -> str:
+def _priority_for_skills(skills: list[str], high_priority: set[str], medium_priority: set[str]) -> str:
     if any(skill in high_priority for skill in skills):
-        return f"Xử lý skill gap ưu tiên cao: {', '.join(skills)}"
-    return f"Củng cố kỹ năng còn thiếu: {', '.join(skills)}"
+        return "high"
+    if any(skill in medium_priority for skill in skills):
+        return "medium"
+    return "low"
+
+
+def _learning_focus_for_skills(skills: list[str], target_role: str, priority: str) -> str:
+    skill_text = ", ".join(skills)
+    if priority == "high":
+        return f"High-priority focus: learn and prove {skill_text} because it is important for {target_role}."
+    if priority == "medium":
+        return f"Strengthen {skill_text} so your CV evidence is closer to {target_role} responsibilities."
+    return f"Polish supporting skill(s): {skill_text}, mainly to improve CV/JD alignment."
 
 
 def _actions_for_week(skills: list[str], improvement_plan: list[str], target_role: str, current_level: str) -> list[str]:
@@ -160,42 +221,111 @@ def _actions_for_week(skills: list[str], improvement_plan: list[str], target_rol
         selected_actions.append(matching_action or _generic_skill_action(skill))
 
     selected_actions.append(
-        f"Tạo một mini task hoặc update project hiện có để chứng minh kỹ năng này theo hướng {target_role}."
+        f"Create a small artifact that proves this skill for {target_role}: commit, README, API route, UI screen, notebook or test case."
     )
-    if current_level.lower() in {"fresher", "junior", "beginner", "entry level"}:
-        selected_actions.append("Ghi lại phần đã học bằng README ngắn: vấn đề, cách làm, lỗi gặp phải và kết quả.")
+    if current_level.lower() in {"fresher", "junior", "beginner", "entry level", "intern"}:
+        selected_actions.append("Write a short README: problem, approach, mistakes fixed and what you can explain in interview.")
     return _dedupe(selected_actions)[:4]
 
 
+def _practice_task_for_skills(skills: list[str], target_role: str) -> str:
+    skill_set = set(skills)
+    if {"authentication", "jwt", "oauth"}.intersection(skill_set):
+        return "Build login/register, one protected endpoint and one role-based authorization check."
+    if {"api", "rest api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}.intersection(skill_set):
+        return "Build a small CRUD API with validation, error responses and a short endpoint README."
+    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
+        return "Design a small schema, seed sample data and write 3-5 queries used by a real feature."
+    if {"react", "next.js", "typescript", "javascript", "tailwind", "html", "css"}.intersection(skill_set):
+        return "Build one responsive UI flow with form state, API integration, loading state and error state."
+    if {"docker", "ci/cd", "github", "git"}.intersection(skill_set):
+        return "Package or document the project setup so another developer can run it locally from the README."
+    if {"ai", "machine learning", "nlp", "scikit-learn", "pandas", "numpy"}.intersection(skill_set):
+        return "Create a mini notebook or script with dataset prep, baseline model/analysis and clear result notes."
+    return f"Create one mini-task connected to {target_role} that proves {', '.join(skills) or 'your target skill'} in a real artifact."
+
+
+def _cv_evidence_for_skills(skills: list[str], target_role: str) -> str:
+    skill_text = ", ".join(skills) or "the target skill"
+    if {"authentication", "jwt", "oauth"}.intersection(skills):
+        return "If you complete this task, you can add: 'Implemented authentication/JWT flow for protected API endpoints.'"
+    if {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}.intersection(skills):
+        return "If accurate, add a bullet about building API endpoints with validation, error handling and data integration."
+    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skills):
+        return "If accurate, add a bullet about schema/query work and how the database supported a feature."
+    if {"react", "next.js", "typescript", "tailwind"}.intersection(skills):
+        return "If accurate, add a bullet about building responsive UI and integrating it with REST APIs."
+    return f"If you actually complete a project task with {skill_text}, add one CV bullet that states the feature, your responsibility and the artifact produced."
+
+
+def _interview_questions_for_skills(skills: list[str], target_role: str) -> list[str]:
+    questions = []
+    for skill in skills[:2]:
+        if skill in {"authentication", "jwt", "oauth"}:
+            questions.extend(["How does JWT authentication work?", "How would you protect an endpoint by role?"])
+        elif skill in {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}:
+            questions.extend(["How do you design a clean API endpoint?", "How do you handle validation and errors?"])
+        elif skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
+            questions.extend(["How would you design the schema for this feature?", "How do you avoid inefficient queries?"])
+        elif skill in {"react", "next.js", "typescript", "javascript"}:
+            questions.extend(["How do you manage loading and error states in UI?", "How do components call backend APIs safely?"])
+        elif skill in {"docker", "ci/cd"}:
+            questions.extend(["Why use Docker for local development or deployment?", "How would you debug a container that fails to start?"])
+        else:
+            questions.append(f"How have you applied {skill} in a real project?")
+    return _dedupe(questions)[:2] or [f"What did you build that proves readiness for {target_role}?"]
+
+
 def _expected_output_for_skills(skills: list[str], target_role: str) -> str:
-    return f"Có bằng chứng thực tế cho {', '.join(skills)}: commit, README, demo nhỏ hoặc đoạn mô tả CV phù hợp với {target_role}."
+    return f"A concrete artifact for {', '.join(skills)}: commit, README, demo, test case or CV bullet aligned with {target_role}."
 
 
-def _fallback_focus(week_number: int, week_count: int, target_role: str) -> str:
-    if week_number == week_count:
-        return f"Hoàn thiện CV alignment và chuẩn bị apply cho {target_role}"
+def _fallback_focus(week_number: int, item_count: int, target_role: str, personalized: bool) -> str:
+    if not personalized and week_number == 1:
+        return f"Clarify the baseline requirements for {target_role} because no analysis was selected."
+    if week_number == item_count:
+        return f"Finalize CV alignment and interview story for {target_role}."
     if week_number == 1:
-        return f"Làm rõ yêu cầu nền tảng của {target_role}"
-    return f"Củng cố project gần nhất với {target_role}"
+        return f"Identify the strongest project evidence for {target_role}."
+    return f"Strengthen one project so it better proves readiness for {target_role}."
 
 
 def _fallback_actions(week_number: int, target_role: str) -> list[str]:
     if week_number == 1:
         return [
-            f"Đọc lại 2-3 JD thật cho {target_role} và ghi ra skill xuất hiện lặp lại.",
-            "So sánh skill đó với CV/profile hiện tại để chọn phần cần làm rõ trước.",
+            f"Read 2-3 real JDs for {target_role} and list repeated requirements.",
+            "Compare those requirements with your CV/profile and choose one gap to prove first.",
         ]
     return [
-        "Viết lại một project theo cấu trúc: vấn đề, tech stack, vai trò cá nhân, kết quả.",
-        "Bổ sung keyword đúng năng lực thật vào CV thay vì liệt kê lan man.",
+        "Rewrite one project using: problem, tech stack, personal responsibility and output.",
+        "Add only keywords that reflect real work, not skills you have not used.",
     ]
 
 
-def _fallback_expected_output(week_number: int, week_count: int, target_role: str) -> str:
-    if week_number == week_count:
-        return f"Có bản CV/profile cập nhật và checklist apply thử cho {target_role}."
-    return "Có một phần project hoặc experience được viết lại rõ hơn, sát với JD mục tiêu."
+def _fallback_practice_task(week_number: int, target_role: str) -> str:
+    if week_number == 1:
+        return f"Create a one-page checklist of the top 5 requirements for {target_role} and map each to your current CV evidence."
+    return "Improve one existing project artifact: README, demo flow, test case, API endpoint, UI state or notebook explanation."
 
+
+def _fallback_cv_evidence(week_number: int, target_role: str) -> str:
+    if week_number == 1:
+        return "No new claim yet. Produce a gap checklist and identify which existing project can support the target role."
+    return f"If the improved project evidence is real, add one concise CV bullet aligned with {target_role}. Do not invent metrics."
+
+
+def _fallback_interview_questions(target_role: str) -> list[str]:
+    return [
+        f"Which project best proves your fit for {target_role}?",
+        "What technical tradeoff or bug can you explain clearly from that project?",
+    ]
+
+
+
+def _fallback_expected_output(week_number: int, item_count: int, target_role: str) -> str:
+    if week_number == item_count:
+        return f"Updated CV/profile section and a short interview story for {target_role}."
+    return "One improved project artifact or experience bullet that is clearer, safer and closer to the target JD."
 
 def _detect_role_context(text: str) -> list[str]:
     normalized = (text or "").lower()
@@ -225,29 +355,42 @@ def _fallback_growth_skills(roles: list[str], current_skills: set[str]) -> list[
 
 def _generic_skill_action(skill: str) -> str:
     if skill in {"docker", "git", "github", "ci/cd"}:
-        return f"Học và áp dụng {skill} ở mức thực dụng: setup, chạy local, ghi lại command và lỗi thường gặp."
-    if skill in {"rest api", "api", "fastapi", "django", "flask", "node.js", "express"}:
-        return f"Xây một flow API nhỏ với {skill}: CRUD, validation, error handling và tài liệu endpoint."
+        return f"Apply {skill} in a practical way: setup, local run command, common error and README note."
+    if skill in {"rest api", "api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}:
+        return f"Build a small {skill} flow: CRUD, validation, error handling and endpoint documentation."
     if skill in {"postgresql", "mysql", "mongodb", "sql", "database"}:
-        return f"Tạo ví dụ database cho {skill}: schema, query chính và cách dữ liệu liên kết với feature."
+        return f"Create a database example for {skill}: schema, main query and feature integration."
     if skill in {"authentication", "jwt", "oauth"}:
-        return f"Làm rõ token/auth flow với {skill}: login, protected route và lỗi quyền truy cập phổ biến."
+        return f"Implement a small auth flow with {skill}: login, protected route and common permission error."
     if skill in {"react", "next.js", "typescript", "javascript", "tailwind", "html", "css"}:
-        return f"Tạo hoặc cải thiện UI nhỏ bằng {skill}: form, state, API integration và responsive layout."
+        return f"Create or improve a small UI with {skill}: form, state, API integration and responsive layout."
     if skill in {"ai", "machine learning", "nlp", "scikit-learn", "pytorch", "tensorflow"}:
-        return f"Làm mini notebook/project về {skill}: dữ liệu đầu vào, metric đơn giản và kết quả giải thích được."
-    return f"Học {skill} theo hướng có output: note ngắn, bài lab nhỏ hoặc commit vào project thật."
+        return f"Build a mini {skill} notebook/project: input data, simple metric and explainable result."
+    return f"Learn {skill} through a concrete output: notes, lab, commit or project artifact."
+
+
+def _feedback_hints(resume_feedback: dict[str, Any] | None) -> list[str]:
+    if not isinstance(resume_feedback, dict):
+        return []
+    hints = []
+    for group_name in ("critical_gaps", "missing_evidence_areas", "recommended_next_edits"):
+        for item in resume_feedback.get(group_name, []) or []:
+            if isinstance(item, dict):
+                message = item.get("suggested_edit") or item.get("message")
+                if message:
+                    hints.append(str(message))
+    return _dedupe(hints)
 
 
 def _gap_summary(high: list[str], medium: list[str], low: list[str]) -> str:
     total = len(high) + len(medium) + len(low)
     if total == 0:
-        return "CV alignment và cách trình bày năng lực vì chưa phát hiện skill gap lớn"
+        return "CV alignment and evidence clarity because no major skill gap was detected"
     if high:
-        return f"{total} skill gap, ưu tiên cao nhất là {', '.join(high[:3])}"
+        return f"{total} skill gaps, with highest priority on {', '.join(high[:3])}"
     if medium:
-        return f"{total} skill gap, trọng tâm là nhóm ưu tiên trung bình: {', '.join(medium[:4])}"
-    return f"{total} skill gap ưu tiên thấp, chủ yếu dùng để tinh chỉnh CV: {', '.join(low[:4])}"
+        return f"{total} skill gaps, focused on medium-priority skills: {', '.join(medium[:4])}"
+    return f"{total} low-priority gaps for CV alignment: {', '.join(low[:4])}"
 
 
 def _dedupe(items: list[str]) -> list[str]:

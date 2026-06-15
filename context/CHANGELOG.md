@@ -241,3 +241,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Frontend `/analysis` now displays `Resume Improvement Suggestions` on detailed analysis results.
 - Added regression tests for U01, U02, U04 and U10 sanity checks.
 - Added `context/PHASE_7_3_RESUME_FEEDBACK_REPORT.md`.
+
+## Phase 7.4: Roadmap Quality V2
+
+- Improved rule-based roadmap generator with action-oriented item fields: learning focus, practice task, CV evidence output, interview prep and priority.
+- Roadmap generation from analysis now uses critical skills, confidence, resume feedback hints, role family and stack groups.
+- Kept database schema unchanged by storing richer roadmap items in existing JSON `items`.
+- Updated frontend `/roadmap` to display priority badge, practice task, CV evidence and interview prep.
+- Added Roadmap V2 tests for practical output fields, priority handling and profile-only fallback.
+- Added `context/PHASE_7_4_ROADMAP_V2_REPORT.md`.
