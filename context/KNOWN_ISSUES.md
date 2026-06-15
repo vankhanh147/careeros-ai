@@ -145,3 +145,10 @@ Remaining UX/testing limitations:
 
 Phase 7.1 fixed frontend API error message encoding and beta checklist encoding. Remaining beta limitations are unchanged: no automated E2E suite, no Alembic migration system, manual production smoke test still required, and some backend-generated Vietnamese strings may still need a dedicated cleanup pass.
 
+## Phase 7.3 Resume Feedback Limitations
+
+- Resume feedback is template-based and heuristic. It is useful for MVP guidance but not a full CV rewrite tool.
+- Suggestions depend on extracted CV text quality; scanned PDFs or poor PDF extraction can reduce accuracy.
+- The engine does not yet point to exact original CV bullet lines.
+- The engine avoids hallucination by using conditional wording for missing skills, but users must still verify suggestions against their real experience.
+- `resume_feedback` is recomputed like other analysis debug fields because `MatchAnalysis` still stores only base analysis fields.

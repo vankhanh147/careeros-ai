@@ -157,3 +157,58 @@ def test_matching_v21_detects_mobile_cross_domain(monkeypatch):
     assert breakdown["jd_role_family"] == "ai/data"
     assert result["match_score"] < 60
 
+
+def test_resume_feedback_u01_exact_fit_does_not_spam_critical_gaps(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Backend intern resume. Projects: built a task management backend API using C#, .NET, ASP.NET Core and PostgreSQL. Implemented REST API CRUD endpoints, JWT authentication, validation, SQL queries, Git/GitHub workflow and Docker deployment basics.",
+        "Backend JD requiring C# .NET ASP.NET Core REST API JWT authentication PostgreSQL SQL Docker and testing.",
+    )
+
+    feedback = result["resume_feedback"]
+    assert result["match_score"] >= 75
+    assert len(feedback["critical_gaps"]) <= 2
+    assert feedback["suggested_bullet_rewrites"]
+
+
+def test_resume_feedback_u02_same_role_different_stack_has_stack_advice(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Backend developer resume. Projects: built e-commerce REST API using Node.js, Express, JavaScript and MongoDB. Implemented JWT authentication, database models, Git/GitHub and Docker. No C#, .NET or ASP.NET Core project.",
+        "Backend JD requiring C# .NET ASP.NET Core REST API JWT authentication PostgreSQL SQL Docker and testing.",
+    )
+
+    feedback = result["resume_feedback"]
+    combined = " ".join(item["message"] + " " + (item.get("suggested_edit") or "") for item in feedback["critical_gaps"] + feedback["recommended_next_edits"])
+    assert ".NET" in combined or ".net" in combined or "c#" in combined.lower()
+    assert "If you actually" in combined or "If you have" in combined
+
+
+def test_resume_feedback_u04_role_mismatch_has_frontend_to_backend_advice(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Frontend developer resume. Projects: built React and Next.js UI with TypeScript, JavaScript, HTML, CSS and Tailwind. Integrated REST API from backend services. No backend project with C#, .NET, ASP.NET Core or database schema.",
+        "Backend JD requiring C# .NET ASP.NET Core REST API JWT authentication PostgreSQL SQL Docker and testing.",
+    )
+
+    feedback = result["resume_feedback"]
+    messages = " ".join(item["message"] for item in feedback["recommended_next_edits"])
+    assert "frontend" in messages.lower()
+    assert "backend" in messages.lower()
+    assert result["scoring_breakdown"]["resume_role_family"] == "frontend"
+
+
+def test_resume_feedback_u10_does_not_hallucinate_backend_skills(monkeypatch):
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_ENABLED", "false")
+    result = resume_job_matcher.analyze_resume_job_match(
+        "Marketing and business resume. Experience: campaign planning, user research and content strategy. No software engineering project, no backend, no API implementation, no C#, no .NET and no authentication experience.",
+        "Backend JD requiring C# .NET ASP.NET Core REST API JWT authentication PostgreSQL SQL Docker and testing.",
+    )
+
+    feedback = result["resume_feedback"]
+    all_suggested = " ".join((item.get("suggested_edit") or "") for group in feedback.values() for item in group)
+    assert result["match_score"] < 35
+    assert result["scoring_breakdown"]["confidence"] == "low"
+    assert "Developed ASP.NET Core backend APIs" not in all_suggested
+    assert "If you actually" in all_suggested or "If you have" in all_suggested
+

@@ -363,3 +363,19 @@ Completed:
 - Added regression tests for negated skill mentions and mobile cross-domain role detection.
 
 Current readiness: Matching V2.1 is acceptable for controlled beta. Next recommended: collect real production disagreement cases before any further matcher tuning.
+
+## Phase 7.3 Update: Resume Feedback & Rewrite Suggestions MVP - Completed
+
+Date: 2026-06-15
+
+Phase 7.3 adds deterministic resume improvement feedback after Resume/JD analysis. No LLM API, database schema change or breaking API contract was introduced.
+
+Completed:
+
+- Added additive `resume_feedback` output to analysis responses.
+- Added template-based feedback groups: critical gaps, CV wording improvements, suggested bullet rewrites, missing evidence areas and recommended next edits.
+- Added frontend `/analysis` section `Resume Improvement Suggestions`.
+- Added benchmark sanity tests for U01, U02, U04 and U10.
+- Added `context/PHASE_7_3_RESUME_FEEDBACK_REPORT.md`.
+
+Current readiness: useful for controlled beta as safe CV edit guidance, not an automatic CV rewrite system.

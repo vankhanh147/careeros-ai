@@ -179,6 +179,18 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         semantic_available=semantic_available,
     )
     suggestions.extend(_v2_suggestions(resume_role, jd_role, resume_stacks, jd_stacks, critical_skills, confidence, evidence_score))
+    resume_feedback = _build_resume_feedback(
+        resume_text=resume_text,
+        matched_skills=matched_skills,
+        missing_skills=missing_skills,
+        critical_skills=critical_skills,
+        jd_role_family=jd_role["primary"],
+        resume_role_family=resume_role["primary"],
+        resume_stacks=resume_stacks,
+        jd_stacks=jd_stacks,
+        evidence_score=evidence_score,
+        confidence=confidence,
+    )
 
     return {
         "match_score": final_score,
@@ -190,6 +202,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "improvement_plan": improvement_plan,
         "summary": _build_summary(final_score, matched_skills, missing_skills, semantic_score, semantic_available),
         "suggestions": _dedupe_preserve_order(suggestions)[:10],
+        "resume_feedback": resume_feedback,
         "resume_text_preview": build_text_preview(resume_text),
         "jd_text_preview": build_text_preview(job_description_text),
         "resume_detected_skills": resume_skills,
@@ -705,6 +718,161 @@ def _skill_action(skill: str, urgent: bool) -> str:
     if skill in {"machine learning", "ai", "nlp", "scikit-learn", "pytorch", "tensorflow", "sentence transformers"}:
         return f"{prefix}: B\u1ed5 sung project AI/ML li\u00ean quan \u0111\u1ebfn {skill}, n\u00eau r\u00f5 d\u1eef li\u1ec7u \u0111\u1ea7u v\u00e0o, c\u00e1ch \u0111\u00e1nh gi\u00e1 v\u00e0 k\u1ebft qu\u1ea3."
     return f"{prefix}: B\u1ed5 sung ho\u1eb7c h\u1ecdc n\u1ec1n t\u1ea3ng {skill}; ch\u1ec9 \u0111\u01b0a v\u00e0o CV khi b\u1ea1n c\u00f3 project, b\u00e0i lab ho\u1eb7c kinh nghi\u1ec7m \u0111\u1ee7 ch\u1ee9ng minh."
+
+
+
+def _feedback_item(title: str, message: str, why_this_matters: str, suggested_edit: str | None = None) -> dict[str, str]:
+    item = {
+        "title": title,
+        "message": message,
+        "why_this_matters": why_this_matters,
+    }
+    if suggested_edit:
+        item["suggested_edit"] = suggested_edit
+    return item
+
+
+def _build_resume_feedback(
+    resume_text: str,
+    matched_skills: list[str],
+    missing_skills: list[str],
+    critical_skills: list[str],
+    jd_role_family: str,
+    resume_role_family: str,
+    resume_stacks: list[str],
+    jd_stacks: list[str],
+    evidence_score: float,
+    confidence: str,
+) -> dict[str, list[dict[str, str]]]:
+    missing_set = set(missing_skills)
+    critical_missing = [skill for skill in critical_skills if skill in missing_set]
+    weak_matched = [skill for skill in matched_skills if _skill_evidence_level(resume_text, skill)[0] == "weak"]
+    evidenced = [skill for skill in matched_skills if _skill_evidence_level(resume_text, skill)[0] in {"medium", "strong"}]
+
+    feedback: dict[str, list[dict[str, str]]] = {
+        "critical_gaps": [],
+        "cv_wording_improvements": [],
+        "suggested_bullet_rewrites": [],
+        "missing_evidence_areas": [],
+        "recommended_next_edits": [],
+    }
+
+    for skill in critical_missing[:5]:
+        feedback["critical_gaps"].append(_feedback_item(
+            title=f"Missing evidence for {skill}",
+            message=f"JD requires {skill}, but the CV does not show clear evidence for it yet.",
+            why_this_matters=f"For a {jd_role_family} role, recruiters usually look for proof of role-critical skills, not only adjacent experience.",
+            suggested_edit=f"If you actually used {skill}, add it to a project or experience bullet with your specific responsibility.",
+        ))
+
+    role_core_missing = [skill for skill in missing_skills if skill in ROLE_CORE_SKILLS.get(jd_role_family, set())]
+    for skill in role_core_missing[:4]:
+        if skill in critical_missing[:5]:
+            continue
+        feedback["missing_evidence_areas"].append(_feedback_item(
+            title=f"Role-critical keyword missing: {skill}",
+            message=f"The JD has {skill}, but the CV does not mention it clearly.",
+            why_this_matters=f"{skill} helps the CV look aligned with the target {jd_role_family} responsibilities.",
+            suggested_edit=f"If you have real experience with {skill}, add it under the most relevant project instead of only listing it in a skills section.",
+        ))
+
+    if evidence_score < 10 or weak_matched:
+        important_weak = weak_matched[:5]
+        skill_text = ", ".join(important_weak) if important_weak else "the matched skills"
+        feedback["cv_wording_improvements"].append(_feedback_item(
+            title="Project evidence is still too generic",
+            message=f"The CV mentions {skill_text}, but the wording does not strongly prove what you built or owned.",
+            why_this_matters="Recruiters need to see technology, responsibility and outcome in the same project bullet.",
+            suggested_edit="Rewrite generic bullets with this pattern: Developed [feature] using [tech stack], responsible for [technical task], resulting in [real outcome if you can prove it].",
+        ))
+
+    if resume_role_family != jd_role_family and jd_role_family != "general software":
+        feedback["recommended_next_edits"].append(_feedback_item(
+            title="Role alignment needs to be clearer",
+            message=f"The CV currently reads closer to {resume_role_family}, while the JD is closer to {jd_role_family}.",
+            why_this_matters="A role mismatch can make relevant transferable work harder for recruiters to notice.",
+            suggested_edit=f"Move the most relevant {jd_role_family} project or technical responsibility higher in the CV if you have it.",
+        ))
+
+    if jd_stacks and not set(resume_stacks).intersection(jd_stacks):
+        feedback["recommended_next_edits"].append(_feedback_item(
+            title="Stack gap should be handled explicitly",
+            message=f"JD stack signals include {', '.join(jd_stacks[:4])}, but the CV stack signals are {', '.join(resume_stacks[:4]) or 'not clear'}.",
+            why_this_matters="Same-role candidates can still be screened out when the target stack is not visible.",
+            suggested_edit="If you have used the JD stack, add it with project evidence. If not, position your current stack as transferable and prioritize learning the missing stack.",
+        ))
+
+    feedback["suggested_bullet_rewrites"].extend(_suggest_safe_bullet_rewrites(evidenced, jd_role_family)[:3])
+
+    if confidence == "low":
+        feedback["recommended_next_edits"].append(_feedback_item(
+            title="CV text is not enough for confident feedback",
+            message="The extracted CV text or detected evidence is limited, so suggestions should be checked against the original CV.",
+            why_this_matters="Low extraction quality can make the system miss real experience.",
+            suggested_edit="Verify the CV preview first, then add more detailed project bullets if important content is missing.",
+        ))
+
+    if not any(feedback.values()):
+        feedback["recommended_next_edits"].append(_feedback_item(
+            title="CV is already aligned on detected skills",
+            message="No major rewrite issue was detected from the current CV and JD text.",
+            why_this_matters="For a strong fit, the next improvement is usually clarity and ordering rather than adding unsupported claims.",
+            suggested_edit="Keep the most relevant project near the top and make sure each bullet shows tech stack, responsibility and real outcome.",
+        ))
+
+    return feedback
+
+
+def _suggest_safe_bullet_rewrites(evidenced_skills: list[str], jd_role_family: str) -> list[dict[str, str]]:
+    skill_set = set(evidenced_skills)
+    suggestions = []
+    role_templates = {
+        "backend": [
+            ({"api", "rest api", "authentication", "jwt"}, "Developed backend REST API workflows with authentication/JWT support and clear request validation."),
+            ({"database", "sql", "postgresql"}, "Implemented database-backed features using SQL/PostgreSQL and documented schema or query responsibilities."),
+            ({"docker"}, "If you actually handled deployment, describe how Docker was used to run or package the backend service."),
+            ({"c#", ".net", "asp.net core"}, "Developed ASP.NET Core backend APIs for core workflows, including validation, data access and service logic."),
+            ({"python", "fastapi"}, "Developed FastAPI backend endpoints for core workflows, including validation, data access and service logic."),
+        ],
+        "frontend": [
+            ({"react", "typescript", "javascript"}, "Built React/TypeScript UI components and integrated them with backend APIs and user-facing states."),
+            ({"html", "css", "tailwind"}, "Implemented responsive UI screens with HTML/CSS/Tailwind and handled loading, empty and error states."),
+            ({"api", "rest api", "authentication"}, "Integrated frontend screens with REST APIs and authentication state for a production-style user flow."),
+        ],
+        "ai/data": [
+            ({"python", "machine learning", "scikit-learn"}, "Built Python machine learning experiments with clear dataset preparation, model evaluation and result interpretation."),
+            ({"pandas", "numpy", "sql"}, "Prepared and analyzed datasets using pandas/numpy/SQL, then documented the insight or decision supported by the analysis."),
+        ],
+    }
+    templates = role_templates.get(jd_role_family, []) + role_templates.get("backend", [])[:1]
+    for required_skills, rewrite in templates:
+        if required_skills.intersection(skill_set):
+            suggestions.append(_feedback_item(
+                title="Safe bullet rewrite template",
+                message="Use this only if it accurately reflects what you implemented.",
+                why_this_matters="This turns a generic project line into a recruiter-readable technical responsibility.",
+                suggested_edit=rewrite,
+            ))
+    if not suggestions and evidenced_skills:
+        suggestions.append(_feedback_item(
+            title="Make evidenced skills more specific",
+            message=f"The CV has evidence for {', '.join(evidenced_skills[:4])}, but the strongest bullet can be more explicit.",
+            why_this_matters="Specific bullets are easier to match with JD requirements than broad claims.",
+            suggested_edit="Rewrite one project bullet to include the feature, tech stack, your responsibility and a real outcome if available.",
+        ))
+    return _dedupe_feedback_items(suggestions)
+
+
+def _dedupe_feedback_items(items: list[dict[str, str]]) -> list[dict[str, str]]:
+    seen = set()
+    deduped = []
+    for item in items:
+        key = (item.get("title"), item.get("message"), item.get("suggested_edit"))
+        if key not in seen:
+            deduped.append(item)
+            seen.add(key)
+    return deduped
+
 
 def _dedupe_preserve_order(items: list[str]) -> list[str]:
     seen = set()

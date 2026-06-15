@@ -268,6 +268,7 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Keyword trùng khớp</h4>
             <TagList items={analysis.keyword_overlap} emptyText="Chưa có keyword overlap đáng kể." />
           </div>
+          <ResumeFeedbackSection feedback={analysis.resume_feedback} />
           <div className="mt-5">
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Gợi ý cải thiện</h4>
             <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
@@ -280,6 +281,52 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
         </>
       ) : null}
     </article>
+  );
+}
+
+
+function ResumeFeedbackSection({ feedback }: { feedback?: MatchAnalysis["resume_feedback"] }) {
+  if (!feedback) return null;
+
+  const groups = [
+    { title: "Critical gaps", items: feedback.critical_gaps },
+    { title: "CV wording improvements", items: feedback.cv_wording_improvements },
+    { title: "Suggested bullet rewrites", items: feedback.suggested_bullet_rewrites },
+    { title: "Missing evidence areas", items: feedback.missing_evidence_areas },
+    { title: "Recommended next edits", items: feedback.recommended_next_edits }
+  ].filter((group) => group.items.length > 0);
+
+  if (groups.length === 0) return null;
+
+  return (
+    <section className="mt-5 rounded-lg border border-emerald-300/20 bg-emerald-300/5 p-5">
+      <h4 className="text-base font-semibold text-emerald-100">Resume Improvement Suggestions</h4>
+      <p className="mt-2 text-sm leading-6 text-slate-300">
+        {"G\u1ee3i \u00fd n\u00e0y d\u1ef1a tr\u00ean CV/JD \u0111\u00e3 \u0111\u1ecdc \u0111\u01b0\u1ee3c v\u00e0 ch\u1ec9 d\u00f9ng template rule-based. H\u00e3y ch\u1ec9 th\u00eam n\u1ed9i dung n\u1ebfu ph\u1ea3n \u00e1nh \u0111\u00fang kinh nghi\u1ec7m th\u1eadt c\u1ee7a b\u1ea1n."}
+      </p>
+
+      <div className="mt-5 space-y-5">
+        {groups.map((group) => (
+          <div key={group.title} className="min-w-0">
+            <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">{group.title}</h5>
+            <div className="mt-3 grid gap-3">
+              {group.items.map((item, itemIndex) => (
+                <div key={`${group.title}-${itemIndex}-${item.title}`} className="rounded-md border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
+                  <p className="font-semibold text-slate-100">{item.title}</p>
+                  <p className="mt-2 break-words">{item.message}</p>
+                  <p className="mt-2 break-words text-slate-400"><span className="font-medium text-slate-300">Why this matters:</span> {item.why_this_matters}</p>
+                  {item.suggested_edit ? (
+                    <p className="mt-2 break-words rounded-md border border-emerald-300/15 bg-emerald-300/5 p-3 text-emerald-100">
+                      <span className="font-medium">Suggested improvement:</span> {item.suggested_edit}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

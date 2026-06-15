@@ -27,6 +27,21 @@ export type PrioritizedMissingSkills = {
   low_priority: string[];
 };
 
+export type ResumeFeedbackItem = {
+  title: string;
+  message: string;
+  why_this_matters: string;
+  suggested_edit?: string | null;
+};
+
+export type ResumeFeedback = {
+  critical_gaps: ResumeFeedbackItem[];
+  cv_wording_improvements: ResumeFeedbackItem[];
+  suggested_bullet_rewrites: ResumeFeedbackItem[];
+  missing_evidence_areas: ResumeFeedbackItem[];
+  recommended_next_edits: ResumeFeedbackItem[];
+};
+
 export type MatchAnalysis = {
   id: number;
   user_id: number;
@@ -38,6 +53,7 @@ export type MatchAnalysis = {
   keyword_overlap: string[];
   summary: string;
   suggestions: string[];
+  resume_feedback: ResumeFeedback;
   resume_text_preview: string;
   jd_text_preview: string;
   resume_detected_skills: string[];

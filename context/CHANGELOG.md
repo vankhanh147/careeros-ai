@@ -232,3 +232,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Calibrated matcher lightly to ignore negated skill mentions such as `no C#`, `no React`, `without Docker` and `kh?ng c? backend`.
 - Adjusted role-family detection so mobile and ai/data profiles are not mislabeled as backend when backend evidence is only generic API/auth/data overlap.
 - Added backend regression tests for negation handling and mobile cross-domain matching.
+
+## Phase 7.3: Resume Feedback & Rewrite Suggestions MVP
+
+- Added template-based resume feedback to Resume/JD analysis output.
+- Added additive `resume_feedback` response field without changing database schema.
+- Feedback groups cover critical gaps, CV wording improvements, suggested bullet rewrites, missing evidence areas and recommended next edits.
+- Frontend `/analysis` now displays `Resume Improvement Suggestions` on detailed analysis results.
+- Added regression tests for U01, U02, U04 and U10 sanity checks.
+- Added `context/PHASE_7_3_RESUME_FEEDBACK_REPORT.md`.

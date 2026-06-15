@@ -116,6 +116,7 @@ def _to_response(analysis: MatchAnalysis, debug_result: dict[str, object] | None
         keyword_overlap=_load_json_list(analysis.keyword_overlap),
         summary=analysis.summary,
         suggestions=_load_json_list(analysis.suggestions),
+        resume_feedback=debug_result.get("resume_feedback", {}),
         resume_text_preview=str(debug_result["resume_text_preview"]),
         jd_text_preview=str(debug_result["jd_text_preview"]),
         resume_detected_skills=[str(item) for item in debug_result["resume_detected_skills"]],

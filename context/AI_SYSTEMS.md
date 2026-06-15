@@ -179,3 +179,17 @@ Matching V2.1 is the current benchmarked matcher baseline. It keeps the Phase 6.
 - Specialized role-family correction: mobile and ai/data profiles can become primary role family when backend signals are only generic API/auth/data overlap and no strong backend stack signal exists.
 
 Benchmark U01-U10 now has V2.1 scores recorded in `docs/benchmark-v1/expected_results_v2.md`. Semantic similarity remains optional and was disabled for the V2.1 benchmark rerun to mirror Render Free production settings.
+
+## Phase 7.3 Resume Feedback Engine MVP
+
+Resume/JD analysis now includes a deterministic `resume_feedback` output. This is not an LLM rewrite system and does not rewrite the full CV.
+
+Current behavior:
+
+- Detects missing critical skills from JD requirements.
+- Flags weak project evidence when matched skills appear shallow or keyword-level.
+- Highlights missing role-critical keywords and role/stack mismatch.
+- Generates safe suggested bullet templates only from evidenced skills.
+- Uses conditional wording such as `If you actually used X...` when evidence is missing or uncertain.
+
+Output groups are `critical_gaps`, `cv_wording_improvements`, `suggested_bullet_rewrites`, `missing_evidence_areas` and `recommended_next_edits`. The system remains rule-based, explainable and deterministic.

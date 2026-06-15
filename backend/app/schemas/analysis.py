@@ -34,6 +34,21 @@ class PrioritizedMissingSkills(BaseModel):
     low_priority: list[str]
 
 
+class ResumeFeedbackItem(BaseModel):
+    title: str
+    message: str
+    why_this_matters: str
+    suggested_edit: str | None = None
+
+
+class ResumeFeedback(BaseModel):
+    critical_gaps: list[ResumeFeedbackItem] = Field(default_factory=list)
+    cv_wording_improvements: list[ResumeFeedbackItem] = Field(default_factory=list)
+    suggested_bullet_rewrites: list[ResumeFeedbackItem] = Field(default_factory=list)
+    missing_evidence_areas: list[ResumeFeedbackItem] = Field(default_factory=list)
+    recommended_next_edits: list[ResumeFeedbackItem] = Field(default_factory=list)
+
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -47,6 +62,7 @@ class MatchAnalysisResponse(BaseModel):
     keyword_overlap: list[str]
     summary: str
     suggestions: list[str]
+    resume_feedback: ResumeFeedback
     resume_text_preview: str
     jd_text_preview: str
     resume_detected_skills: list[str]
