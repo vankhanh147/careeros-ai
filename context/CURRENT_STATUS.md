@@ -407,7 +407,7 @@ Completed:
 - Expanded deterministic question bank for Backend .NET, Backend Node.js, Backend Python/FastAPI, Frontend React, AI/Data, Mobile Flutter and General software intern.
 - Added adaptive question selection from missing/critical skills, latest roadmap interview prep, target role and stack context.
 - Added additive response metadata for question reason, related skills, category and better answer hints.
-- Improved answer feedback with categories such as `thi?u concept`, `thi?u v? d? project`, `thi?u tradeoff`, `tr? l?i qu? chung` and `c? d?u hi?u hi?u ??ng`.
+- Improved answer feedback with categories such as `thiếu concept`, `thiếu ví dụ project`, `thiếu tradeoff`, `trả lời quá chung` and `có dấu hiệu hiểu đúng`.
 - Polished frontend `/interview` to show role/stack context, why a question is asked, related skills and feedback category.
 - Added `context/PHASE_7_5_INTERVIEW_V2_REPORT.md`.
 
@@ -421,9 +421,25 @@ Completed:
 
 - Added roadmap item completion using the existing `LearningRoadmap.items` JSON payload.
 - Added `PATCH /api/roadmaps/latest/items/{item_index}/completion` for the latest roadmap only.
-- Frontend `/roadmap` now lets users mark current roadmap items complete/incomplete and shows a simple `?? ho?n th?nh X/Y m?c roadmap` summary.
+- Frontend `/roadmap` now lets users mark current roadmap items complete/incomplete and shows a simple `Đã hoàn thành X/Y mục roadmap` summary.
 - Dashboard summary now includes learning-loop signals: latest roadmap progress, `has_new_resume_after_analysis`, `should_rerun_analysis` and `learning_loop_summary`.
 - Dashboard next actions now suggest rerunning analysis after a new CV upload or after roadmap progress, and suggest Mock Interview after roadmap creation.
 - Added backend tests for completion updates and dashboard learning-loop signals.
 
 Current readiness: CareerOS AI now has a simple return loop for beta users: learn from roadmap, update CV, rerun matching and practice interview.
+
+## Phase 7.7 Update: Lightweight Founder Insights - Completed
+
+Date: 2026-06-16
+
+Phase 7.7 adds a lightweight founder/internal insights view without creating an analytics platform or changing the database schema.
+
+Completed:
+
+- Added founder-only endpoint `GET /api/founder/insights`, protected by JWT and `User.role` in `founder` or `admin`.
+- Added hidden frontend page `/founder-insights` with aggregate cards/lists only.
+- Aggregated product funnel counts, useful feedback by type, common missing skills, match health and learning-loop signals.
+- Reused existing product data, `UsageEvent` and `UserFeedback`; no external analytics service or new event system was added.
+- Added backend tests for founder auth, empty fallback and aggregate insight correctness.
+
+Current readiness: founder can now answer where beta users are stuck and which MVP modules seem useful, without exposing PII or building a full analytics/admin product.

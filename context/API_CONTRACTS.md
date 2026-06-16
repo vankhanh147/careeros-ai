@@ -540,3 +540,31 @@ Existing fields remain available: `skill_score`, `keyword_score`, `semantic_scor
 - `learning_loop_summary`
 
 Existing frontend/API consumers remain compatible because these are additive fields.
+
+## Phase 7.7 Founder Insights API
+
+Router: `backend/app/routers/founder_insights.py`
+
+### `GET /api/founder/insights`
+
+JWT protected and founder-only.
+
+Access rule:
+
+- `User.role` must be `founder` or `admin`.
+- Regular users receive `403` with code `FOUNDER_ACCESS_REQUIRED`.
+
+Response includes aggregate-only data:
+
+- `funnel`: registered users, profile completed users, CV users, JD users, analysis users, roadmap users, interview started users, interview completed users.
+- `feedback`: useful/not useful totals and useful rate by `analysis`, `roadmap`, `interview`.
+- `common_missing_skills`: top missing skills from stored analysis missing-skill lists.
+- `match_health`: total analyses, average match score and confidence counts.
+- `learning_loop`: users completing roadmap items, completed roadmap items and users rerunning analysis after roadmap.
+
+Safety:
+
+- Does not return user emails.
+- Does not return CV text.
+- Does not return JD text.
+- Does not return feedback comments.

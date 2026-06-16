@@ -174,3 +174,10 @@ Phase 7.1 fixed frontend API error message encoding and beta checklist encoding.
 - Only the latest roadmap can be updated; older roadmap history is read-only in the UI.
 - Completion is self-reported by the user and is not verified against actual CV changes or project artifacts.
 - There is no progress table, streak, badge, notification or complex productivity system.
+
+## Phase 7.7 Founder Insights Limitations
+
+- Founder insights are lifetime aggregate counts, not cohort analytics or time-windowed reporting.
+- Rerun-after-roadmap is inferred from existing analysis/roadmap records, not a dedicated event.
+- Confidence counts are recomputed from current matcher logic, so they can shift after matcher changes.
+- There is no chart library, export flow, segmentation, audit log or admin user-management screen.

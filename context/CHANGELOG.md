@@ -266,3 +266,10 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added dashboard rerun signals for new CV uploads after analysis and partial roadmap completion.
 - Added backend regression tests for roadmap completion and dashboard learning-loop signals.
 - No database schema change, no new progress table and no gamification system were added.
+
+## 2026-06-16 - Phase 7.7 Lightweight Founder Insights
+
+- Added founder-only aggregate insights endpoint `GET /api/founder/insights`.
+- Added hidden frontend page `/founder-insights` for product funnel, useful feedback, common missing skills, match health and learning-loop signals.
+- Reused existing product tables, `UsageEvent` and `UserFeedback`; no external analytics service, charting system, new event system or database schema change was added.
+- Added backend tests for founder access, empty data fallback and aggregation correctness.
