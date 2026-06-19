@@ -125,6 +125,7 @@ def _to_response(analysis: MatchAnalysis, debug_result: dict[str, object] | None
         skill_gap_summary=str(debug_result["skill_gap_summary"]),
         prioritized_missing_skills=debug_result["prioritized_missing_skills"],
         improvement_plan=[str(item) for item in debug_result["improvement_plan"]],
+        taxonomy_insights=debug_result.get("taxonomy_insights", {}),
         created_at=analysis.created_at,
         updated_at=analysis.updated_at,
     )

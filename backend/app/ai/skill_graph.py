@@ -79,7 +79,7 @@ SKILL_GRAPH: dict[str, SkillNode] = {
         "related_skills": ["FastAPI", "Django", "Flask", "pandas", "machine learning"],
     },
     "ASP.NET Core": {
-        "aliases": ["asp net core", "asp.net", "asp net", ".net web api"],
+        "aliases": ["asp net core", "asp.net", "asp net", "aspnet core", "aspnetcore", ".net web api"],
         "category": "backend_framework",
         "related_skills": ["C#", ".NET", "REST API", "Entity Framework Core", "JWT"],
     },

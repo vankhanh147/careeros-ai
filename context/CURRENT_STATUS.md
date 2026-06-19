@@ -468,3 +468,18 @@ Date: 2026-06-20
 - Added `context/LANGUAGE_ENCODING_STANDARD.md` as the project-level standard for Vietnamese-first content and future i18n readiness.
 - Added rules to avoid mojibake in new markdown, docs, reports and generated content.
 - No app logic, API contract, database schema, matcher logic or UI behavior was changed.
+
+## Phase 8.2 Update: Taxonomy Integration Read-only Mode - Completed
+
+Date: 2026-06-20
+
+Phase 8.2 integrates Career Taxonomy and Skill Graph as a read-only knowledge layer.
+
+Completed:
+
+- Added `backend/app/ai/taxonomy_insights.py` for skill alias normalization, role-family insight, stack group insight and related skill suggestions.
+- Added additive `taxonomy_insights` metadata to Resume/JD analysis response.
+- Roadmap generator now reads taxonomy to normalize aliases, reduce duplicate skills and suggest related skills lightly.
+- Interview generator now normalizes missing/critical skill aliases before question selection.
+- Benchmark safety rerun confirmed taxonomy metadata changes score delta by `0.0` for U01-U10 canonical reconstruction.
+- No database schema, scoring formula, UI production flow, LLM, training or benchmark baseline change was introduced.

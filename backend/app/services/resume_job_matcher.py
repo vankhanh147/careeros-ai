@@ -6,6 +6,8 @@ from typing import Any
 
 from pypdf import PdfReader
 
+from app.ai.taxonomy_insights import build_match_taxonomy_insights
+
 SEMANTIC_MODEL_NAME = "all-MiniLM-L6-v2"
 SEMANTIC_MODEL: Any | None = None
 SEMANTIC_MODEL_LOAD_ERROR: str | None = None
@@ -207,6 +209,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "jd_text_preview": build_text_preview(job_description_text),
         "resume_detected_skills": resume_skills,
         "jd_detected_skills": jd_skills,
+        "taxonomy_insights": build_match_taxonomy_insights(resume_skills, jd_skills),
         "scoring_breakdown": {
             "skill_score": skill_score,
             "keyword_score": keyword_score,

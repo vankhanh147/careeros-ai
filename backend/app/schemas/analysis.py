@@ -49,6 +49,22 @@ class ResumeFeedback(BaseModel):
     recommended_next_edits: list[ResumeFeedbackItem] = Field(default_factory=list)
 
 
+class TaxonomyInsight(BaseModel):
+    role_family: str = "general software"
+    stack_groups: list[str] = Field(default_factory=list)
+    normalized_skills: list[str] = Field(default_factory=list)
+    related_skill_suggestions: list[str] = Field(default_factory=list)
+
+
+class MatchTaxonomyInsights(BaseModel):
+    role_family: str = "general software"
+    stack_groups: list[str] = Field(default_factory=list)
+    normalized_skills: list[str] = Field(default_factory=list)
+    related_skill_suggestions: list[str] = Field(default_factory=list)
+    resume: TaxonomyInsight = Field(default_factory=TaxonomyInsight)
+    job_description: TaxonomyInsight = Field(default_factory=TaxonomyInsight)
+
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -71,6 +87,7 @@ class MatchAnalysisResponse(BaseModel):
     skill_gap_summary: str
     prioritized_missing_skills: PrioritizedMissingSkills
     improvement_plan: list[str]
+    taxonomy_insights: MatchTaxonomyInsights = Field(default_factory=MatchTaxonomyInsights)
     created_at: datetime
     updated_at: datetime
 

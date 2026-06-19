@@ -2,6 +2,7 @@ import re
 import unicodedata
 from typing import Any
 
+from app.ai.taxonomy_insights import expand_related_skills, normalize_skill_list
 from app.models.career_profile import CareerProfile
 from app.services.resume_job_matcher import ROLE_CORE_SKILLS, extract_skills
 
@@ -50,11 +51,12 @@ def build_roadmap_from_analysis(
     item_count = _item_count_for_timeline(week_count)
     target_role = target_role.strip() or DEFAULT_TARGET_ROLE
     current_level = current_level.strip() or "ch\u01b0a x\u00e1c \u0111\u1ecbnh"
-    high = prioritized_missing_skills.get("high_priority", [])
-    medium = prioritized_missing_skills.get("medium_priority", [])
-    low = prioritized_missing_skills.get("low_priority", [])
-    critical = critical_skills or []
-    skill_queue = _dedupe([skill for skill in critical if skill in high + medium + low] + high + medium + low)
+    high = normalize_skill_list(prioritized_missing_skills.get("high_priority", []))
+    medium = normalize_skill_list(prioritized_missing_skills.get("medium_priority", []))
+    low = normalize_skill_list(prioritized_missing_skills.get("low_priority", []))
+    critical = normalize_skill_list(critical_skills or [])
+    skill_queue = normalize_skill_list([skill for skill in critical if skill in high + medium + low] + high + medium + low)
+    related_support_skills = expand_related_skills(skill_queue, limit=4)
 
     feedback_hints = _feedback_hints(resume_feedback)
     items = _build_items(
@@ -67,6 +69,7 @@ def build_roadmap_from_analysis(
         improvement_plan=improvement_plan,
         personalized=True,
         feedback_hints=feedback_hints,
+        related_support_skills=related_support_skills,
     )
     gap_text = _gap_summary(high, medium, low)
     stack_text = f" Tr\u1ecdng t\u00e2m tech stack: {', '.join(stack_groups or [])}." if stack_groups else ""
@@ -95,14 +98,15 @@ def build_roadmap_from_profile(profile: CareerProfile, timeline: str | None = No
             target_role,
         ]
     )
-    current_skills = set(extract_skills(profile_text))
+    current_skills = set(normalize_skill_list(extract_skills(profile_text)))
     role_context = _detect_role_context(target_role)
     core_skills = _core_skills_for_roles(role_context)
-    missing_skills = [skill for skill in core_skills if skill not in current_skills]
+    missing_skills = normalize_skill_list([skill for skill in core_skills if skill not in current_skills])
 
     if not missing_skills and current_skills:
-        missing_skills = _fallback_growth_skills(role_context, current_skills)
+        missing_skills = normalize_skill_list(_fallback_growth_skills(role_context, current_skills))
 
+    related_support_skills = expand_related_skills(missing_skills, limit=4)
     high_priority = set(missing_skills[:3])
     improvement_plan = [_generic_skill_action(skill) for skill in missing_skills[:6]]
     if not improvement_plan:
@@ -121,6 +125,7 @@ def build_roadmap_from_profile(profile: CareerProfile, timeline: str | None = No
         improvement_plan=improvement_plan,
         personalized=False,
         feedback_hints=[],
+        related_support_skills=related_support_skills,
     )
     return {
         "title": f"Roadmap {week_count} tu\u1ea7n cho {target_role}",
@@ -142,10 +147,12 @@ def _build_items(
     improvement_plan: list[str],
     personalized: bool,
     feedback_hints: list[str],
+    related_support_skills: list[str] | None = None,
 ) -> list[dict[str, object]]:
     items = []
     clean_skills = skill_queue or []
     actions = improvement_plan or []
+    related_support_skills = related_support_skills or []
 
     for index in range(item_count):
         week_number = index + 1
@@ -154,6 +161,9 @@ def _build_items(
         if focus_skills:
             learning_focus = _learning_focus_for_skills(focus_skills, target_role, priority)
             item_actions = _actions_for_week(focus_skills, actions, target_role, current_level)
+            related_for_week = [skill for skill in related_support_skills if skill not in focus_skills][:2]
+            if related_for_week:
+                item_actions.append(f"K\u1ef9 n\u0103ng li\u00ean quan n\u00ean tham kh\u1ea3o th\u00eam: {', '.join(related_for_week)}. Ch\u1ec9 \u0111\u01b0a v\u00e0o CV n\u1ebfu b\u1ea1n c\u00f3 evidence th\u1eadt.")
             practice_task = _practice_task_for_skills(focus_skills, target_role)
             cv_evidence_output = _cv_evidence_for_skills(focus_skills, target_role)
             interview_prep = _interview_questions_for_skills(focus_skills, target_role)
@@ -229,7 +239,7 @@ def _actions_for_week(skills: list[str], improvement_plan: list[str], target_rol
 
 
 def _practice_task_for_skills(skills: list[str], target_role: str) -> str:
-    skill_set = set(skills)
+    skill_set = {skill.lower() for skill in skills}
     if {"authentication", "jwt", "oauth"}.intersection(skill_set):
         return "X\u00e2y d\u1ef1ng login/register, m\u1ed9t protected endpoint v\u00e0 m\u1ed9t ki\u1ec3m tra ph\u00e2n quy\u1ec1n theo role."
     if {"api", "rest api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}.intersection(skill_set):
@@ -248,13 +258,14 @@ def _practice_task_for_skills(skills: list[str], target_role: str) -> str:
 
 def _cv_evidence_for_skills(skills: list[str], target_role: str) -> str:
     skill_text = ", ".join(skills) or "the target skill"
-    if {"authentication", "jwt", "oauth"}.intersection(skills):
+    skill_set = {skill.lower() for skill in skills}
+    if {"authentication", "jwt", "oauth"}.intersection(skill_set):
         return "N\u1ebfu ho\u00e0n th\u00e0nh task n\u00e0y, b\u1ea1n c\u00f3 th\u1ec3 th\u00eam bullet: \'Implemented authentication/JWT flow for protected API endpoints.\'"
-    if {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}.intersection(skills):
+    if {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 vi\u1ec7c x\u00e2y d\u1ef1ng API endpoints c\u00f3 validation, error handling v\u00e0 t\u00edch h\u1ee3p d\u1eef li\u1ec7u."
-    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skills):
+    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 schema/query v\u00e0 c\u00e1ch database h\u1ed7 tr\u1ee3 m\u1ed9t t\u00ednh n\u0103ng c\u1ee5 th\u1ec3."
-    if {"react", "next.js", "typescript", "tailwind"}.intersection(skills):
+    if {"react", "next.js", "typescript", "tailwind"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 vi\u1ec7c x\u00e2y d\u1ef1ng UI responsive v\u00e0 t\u00edch h\u1ee3p v\u1edbi REST APIs."
     return f"N\u1ebfu b\u1ea1n th\u1ef1c s\u1ef1 ho\u00e0n th\u00e0nh project task v\u1edbi {skill_text}, h\u00e3y th\u00eam m\u1ed9t CV bullet n\u00eau r\u00f5 t\u00ednh n\u0103ng, tr\u00e1ch nhi\u1ec7m c\u1ee7a b\u1ea1n v\u00e0 artifact \u0111\u00e3 t\u1ea1o."
 
@@ -262,15 +273,16 @@ def _cv_evidence_for_skills(skills: list[str], target_role: str) -> str:
 def _interview_questions_for_skills(skills: list[str], target_role: str) -> list[str]:
     questions = []
     for skill in skills[:2]:
-        if skill in {"authentication", "jwt", "oauth"}:
+        normalized_skill = skill.lower()
+        if normalized_skill in {"authentication", "jwt", "oauth"}:
             questions.extend(["JWT authentication ho\u1ea1t \u0111\u1ed9ng nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n s\u1ebd b\u1ea3o v\u1ec7 endpoint theo role nh\u01b0 th\u1ebf n\u00e0o?"])
-        elif skill in {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}:
+        elif normalized_skill in {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}:
             questions.extend(["B\u1ea1n thi\u1ebft k\u1ebf m\u1ed9t API endpoint r\u00f5 r\u00e0ng nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n x\u1eed l\u00fd validation v\u00e0 l\u1ed7i nh\u01b0 th\u1ebf n\u00e0o?"])
-        elif skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
+        elif normalized_skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
             questions.extend(["B\u1ea1n s\u1ebd thi\u1ebft k\u1ebf schema cho t\u00ednh n\u0103ng n\u00e0y nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n tr\u00e1nh query k\u00e9m hi\u1ec7u qu\u1ea3 nh\u01b0 th\u1ebf n\u00e0o?"])
-        elif skill in {"react", "next.js", "typescript", "javascript"}:
+        elif normalized_skill in {"react", "next.js", "typescript", "javascript"}:
             questions.extend(["B\u1ea1n qu\u1ea3n l\u00fd loading state v\u00e0 error state trong UI nh\u01b0 th\u1ebf n\u00e0o?", "Component g\u1ecdi backend API an to\u00e0n nh\u01b0 th\u1ebf n\u00e0o?"])
-        elif skill in {"docker", "ci/cd"}:
+        elif normalized_skill in {"docker", "ci/cd"}:
             questions.extend(["V\u00ec sao n\u00ean d\u00f9ng Docker cho local development ho\u1eb7c deployment?", "B\u1ea1n s\u1ebd debug container kh\u00f4ng kh\u1edfi \u0111\u1ed9ng \u0111\u01b0\u1ee3c nh\u01b0 th\u1ebf n\u00e0o?"])
         else:
             questions.append(f"B\u1ea1n \u0111\u00e3 \u00e1p d\u1ee5ng {skill} trong project th\u1ef1c t\u1ebf nh\u01b0 th\u1ebf n\u00e0o?")
@@ -346,7 +358,7 @@ def _core_skills_for_roles(roles: list[str]) -> list[str]:
     skills = []
     for role in roles:
         skills.extend(sorted(ROLE_CORE_SKILLS.get(role, set())))
-    return _dedupe(skills)[:10]
+    return normalize_skill_list(_dedupe(skills))[:10]
 
 
 def _fallback_growth_skills(roles: list[str], current_skills: set[str]) -> list[str]:
@@ -355,17 +367,18 @@ def _fallback_growth_skills(roles: list[str], current_skills: set[str]) -> list[
 
 
 def _generic_skill_action(skill: str) -> str:
-    if skill in {"docker", "git", "github", "ci/cd"}:
+    normalized_skill = skill.lower()
+    if normalized_skill in {"docker", "git", "github", "ci/cd"}:
         return f"\u00c1p d\u1ee5ng {skill} theo c\u00e1ch th\u1ef1c t\u1ebf: setup, l\u1ec7nh ch\u1ea1y local, l\u1ed7i th\u01b0\u1eddng g\u1eb7p v\u00e0 ghi ch\u00fa README."
-    if skill in {"rest api", "api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}:
+    if normalized_skill in {"rest api", "api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}:
         return f"X\u00e2y d\u1ef1ng m\u1ed9t flow {skill} nh\u1ecf: CRUD, validation, error handling v\u00e0 t\u00e0i li\u1ec7u endpoint."
-    if skill in {"postgresql", "mysql", "mongodb", "sql", "database"}:
+    if normalized_skill in {"postgresql", "mysql", "mongodb", "sql", "database"}:
         return f"T\u1ea1o v\u00ed d\u1ee5 database cho {skill}: schema, query ch\u00ednh v\u00e0 t\u00edch h\u1ee3p v\u00e0o t\u00ednh n\u0103ng."
-    if skill in {"authentication", "jwt", "oauth"}:
+    if normalized_skill in {"authentication", "jwt", "oauth"}:
         return f"Tri\u1ec3n khai auth flow nh\u1ecf v\u1edbi {skill}: login, protected route v\u00e0 l\u1ed7i permission th\u01b0\u1eddng g\u1eb7p."
-    if skill in {"react", "next.js", "typescript", "javascript", "tailwind", "html", "css"}:
+    if normalized_skill in {"react", "next.js", "typescript", "javascript", "tailwind", "html", "css"}:
         return f"T\u1ea1o ho\u1eb7c c\u1ea3i thi\u1ec7n m\u1ed9t UI nh\u1ecf v\u1edbi {skill}: form, state, t\u00edch h\u1ee3p API v\u00e0 layout responsive."
-    if skill in {"ai", "machine learning", "nlp", "scikit-learn", "pytorch", "tensorflow"}:
+    if normalized_skill in {"ai", "machine learning", "nlp", "scikit-learn", "pytorch", "tensorflow"}:
         return f"X\u00e2y d\u1ef1ng m\u1ed9t notebook/project {skill} nh\u1ecf: d\u1eef li\u1ec7u \u0111\u1ea7u v\u00e0o, metric \u0111\u01a1n gi\u1ea3n v\u00e0 k\u1ebft qu\u1ea3 d\u1ec5 gi\u1ea3i th\u00edch."
     return f"H\u1ecdc {skill} th\u00f4ng qua output c\u1ee5 th\u1ec3: ghi ch\u00fa, lab, commit ho\u1eb7c artifact project."
 

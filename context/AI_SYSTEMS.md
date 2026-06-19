@@ -236,3 +236,21 @@ Role taxonomy covers Backend Developer, Frontend Developer, Fullstack Developer,
 Skill graph stores canonical skill nodes with aliases, category and related skills. Initial coverage includes JWT, Authentication, Authorization, OAuth2, React, Next.js, TypeScript, FastAPI, REST API, Python Backend and other common CareerOS AI skill families.
 
 Important boundary: Phase 8.1 does not change `resume_job_matcher.py`, roadmap generation, interview generation, database schema, API contract or frontend UI. Future phases should use this taxonomy in read-only/parallel mode before migrating production scoring logic.
+
+## Phase 8.2 Taxonomy Integration Read-only Mode
+
+CareerOS AI now uses taxonomy as a read-only knowledge layer, not as a scoring engine.
+
+Current additions:
+
+- `backend/app/ai/taxonomy_insights.py` normalizes skill aliases from `skill_graph.py`.
+- Analysis responses include additive `taxonomy_insights` metadata with role family, stack groups, normalized skills and related skill suggestions.
+- Roadmap generator can read taxonomy to normalize aliases, reduce duplicate skills and add lightweight related-skill hints.
+- Interview generator normalizes missing/critical skill aliases before selecting deterministic question-bank prompts.
+
+Important boundary:
+
+- `match_score` and `scoring_breakdown` formulas are unchanged.
+- Benchmark baseline docs are unchanged.
+- Taxonomy is not a model, not an LLM layer and not a training pipeline.
+- Future phases should keep taxonomy in parallel-evaluation mode until benchmark automation and real anonymized artifacts are available.

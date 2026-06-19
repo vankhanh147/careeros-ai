@@ -1,5 +1,6 @@
 from typing import Any
 
+from app.ai.taxonomy_insights import normalize_skill_list, normalize_skill_name
 from app.models.career_profile import CareerProfile
 from app.services.resume_job_matcher import extract_skills
 
@@ -97,12 +98,12 @@ def generate_interview_questions(
     analysis_context: dict[str, Any] | None = None,
 ) -> list[Question]:
     role_key = detect_role_key(target_role, analysis_context=analysis_context)
-    critical_skills = _as_list((analysis_context or {}).get("critical_skills"))
-    prioritized_skills = _dedupe([*critical_skills, *(missing_skills or [])])
+    critical_skills = normalize_skill_list(_as_list((analysis_context or {}).get("critical_skills")))
+    prioritized_skills = normalize_skill_list(_dedupe([*critical_skills, *(missing_skills or [])]))
     questions: list[Question] = []
 
     for skill in prioritized_skills:
-        normalized_skill = skill.strip().lower()
+        normalized_skill = normalize_skill_name(skill).lower()
         if normalized_skill in SKILL_QUESTIONS:
             questions.append(_with_reason(SKILL_QUESTIONS[normalized_skill], "C\u00e2u n\u00e0y \u0111\u01b0\u1ee3c \u01b0u ti\u00ean v\u00ec skill n\u00e0y \u0111ang thi\u1ebfu ho\u1eb7c l\u00e0 critical skill trong JD."))
 
@@ -115,7 +116,8 @@ def generate_interview_questions(
 
 
 def detect_role_key(target_role: str, analysis_context: dict[str, Any] | None = None) -> str:
-    normalized = " ".join([target_role or "", " ".join(_as_list((analysis_context or {}).get("stack_groups")))]).lower()
+    normalized_context_skills = " ".join(normalize_skill_list(_as_list((analysis_context or {}).get("critical_skills"))))
+    normalized = " ".join([target_role or "", " ".join(_as_list((analysis_context or {}).get("stack_groups"))), normalized_context_skills]).lower()
     if any(token in normalized for token in ("asp.net", ".net", "dotnet", "c#", "ef core")):
         return "backend_dotnet"
     if any(token in normalized for token in ("node", "express", "nestjs")):
@@ -144,7 +146,7 @@ def infer_target_role(profile: CareerProfile | None, explicit_target_role: str |
 def infer_profile_skills(profile: CareerProfile | None) -> list[str]:
     if profile is None:
         return []
-    return extract_skills(" ".join([profile.skills, profile.projects_summary, profile.experience_summary]))
+    return normalize_skill_list(extract_skills(" ".join([profile.skills, profile.projects_summary, profile.experience_summary])))
 
 
 def _questions_from_roadmap(items: list[dict[str, Any]]) -> list[Question]:

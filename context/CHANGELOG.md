@@ -289,3 +289,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `context/LANGUAGE_ENCODING_STANDARD.md` for Vietnamese-first copy, UTF-8 markdown/report/docs rules and future i18n readiness.
 - Updated AGENTS and DECISIONS with the new language/encoding rules.
 - No backend/frontend runtime logic was changed.
+
+## 2026-06-20 - Phase 8.2 Taxonomy Integration Read-only Mode
+
+- Added `backend/app/ai/taxonomy_insights.py` as a read-only knowledge layer over role taxonomy and skill graph.
+- Added additive `taxonomy_insights` field to analysis responses.
+- Roadmap generation now uses taxonomy normalization and related skill hints without changing schema or architecture.
+- Interview question selection now normalizes missing/critical skill aliases before matching question bank keys.
+- Added backend tests for taxonomy normalization, analysis metadata, roadmap support and interview alias handling.
+- Reran U01-U10 benchmark safety check with taxonomy metadata on/off; score delta was `0.0` for all cases.
