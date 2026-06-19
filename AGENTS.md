@@ -77,3 +77,12 @@ Các chức năng nên phục vụ trực tiếp cho giá trị cốt lõi:
 - Hỗ trợ luyện phỏng vấn.
 
 Mọi quyết định kỹ thuật nên giúp sản phẩm tiến gần hơn đến một MVP hữu ích, có thể triển khai và có thể học từ phản hồi thực tế.
+
+## Language & Encoding Standard
+
+- Toàn bộ markdown, docs, reports và generated content mới phải lưu UTF-8 chuẩn.
+- Giai đoạn hiện tại ưu tiên tiếng Việt làm ngôn ngữ chính cho UI, docs, reports và generated content.
+- Technical terms phổ biến như Backend, Frontend, Fullstack, REST API, JWT, Docker, FastAPI, Next.js, PostgreSQL, React, TypeScript, Machine Learning và AI có thể giữ nguyên khi tự nhiên.
+- Không tạo mojibake trong file mới hoặc file đang sửa. Nếu thấy lỗi như `M?c ti?u`, `Kh?ng thay ??i`, `H??ng d?n`, phải sửa ngay trong scope hiện tại.
+- Chưa triển khai i18n cho tới khi có phase riêng. Text mới nên được đặt rõ ràng để sau này dễ migrate sang `vi` và `en`.
+- Tham chiếu chuẩn chi tiết: `context/LANGUAGE_ENCODING_STANDARD.md`.

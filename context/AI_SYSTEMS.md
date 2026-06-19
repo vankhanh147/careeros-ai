@@ -223,3 +223,16 @@ Current behavior:
 - Feedback classifies answers as too short, missing concept, missing project example, missing tradeoff, too generic or showing correct understanding.
 
 Still not used: LLM API, voice/video interview, fine-tuning or conversational agent workflow.
+
+## Phase 8.1 Career Taxonomy & Skill Graph Foundation
+
+CareerOS AI now has reusable AI taxonomy foundation modules that are intentionally not integrated into production scoring yet:
+
+- `backend/app/ai/role_taxonomy.py`
+- `backend/app/ai/skill_graph.py`
+
+Role taxonomy covers Backend Developer, Frontend Developer, Fullstack Developer, Mobile Developer, AI / Machine Learning, Data Analyst, Data Engineer, DevOps, QA / Testing and Cybersecurity. Each role includes a normalized role family, stack groups and common skills.
+
+Skill graph stores canonical skill nodes with aliases, category and related skills. Initial coverage includes JWT, Authentication, Authorization, OAuth2, React, Next.js, TypeScript, FastAPI, REST API, Python Backend and other common CareerOS AI skill families.
+
+Important boundary: Phase 8.1 does not change `resume_job_matcher.py`, roadmap generation, interview generation, database schema, API contract or frontend UI. Future phases should use this taxonomy in read-only/parallel mode before migrating production scoring logic.

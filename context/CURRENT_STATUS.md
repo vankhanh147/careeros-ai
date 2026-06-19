@@ -1,4 +1,4 @@
-﻿# CURRENT_STATUS.md
+# CURRENT_STATUS.md
 
 Tài liệu này là snapshot trạng thái thật của CareerOS AI sau Phase 5.1. Future agents phải đọc file này cùng các file context khác trước khi làm feature mới.
 
@@ -443,3 +443,28 @@ Completed:
 - Added backend tests for founder auth, empty fallback and aggregate insight correctness.
 
 Current readiness: founder can now answer where beta users are stuck and which MVP modules seem useful, without exposing PII or building a full analytics/admin product.
+
+## Phase 8.1 Update: Career Taxonomy & Skill Graph Foundation - Completed
+
+Date: 2026-06-19
+
+Phase 8.1 creates reusable AI taxonomy foundations without changing production matcher behavior, database schema, API contract or UI.
+
+Completed:
+
+- Added `backend/app/ai/role_taxonomy.py` with normalized role definitions for Backend Developer, Frontend Developer, Fullstack Developer, Mobile Developer, AI / Machine Learning, Data Analyst, Data Engineer, DevOps, QA / Testing and Cybersecurity.
+- Added `backend/app/ai/skill_graph.py` with skill aliases, categories and related skills for core authentication, frontend, backend, database, DevOps, mobile, AI/ML, data, testing and cybersecurity skills.
+- Added `docs/ai-taxonomy/` documentation for role taxonomy and skill graph.
+- Added `context/PHASE_8_1_TAXONOMY_REPORT.md`.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: Phase 8.2 should integrate taxonomy in read-only/parallel mode first, then compare against existing matcher outputs before changing production scoring.
+
+## Language & Encoding Standard Update - Completed
+
+Date: 2026-06-20
+
+- Fixed Phase 8.1 taxonomy report and AI taxonomy docs to valid UTF-8 Vietnamese.
+- Added `context/LANGUAGE_ENCODING_STANDARD.md` as the project-level standard for Vietnamese-first content and future i18n readiness.
+- Added rules to avoid mojibake in new markdown, docs, reports and generated content.
+- No app logic, API contract, database schema, matcher logic or UI behavior was changed.

@@ -273,3 +273,19 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added hidden frontend page `/founder-insights` for product funnel, useful feedback, common missing skills, match health and learning-loop signals.
 - Reused existing product tables, `UsageEvent` and `UserFeedback`; no external analytics service, charting system, new event system or database schema change was added.
 - Added backend tests for founder access, empty data fallback and aggregation correctness.
+
+## 2026-06-19 - Phase 8.1 Career Taxonomy & Skill Graph Foundation
+
+- Added `backend/app/ai/role_taxonomy.py` as a shared static role taxonomy foundation.
+- Added `backend/app/ai/skill_graph.py` as a shared static skill graph foundation.
+- Added `docs/ai-taxonomy/` with role taxonomy and skill graph documentation.
+- Added `context/PHASE_8_1_TAXONOMY_REPORT.md`.
+- No production matcher logic, API contract, UI flow or database schema was changed.
+
+## 2026-06-20 - Language & Encoding Standardization
+
+- Fixed mojibake in `context/PHASE_8_1_TAXONOMY_REPORT.md`.
+- Fixed mojibake in `docs/ai-taxonomy/README.md`, `docs/ai-taxonomy/role_taxonomy.md` and `docs/ai-taxonomy/skill_graph.md`.
+- Added `context/LANGUAGE_ENCODING_STANDARD.md` for Vietnamese-first copy, UTF-8 markdown/report/docs rules and future i18n readiness.
+- Updated AGENTS and DECISIONS with the new language/encoding rules.
+- No backend/frontend runtime logic was changed.

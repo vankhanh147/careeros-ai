@@ -113,3 +113,12 @@ Do not add unless explicitly requested:
 - Negated skill mentions should not count as skill evidence.
 - Generic API/auth/database overlap should not automatically make mobile or data profiles look like backend profiles.
 - Future matcher changes must compare against the V2.1 U01-U10 scores in `docs/benchmark-v1/expected_results_v2.md`.
+
+## Language & Encoding Decisions
+
+- Current product language is Vietnamese-first until a dedicated i18n phase is implemented.
+- New markdown, docs, reports and generated content must be saved as valid UTF-8.
+- New UI/generated copy should be Vietnamese by default, while common technical terms can remain in English when natural.
+- Do not introduce mojibake in new files or touched files. If encoding corruption is found in the current scope, fix it before finishing the phase.
+- Future multilingual support should target `vi` and `en`, but language toggle/i18n infrastructure should wait for a dedicated phase to avoid premature complexity.
+- Detailed standard lives in `context/LANGUAGE_ENCODING_STANDARD.md`.
