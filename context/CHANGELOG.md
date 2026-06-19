@@ -298,3 +298,13 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Interview question selection now normalizes missing/critical skill aliases before matching question bank keys.
 - Added backend tests for taxonomy normalization, analysis metadata, roadmap support and interview alias handling.
 - Reran U01-U10 benchmark safety check with taxonomy metadata on/off; score delta was `0.0` for all cases.
+
+## 2026-06-20 - Phase 8.3 Semantic Matching Foundation
+
+- Added `backend/app/ai/semantic_matcher.py` as a lazy-loaded semantic insight service.
+- Added additive `semantic_insights` metadata to analysis responses.
+- Added `SENTENCE_TRANSFORMERS_MODEL_NAME` env documentation.
+- Added a compact Vietnamese semantic insight block to `/analysis` debug preview.
+- Added semantic fallback tests covering disabled mode, load failure and final_score safety.
+- Added `backend/scripts/run_semantic_benchmark_notes.py` as a lightweight manual helper for U01-U10 semantic evaluation.
+- Kept database schema, production scoring formula, benchmark baseline and API success fields backward-compatible.

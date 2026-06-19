@@ -67,6 +67,7 @@ JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 BACKEND_CORS_ORIGINS=https://careeros-ai-bay.vercel.app,http://localhost:3000
 SENTENCE_TRANSFORMERS_ENABLED=false
+SENTENCE_TRANSFORMERS_MODEL_NAME=all-MiniLM-L6-v2
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 LOG_LEVEL=INFO
 SUPABASE_URL=https://your-project.supabase.co
@@ -102,12 +103,13 @@ For Render free or small instances, keep:
 
 ```text
 SENTENCE_TRANSFORMERS_ENABLED=false
+SENTENCE_TRANSFORMERS_MODEL_NAME=all-MiniLM-L6-v2
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 ```
 
 With `SENTENCE_TRANSFORMERS_ENABLED=false`, the backend does not import or load `sentence-transformers` at startup or during matching. Matching falls back to rule-based scoring and the app can open its Render port quickly.
 
-Only set `SENTENCE_TRANSFORMERS_ENABLED=true` when the deployment environment has enough memory/CPU for model load. If enabled, keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` unless you intentionally allow runtime model download.
+Only set `SENTENCE_TRANSFORMERS_ENABLED=true` when the deployment environment has enough memory/CPU for model load. If enabled, set `SENTENCE_TRANSFORMERS_MODEL_NAME=all-MiniLM-L6-v2` or another lightweight compatible model, and keep `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` unless you intentionally allow runtime model download.
 
 ### Supabase Storage
 
@@ -222,6 +224,7 @@ Render Free can be too small for eager `sentence-transformers` or `torch` loadin
 
 ```text
 SENTENCE_TRANSFORMERS_ENABLED=false
+SENTENCE_TRANSFORMERS_MODEL_NAME=all-MiniLM-L6-v2
 SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true
 ```
 
@@ -251,6 +254,7 @@ Backend:
 - `JWT_SECRET_KEY` is strong and not committed.
 - `BACKEND_CORS_ORIGINS` includes the Vercel production URL.
 - `SENTENCE_TRANSFORMERS_ENABLED=false` for stable Render Free deploy unless model hosting is prepared.
+- `SENTENCE_TRANSFORMERS_MODEL_NAME=all-MiniLM-L6-v2` as the default lightweight semantic model for local evaluation.
 - `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` to avoid runtime model downloads when semantic matching is enabled.
 - Supabase Storage env vars point to the private `career-documents` bucket.
 

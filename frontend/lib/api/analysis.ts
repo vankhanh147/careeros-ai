@@ -42,6 +42,15 @@ export type ResumeFeedback = {
   recommended_next_edits: ResumeFeedbackItem[];
 };
 
+
+export type SemanticInsights = {
+  enabled: boolean;
+  model_name?: string | null;
+  resume_jd_similarity?: number | null;
+  confidence: "high" | "medium" | "low" | string;
+  notes: string[];
+  reason?: string | null;
+};
 export type MatchAnalysis = {
   id: number;
   user_id: number;
@@ -62,6 +71,7 @@ export type MatchAnalysis = {
   skill_gap_summary: string;
   prioritized_missing_skills: PrioritizedMissingSkills;
   improvement_plan: string[];
+  semantic_insights?: SemanticInsights;
   created_at: string;
   updated_at: string;
 };

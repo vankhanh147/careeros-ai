@@ -254,3 +254,28 @@ Important boundary:
 - Benchmark baseline docs are unchanged.
 - Taxonomy is not a model, not an LLM layer and not a training pipeline.
 - Future phases should keep taxonomy in parallel-evaluation mode until benchmark automation and real anonymized artifacts are available.
+
+## Phase 8.3 Semantic Matching Foundation
+
+CareerOS AI now has a dedicated semantic foundation module:
+
+- `backend/app/ai/semantic_matcher.py`
+
+Current behavior:
+
+- Semantic model loading remains disabled by default for production/free-tier deploys.
+- `SENTENCE_TRANSFORMERS_ENABLED=false` prevents importing/loading `sentence-transformers`.
+- `SENTENCE_TRANSFORMERS_MODEL_NAME` defaults to `all-MiniLM-L6-v2` for local/dev evaluation.
+- `SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY=true` prevents accidental runtime model downloads.
+- Analysis responses include additive `semantic_insights` metadata.
+- The semantic insight layer is parallel/evaluation metadata and does not replace the deterministic matcher baseline.
+- From Phase 8.3 onward, embedding similarity is exposed through `semantic_insights`; it should not change `match_score` or `final_score` until a future Hybrid Matching phase explicitly calibrates and benchmarks it.
+
+Important boundary:
+
+- No vector database.
+- No embedding persistence.
+- No LLM API.
+- No fine-tuning.
+- No benchmark baseline change.
+- Hybrid scoring should wait until Phase 8.4 and must be benchmarked before affecting production behavior.

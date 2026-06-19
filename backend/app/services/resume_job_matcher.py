@@ -1,16 +1,12 @@
 from collections import Counter
-import os
 from pathlib import Path
 import re
 from typing import Any
 
 from pypdf import PdfReader
 
+from app.ai.semantic_matcher import build_semantic_insights
 from app.ai.taxonomy_insights import build_match_taxonomy_insights
-
-SEMANTIC_MODEL_NAME = "all-MiniLM-L6-v2"
-SEMANTIC_MODEL: Any | None = None
-SEMANTIC_MODEL_LOAD_ERROR: str | None = None
 
 SKILL_ALIASES = {
     "js": "javascript",
@@ -53,7 +49,6 @@ STOPWORDS = {
 }
 
 PREVIEW_LENGTH = 1200
-MIN_TEXT_LENGTH_FOR_SEMANTIC = 80
 
 ROLE_CORE_SKILLS = {
     "backend": {
@@ -152,6 +147,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
     improvement_plan = _build_improvement_plan(prioritized_missing_skills, resume_text, job_description_text)
     overlapping_keywords = _keyword_overlap(resume_text, job_description_text)
     semantic_score, semantic_available = _semantic_score(resume_text, job_description_text)
+    semantic_insights = build_semantic_insights(resume_text, job_description_text)
 
     base_role_score, role_notes = _role_alignment_score(resume_role, jd_role, resume_stacks, jd_stacks)
     base_evidence_score, evidence_notes = _evidence_score(resume_text, matched_skills)
@@ -210,6 +206,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "resume_detected_skills": resume_skills,
         "jd_detected_skills": jd_skills,
         "taxonomy_insights": build_match_taxonomy_insights(resume_skills, jd_skills),
+        "semantic_insights": semantic_insights,
         "scoring_breakdown": {
             "skill_score": skill_score,
             "keyword_score": keyword_score,
@@ -526,50 +523,7 @@ def _v2_suggestions(
 
 
 def _semantic_score(resume_text: str, job_description_text: str) -> tuple[float, bool]:
-    if len(resume_text.strip()) < MIN_TEXT_LENGTH_FOR_SEMANTIC or len(job_description_text.strip()) < MIN_TEXT_LENGTH_FOR_SEMANTIC:
-        return 0.0, False
-
-    model = _get_semantic_model()
-    if model is None:
-        return 0.0, False
-
-    try:
-        embeddings = model.encode(
-            [resume_text, job_description_text],
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-            show_progress_bar=False,
-        )
-        cosine_similarity = float(embeddings[0] @ embeddings[1])
-        normalized_similarity = max(0.0, min(1.0, cosine_similarity))
-        return round(normalized_similarity * 15.0, 1), True
-    except Exception:
-        return 0.0, False
-
-
-def _get_semantic_model() -> Any | None:
-    global SEMANTIC_MODEL, SEMANTIC_MODEL_LOAD_ERROR
-
-    if not _sentence_transformers_enabled():
-        return None
-    if SEMANTIC_MODEL is not None:
-        return SEMANTIC_MODEL
-    if SEMANTIC_MODEL_LOAD_ERROR is not None:
-        return None
-
-    try:
-        from sentence_transformers import SentenceTransformer
-
-        local_files_only = os.getenv("SENTENCE_TRANSFORMERS_LOCAL_FILES_ONLY", "true").lower() != "false"
-        SEMANTIC_MODEL = SentenceTransformer(SEMANTIC_MODEL_NAME, local_files_only=local_files_only)
-        return SEMANTIC_MODEL
-    except Exception as exc:
-        SEMANTIC_MODEL_LOAD_ERROR = str(exc)
-        return None
-
-
-def _sentence_transformers_enabled() -> bool:
-    return os.getenv("SENTENCE_TRANSFORMERS_ENABLED", "false").strip().lower() == "true"
+    return 0.0, False
 
 
 def _build_summary(

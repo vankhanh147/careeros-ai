@@ -65,6 +65,15 @@ class MatchTaxonomyInsights(BaseModel):
     job_description: TaxonomyInsight = Field(default_factory=TaxonomyInsight)
 
 
+
+class SemanticInsights(BaseModel):
+    enabled: bool = False
+    model_name: str | None = None
+    resume_jd_similarity: float | None = None
+    confidence: str = "low"
+    notes: list[str] = Field(default_factory=list)
+    reason: str | None = None
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -88,6 +97,7 @@ class MatchAnalysisResponse(BaseModel):
     prioritized_missing_skills: PrioritizedMissingSkills
     improvement_plan: list[str]
     taxonomy_insights: MatchTaxonomyInsights = Field(default_factory=MatchTaxonomyInsights)
+    semantic_insights: SemanticInsights = Field(default_factory=SemanticInsights)
     created_at: datetime
     updated_at: datetime
 

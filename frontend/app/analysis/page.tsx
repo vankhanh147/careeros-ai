@@ -398,7 +398,7 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
         <ScoreItem label="Role alignment" value={analysis.scoring_breakdown.role_alignment_score} />
         <ScoreItem label="Evidence score" value={analysis.scoring_breakdown.evidence_score} />
         <ScoreItem label="Data completeness" value={analysis.scoring_breakdown.length_sanity} />
-        <TextItem label="Confidence" value={formatConfidence(analysis.scoring_breakdown.confidence)} />
+        <TextItem label="Độ tin cậy" value={formatConfidence(analysis.scoring_breakdown.confidence)} />
         <ScoreItem label="Final score" value={analysis.scoring_breakdown.final_score} />
       </dl>
 
@@ -429,6 +429,45 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
   );
 }
 
+
+function SemanticInsightBlock({ insight }: { insight?: MatchAnalysis["semantic_insights"] }) {
+  if (!insight) return null;
+
+  const similarity = typeof insight.resume_jd_similarity === "number" ? `${Math.round(insight.resume_jd_similarity * 100)}%` : "Chưa có";
+  const status = insight.enabled ? "Đang bật" : "Đang tắt";
+  const reason = insight.reason ? `Lý do: ${insight.reason}` : null;
+
+  return (
+    <section className="mt-5 rounded-md border border-violet-300/20 bg-violet-300/5 p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-violet-200">Tín hiệu semantic</h5>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Tín hiệu ngữ nghĩa chạy ở chế độ đánh giá song song, không thay đổi điểm phù hợp hiện tại.
+          </p>
+        </div>
+        <div className="shrink-0 rounded-md border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
+          {status}
+        </div>
+      </div>
+
+      <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+        <TextItem label="Mô hình" value={insight.model_name || "Chưa cấu hình"} />
+        <TextItem label="Độ tương đồng" value={similarity} />
+        <TextItem label="Độ tin cậy" value={formatConfidence(insight.confidence)} />
+      </dl>
+
+      {reason ? <p className="mt-3 break-words text-sm text-slate-400">{reason}</p> : null}
+      {insight.notes.length > 0 ? (
+        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+          {insight.notes.map((note, index) => (
+            <li key={`${index}-${note}`} className="break-words">{note}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
 function PreviewBox({ title, text }: { title: string; text: string }) {
   return (
     <div className="min-w-0">

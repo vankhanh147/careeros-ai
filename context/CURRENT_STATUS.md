@@ -483,3 +483,21 @@ Completed:
 - Interview generator now normalizes missing/critical skill aliases before question selection.
 - Benchmark safety rerun confirmed taxonomy metadata changes score delta by `0.0` for U01-U10 canonical reconstruction.
 - No database schema, scoring formula, UI production flow, LLM, training or benchmark baseline change was introduced.
+
+## Phase 8.3 Update: Semantic Matching Foundation - Completed
+
+Date: 2026-06-20
+
+Phase 8.3 adds a semantic matching foundation in parallel/evaluation mode.
+
+Completed:
+
+- Added `backend/app/ai/semantic_matcher.py` for lazy-loaded Sentence Transformers semantic insight.
+- Added `SENTENCE_TRANSFORMERS_MODEL_NAME` with default `all-MiniLM-L6-v2`.
+- Added additive `semantic_insights` metadata to Resume/JD analysis responses.
+- Frontend `/analysis` now shows a small Vietnamese debug block for semantic status, similarity and notes.
+- Added backend tests for disabled fallback, no import while disabled, load failure fallback, response metadata and final_score safety.
+- No database schema, production scoring formula, benchmark baseline, LLM API, fine-tuning, vector database or infra change was introduced.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: Phase 8.4 should evaluate Hybrid Matching V3 only after semantic signals are benchmarked against U01-U10 with stable artifacts.
