@@ -74,6 +74,17 @@ class SemanticInsights(BaseModel):
     notes: list[str] = Field(default_factory=list)
     reason: str | None = None
 
+
+class HybridEvaluation(BaseModel):
+    enabled: bool = False
+    hybrid_score_candidate: float
+    rule_based_score: float
+    semantic_component: float | None = None
+    taxonomy_component: float
+    confidence_adjustment: float
+    explanation_notes: list[str] = Field(default_factory=list)
+    production_safe: bool = True
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -98,6 +109,7 @@ class MatchAnalysisResponse(BaseModel):
     improvement_plan: list[str]
     taxonomy_insights: MatchTaxonomyInsights = Field(default_factory=MatchTaxonomyInsights)
     semantic_insights: SemanticInsights = Field(default_factory=SemanticInsights)
+    hybrid_evaluation: HybridEvaluation
     created_at: datetime
     updated_at: datetime
 

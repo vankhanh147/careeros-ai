@@ -127,6 +127,7 @@ def _to_response(analysis: MatchAnalysis, debug_result: dict[str, object] | None
         improvement_plan=[str(item) for item in debug_result["improvement_plan"]],
         taxonomy_insights=debug_result.get("taxonomy_insights", {}),
         semantic_insights=debug_result.get("semantic_insights", {}),
+        hybrid_evaluation=debug_result["hybrid_evaluation"],
         created_at=analysis.created_at,
         updated_at=analysis.updated_at,
     )

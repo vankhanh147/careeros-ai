@@ -501,3 +501,21 @@ Completed:
 
 Current: Phase 8 - AI Intelligence Foundation.
 Next recommended: Phase 8.4 should evaluate Hybrid Matching V3 only after semantic signals are benchmarked against U01-U10 with stable artifacts.
+## Phase 8.4 Update: Hybrid Matching V3 Evaluation Mode - Completed
+
+Date: 2026-06-21
+
+Phase 8.4 adds a Hybrid Matching V3 candidate in evaluation/parallel mode.
+
+Completed:
+
+- Added `backend/app/ai/hybrid_evaluation.py` for a non-production hybrid score candidate.
+- Analysis responses now include additive `hybrid_evaluation` metadata.
+- Hybrid candidate combines rule-based score, semantic metadata, taxonomy alignment and confidence adjustment only for evaluation.
+- `/analysis` shows a small Vietnamese debug block `Hybrid evaluation (thử nghiệm)`.
+- Added `backend/scripts/run_hybrid_benchmark_notes.py` for manual U01-U10 review.
+- Added backend tests for response presence, semantic-disabled fallback, taxonomy safety and final_score safety.
+- No database schema, production `match_score`, production `final_score`, benchmark baseline, LLM, fine-tuning, vector database or infra change was introduced.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: collect benchmark observations for `hybrid_score_candidate` before any Phase 8.5 decision about production scoring.

@@ -51,6 +51,17 @@ export type SemanticInsights = {
   notes: string[];
   reason?: string | null;
 };
+
+export type HybridEvaluation = {
+  enabled: boolean;
+  hybrid_score_candidate: number;
+  rule_based_score: number;
+  semantic_component?: number | null;
+  taxonomy_component: number;
+  confidence_adjustment: number;
+  explanation_notes: string[];
+  production_safe: boolean;
+};
 export type MatchAnalysis = {
   id: number;
   user_id: number;
@@ -72,6 +83,7 @@ export type MatchAnalysis = {
   prioritized_missing_skills: PrioritizedMissingSkills;
   improvement_plan: string[];
   semantic_insights?: SemanticInsights;
+  hybrid_evaluation?: HybridEvaluation;
   created_at: string;
   updated_at: string;
 };

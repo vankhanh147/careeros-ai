@@ -5,6 +5,7 @@ from typing import Any
 
 from pypdf import PdfReader
 
+from app.ai.hybrid_evaluation import build_hybrid_evaluation
 from app.ai.semantic_matcher import build_semantic_insights
 from app.ai.taxonomy_insights import build_match_taxonomy_insights
 
@@ -148,6 +149,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
     overlapping_keywords = _keyword_overlap(resume_text, job_description_text)
     semantic_score, semantic_available = _semantic_score(resume_text, job_description_text)
     semantic_insights = build_semantic_insights(resume_text, job_description_text)
+    taxonomy_insights = build_match_taxonomy_insights(resume_skills, jd_skills)
 
     base_role_score, role_notes = _role_alignment_score(resume_role, jd_role, resume_stacks, jd_stacks)
     base_evidence_score, evidence_notes = _evidence_score(resume_text, matched_skills)
@@ -190,6 +192,32 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         confidence=confidence,
     )
 
+    scoring_breakdown = {
+        "skill_score": skill_score,
+        "keyword_score": keyword_score,
+        "semantic_score": semantic_score,
+        "role_alignment_score": role_alignment_score,
+        "evidence_score": evidence_score,
+        "length_sanity": length_sanity,
+        "confidence": confidence,
+        "final_score": final_score,
+        "resume_role_family": resume_role["primary"],
+        "jd_role_family": jd_role["primary"],
+        "resume_role_signals": resume_role["signals"],
+        "jd_role_signals": jd_role["signals"],
+        "resume_stack_groups": resume_stacks,
+        "jd_stack_groups": jd_stacks,
+        "critical_skills": critical_skills,
+        "role_alignment_notes": role_notes,
+        "evidence_notes": evidence_notes,
+    }
+    hybrid_evaluation = build_hybrid_evaluation(
+        rule_based_score=final_score,
+        semantic_insights=semantic_insights,
+        taxonomy_insights=taxonomy_insights,
+        scoring_breakdown=scoring_breakdown,
+    )
+
     return {
         "match_score": final_score,
         "matched_skills": matched_skills,
@@ -205,29 +233,11 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "jd_text_preview": build_text_preview(job_description_text),
         "resume_detected_skills": resume_skills,
         "jd_detected_skills": jd_skills,
-        "taxonomy_insights": build_match_taxonomy_insights(resume_skills, jd_skills),
+        "taxonomy_insights": taxonomy_insights,
         "semantic_insights": semantic_insights,
-        "scoring_breakdown": {
-            "skill_score": skill_score,
-            "keyword_score": keyword_score,
-            "semantic_score": semantic_score,
-            "role_alignment_score": role_alignment_score,
-            "evidence_score": evidence_score,
-            "length_sanity": length_sanity,
-            "confidence": confidence,
-            "final_score": final_score,
-            "resume_role_family": resume_role["primary"],
-            "jd_role_family": jd_role["primary"],
-            "resume_role_signals": resume_role["signals"],
-            "jd_role_signals": jd_role["signals"],
-            "resume_stack_groups": resume_stacks,
-            "jd_stack_groups": jd_stacks,
-            "critical_skills": critical_skills,
-            "role_alignment_notes": role_notes,
-            "evidence_notes": evidence_notes,
-        },
+        "hybrid_evaluation": hybrid_evaluation,
+        "scoring_breakdown": scoring_breakdown,
     }
-
 
 def build_text_preview(text: str, limit: int = PREVIEW_LENGTH) -> str:
     cleaned = re.sub(r"\s+", " ", (text or "")).strip()

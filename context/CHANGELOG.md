@@ -308,3 +308,11 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added semantic fallback tests covering disabled mode, load failure and final_score safety.
 - Added `backend/scripts/run_semantic_benchmark_notes.py` as a lightweight manual helper for U01-U10 semantic evaluation.
 - Kept database schema, production scoring formula, benchmark baseline and API success fields backward-compatible.
+## 2026-06-21 - Phase 8.4 Hybrid Matching V3 Evaluation Mode
+
+- Added `backend/app/ai/hybrid_evaluation.py` for evaluation-only hybrid score candidates.
+- Added additive `hybrid_evaluation` metadata to analysis responses.
+- Added compact `/analysis` debug UI for Hybrid evaluation thử nghiệm.
+- Added `backend/scripts/run_hybrid_benchmark_notes.py` for U01-U10 manual review.
+- Added backend tests for hybrid response, semantic fallback, taxonomy safety and final_score safety.
+- Kept production `match_score`, `final_score`, database schema and benchmark baseline unchanged.

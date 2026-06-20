@@ -468,6 +468,45 @@ function SemanticInsightBlock({ insight }: { insight?: MatchAnalysis["semantic_i
     </section>
   );
 }
+
+function HybridEvaluationBlock({ evaluation, semanticEnabled }: { evaluation?: MatchAnalysis["hybrid_evaluation"]; semanticEnabled: boolean }) {
+  if (!evaluation) return null;
+
+  const semanticStatus = semanticEnabled ? "Đang bật" : "Đang tắt";
+  const hybridScore = `${evaluation.hybrid_score_candidate}%`;
+  const semanticValue = typeof evaluation.semantic_component === "number" ? `${evaluation.semantic_component}%` : "Chưa có";
+
+  return (
+    <section className="mt-5 rounded-md border border-fuchsia-300/20 bg-fuchsia-300/5 p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Hybrid evaluation (thử nghiệm)</h5>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Điểm này chỉ dùng để đánh giá nội bộ, chưa thay thế điểm phù hợp chính đang hiển thị.
+          </p>
+        </div>
+        <div className="shrink-0 rounded-md border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
+          Semantic: {semanticStatus}
+        </div>
+      </div>
+
+      <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <TextItem label="Điểm production" value={`${evaluation.rule_based_score}%`} />
+        <TextItem label="Điểm hybrid thử nghiệm" value={hybridScore} />
+        <TextItem label="Semantic component" value={semanticValue} />
+        <TextItem label="Taxonomy component" value={`${evaluation.taxonomy_component}%`} />
+      </dl>
+
+      {evaluation.explanation_notes.length > 0 ? (
+        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+          {evaluation.explanation_notes.map((note, index) => (
+            <li key={`${index}-${note}`} className="break-words">{note}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
 function PreviewBox({ title, text }: { title: string; text: string }) {
   return (
     <div className="min-w-0">

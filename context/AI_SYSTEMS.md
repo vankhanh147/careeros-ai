@@ -279,3 +279,25 @@ Important boundary:
 - No fine-tuning.
 - No benchmark baseline change.
 - Hybrid scoring should wait until Phase 8.4 and must be benchmarked before affecting production behavior.
+## Phase 8.4 Hybrid Matching V3 Evaluation Mode
+
+CareerOS AI now exposes an evaluation-only hybrid matching candidate:
+
+- `backend/app/ai/hybrid_evaluation.py`
+
+Current behavior:
+
+- Analysis responses include additive `hybrid_evaluation` metadata.
+- Hybrid candidate combines rule-based score, semantic insight, taxonomy alignment and confidence adjustment.
+- If semantic is disabled, candidate mirrors rule-based score and records the fallback reason.
+- `match_score` and `scoring_breakdown.final_score` remain the production source of truth.
+- The frontend labels this as `Hybrid evaluation (thử nghiệm)` and explains that it is internal/evaluation-only.
+
+Important boundary:
+
+- No database schema change.
+- No vector database.
+- No LLM API.
+- No fine-tuning.
+- No benchmark baseline change.
+- Hybrid candidate must be benchmarked before any future phase considers using it as production score.

@@ -568,3 +568,20 @@ Safety:
 - Does not return CV text.
 - Does not return JD text.
 - Does not return feedback comments.
+
+## Phase 8.4 Analysis Response Addition
+
+`POST /api/analysis/resume-job-match` and `GET /api/analysis/history` keep the existing response shape and add `hybrid_evaluation` metadata.
+
+`hybrid_evaluation` includes:
+
+- `enabled`
+- `hybrid_score_candidate`
+- `rule_based_score`
+- `semantic_component`
+- `taxonomy_component`
+- `confidence_adjustment`
+- `explanation_notes`
+- `production_safe`
+
+This is evaluation-only metadata. It does not replace `match_score` or `scoring_breakdown.final_score`.
