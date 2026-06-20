@@ -564,3 +564,25 @@ Important boundary:
 
 Current: Phase 8 - AI Intelligence Foundation.
 Next recommended: use synthetic data as evaluation supplement only, then combine with anonymized real beta cases before Phase 9.0 Trainable Matching Model.
+## Phase 8.7 Update: Synthetic Dataset Quality Review - Completed
+
+Date: 2026-06-21
+
+Phase 8.7 validates and reviews Synthetic Dataset V1 before any trainable matching work.
+
+Completed:
+
+- Added `backend/scripts/validate_synthetic_dataset.py` for deterministic dataset QA.
+- Added tests for validator success path, duplicate case detection and PII detection.
+- Added `docs/datasets/synthetic/DATASET_CARD.md`.
+- Added `context/PHASE_8_7_DATASET_QUALITY_REPORT.md`.
+- Validator confirmed 70 cases, 7 groups, 10 cases per group, valid labels/ranges, no PII signal and no mojibake signal in synthetic scope.
+
+Important boundary:
+
+- No model training was added.
+- No production scoring, database schema, UI, LLM, vector database or matcher logic changed.
+- Synthetic Dataset V1 is suitable for QA supplement, not as the sole source for Phase 9.0.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: collect real anonymized beta labels or expand synthetic coverage for DevOps, QA and Cybersecurity before trainable model work.

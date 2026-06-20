@@ -333,3 +333,11 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added deterministic generator script `backend/scripts/generate_synthetic_dataset.py`.
 - Added backend tests for synthetic dataset generator output and required fields.
 - Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.
+## 2026-06-21 - Phase 8.7 Synthetic Dataset Quality Review
+
+- Added `backend/scripts/validate_synthetic_dataset.py` to validate Synthetic Dataset V1.
+- Added validator tests for generated dataset quality, duplicate case detection and PII detection.
+- Added `docs/datasets/synthetic/DATASET_CARD.md`.
+- Added `context/PHASE_8_7_DATASET_QUALITY_REPORT.md`.
+- Validator confirmed 70 cases, balanced groups, valid labels/ranges and no blocking quality issues.
+- No production scoring, database schema, UI, LLM usage, vector database or matcher logic was changed.

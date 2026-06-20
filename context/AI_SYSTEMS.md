@@ -354,3 +354,24 @@ Important boundary:
 - It does not train a model.
 - It does not change production matcher scoring.
 - Future trainable matching should combine synthetic cases with anonymized real beta cases and human-reviewed disagreement labels.
+## Phase 8.7 Synthetic Dataset Quality Review
+
+Synthetic Dataset V1 now has validation and documentation guardrails:
+
+- `backend/scripts/validate_synthetic_dataset.py` validates dataset structure, labels, ranges, group balance, PII signals and mojibake signals.
+- `docs/datasets/synthetic/DATASET_CARD.md` documents purpose, generation method, intended use, limitations, privacy policy and known biases.
+- `context/PHASE_8_7_DATASET_QUALITY_REPORT.md` records validation result and quality review.
+
+Current validation status:
+
+- 70 cases.
+- 7 groups with 10 cases each.
+- label distribution: 10 good, 20 medium, 20 weak, 20 mismatch.
+- no blocking validation errors.
+- no cleanup needed for `synthetic_cases.json` in Phase 8.7.
+
+Important boundary:
+
+- Synthetic dataset is still a QA supplement only.
+- It should not be used alone to train or replace production scoring.
+- Trainable matching requires real anonymized beta labels and human disagreement review.
