@@ -329,3 +329,28 @@ Important boundary:
 - Useful/not useful feedback is only a weak label.
 - Human review is required before using beta labels for any trainable model.
 - Phase 9.0 should not start model training until anonymized real beta cases and disagreement reviews are available.
+## Phase 8.6 Synthetic Dataset Generation Foundation
+
+CareerOS AI now has a controlled synthetic dataset foundation:
+
+- `docs/datasets/synthetic/synthetic_cases.json` contains 70 synthetic CV/JD matching cases.
+- `docs/datasets/synthetic/synthetic_case_schema.json` defines the required case format.
+- `backend/scripts/generate_synthetic_dataset.py` deterministically regenerates the dataset without external API calls.
+
+Synthetic dataset coverage:
+
+- exact fit.
+- same-role different-stack.
+- role mismatch.
+- cross-domain transferable.
+- weak CV.
+- keyword stuffing.
+- non-IT mismatch.
+
+Important boundary:
+
+- Synthetic dataset is not real beta data.
+- It contains no scraped CVs, no copied long JD text and no PII.
+- It does not train a model.
+- It does not change production matcher scoring.
+- Future trainable matching should combine synthetic cases with anonymized real beta cases and human-reviewed disagreement labels.

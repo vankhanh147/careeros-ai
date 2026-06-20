@@ -53,6 +53,22 @@ Chỉ nên tạo training dataset khi đã có:
 - benchmark regression guardrail;
 - quyết định rõ về model training và evaluation.
 
+### Synthetic dataset
+
+Synthetic dataset là bộ case CV/JD tự tạo có kiểm soát, không chứa CV thật, JD thật hoặc PII.
+
+Nguồn hiện tại:
+
+- `docs/datasets/synthetic/`
+
+Synthetic dataset dùng để:
+
+- kiểm tra matcher trên nhiều pattern hơn khi chưa có đủ real beta users;
+- chuẩn bị format cho trainable matching trong tương lai;
+- tạo case về exact fit, same-role different-stack, role mismatch, cross-domain transferable, weak CV, keyword stuffing và non-IT mismatch.
+
+Synthetic dataset không được xem là real beta data và không nên dùng một mình để thay production scoring.
+
 ## Format chuẩn cho evaluation case
 
 ```json

@@ -325,3 +325,11 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added aggregate `feedback_labels` metadata to founder insights.
 - Added backend tests for dataset export and updated founder insights aggregation tests.
 - Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.
+## 2026-06-21 - Phase 8.6 Synthetic Dataset Generation Foundation
+
+- Added `docs/datasets/synthetic/` for controlled synthetic CV/JD matching cases.
+- Added `synthetic_case_schema.json` and generated `synthetic_cases.json` with 70 synthetic cases.
+- Covered exact fit, same-role different-stack, role mismatch, cross-domain transferable, weak CV, keyword stuffing and non-IT mismatch groups.
+- Added deterministic generator script `backend/scripts/generate_synthetic_dataset.py`.
+- Added backend tests for synthetic dataset generator output and required fields.
+- Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.

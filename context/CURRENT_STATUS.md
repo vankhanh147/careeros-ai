@@ -542,3 +542,25 @@ Important boundary:
 
 Current: Phase 8 - AI Intelligence Foundation.
 Next recommended: collect anonymized beta artifacts and review disagreement cases before Phase 9.0 Trainable Matching Model.
+## Phase 8.6 Update: Synthetic Dataset Generation Foundation - Completed
+
+Date: 2026-06-21
+
+Phase 8.6 creates a controlled synthetic dataset foundation for future trainable matching work while keeping production scoring unchanged.
+
+Completed:
+
+- Added `docs/datasets/synthetic/` with README, schema and generated dataset.
+- Added 70 synthetic CV/JD matching cases across exact fit, same-role different-stack, role mismatch, cross-domain transferable, weak CV, keyword stuffing and non-IT mismatch groups.
+- Added deterministic generator script `backend/scripts/generate_synthetic_dataset.py`.
+- Added tests for generator size, group coverage, case IDs, labels and required fields.
+- Updated dataset documentation and AI context.
+
+Important boundary:
+
+- Synthetic cases are not real beta data.
+- No production `match_score` or `final_score` changed.
+- No model training, LLM API, fine-tuning, vector database or database schema change was introduced.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: use synthetic data as evaluation supplement only, then combine with anonymized real beta cases before Phase 9.0 Trainable Matching Model.

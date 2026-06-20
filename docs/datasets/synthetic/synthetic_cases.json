@@ -1,0 +1,1694 @@
+{
+  "schema_version": "careeros-synthetic-dataset-v1",
+  "dataset_type": "synthetic",
+  "description": "Synthetic CV/JD matching cases tự tạo, không chứa CV thật, JD thật hoặc PII.",
+  "case_count": 70,
+  "cases": [
+    {
+      "case_id": "SYN001",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với .NET, C#, SQL #1.",
+      "resume_summary": "CV mô tả project dùng C#, ASP.NET Core, REST API, JWT, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN008",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Node.js, Express, MongoDB #2.",
+      "resume_summary": "CV mô tả project dùng Node.js, Express, REST API, JWT, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN015",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, FastAPI, SQL #3.",
+      "resume_summary": "CV mô tả project dùng Python, FastAPI, REST API, PostgreSQL, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI",
+        "REST API",
+        "PostgreSQL"
+      ],
+      "missing_critical_skills": [
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN022",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #4.",
+      "resume_summary": "CV mô tả project dùng React, TypeScript, Next.js, REST API, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN029",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #5.",
+      "resume_summary": "CV mô tả project dùng Python, Machine Learning, scikit-learn, pandas, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Python",
+        "Machine Learning",
+        "scikit-learn",
+        "pandas"
+      ],
+      "missing_critical_skills": [
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN036",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Flutter, Dart, Firebase #6.",
+      "resume_summary": "CV mô tả project dùng Flutter, Dart, Firebase, REST API, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN043",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #7.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, data cleaning, Power BI, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "SQL",
+        "dashboard",
+        "data cleaning",
+        "Power BI"
+      ],
+      "missing_critical_skills": [
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN050",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với .NET, C#, SQL #8.",
+      "resume_summary": "CV mô tả project dùng C#, ASP.NET Core, REST API, JWT, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN057",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Node.js, Express, MongoDB #9.",
+      "resume_summary": "CV mô tả project dùng Node.js, Express, REST API, JWT, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN064",
+      "dataset_type": "synthetic",
+      "group": "exact_fit",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, FastAPI, SQL #10.",
+      "resume_summary": "CV mô tả project dùng Python, FastAPI, REST API, PostgreSQL, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "good",
+      "expected_score_range": "75-90",
+      "reason": "Ứng viên và JD cùng role/stack chính, còn thiếu một vài kỹ năng phụ nên không nên chấm tuyệt đối.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI",
+        "REST API",
+        "PostgreSQL"
+      ],
+      "missing_critical_skills": [
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN002",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Node.js, Express, MongoDB #1.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core"
+      ]
+    },
+    {
+      "case_id": "SYN009",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, FastAPI, SQL #2.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express"
+      ]
+    },
+    {
+      "case_id": "SYN016",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với .NET, C#, SQL #3.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI"
+      ]
+    },
+    {
+      "case_id": "SYN023",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #4.",
+      "resume_summary": "CV mô tả project dùng REST API, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN030",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #5.",
+      "resume_summary": "CV mô tả project dùng Python, Machine Learning, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Python",
+        "Machine Learning",
+        "scikit-learn",
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN037",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Flutter, Dart, Firebase #6.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN044",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #7.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "SQL",
+        "dashboard",
+        "data cleaning",
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN051",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Node.js, Express, MongoDB #8.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core"
+      ]
+    },
+    {
+      "case_id": "SYN058",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, FastAPI, SQL #9.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express"
+      ]
+    },
+    {
+      "case_id": "SYN065",
+      "dataset_type": "synthetic",
+      "group": "same_role_different_stack",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với .NET, C#, SQL #10.",
+      "resume_summary": "CV mô tả project dùng REST API, JWT, PostgreSQL, Docker, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "50-70",
+      "reason": "Cùng role family nhưng khác stack chính; nên có điểm trung bình khá và giải thích rõ stack gap.",
+      "skill_overlap": [
+        "REST API",
+        "JWT",
+        "PostgreSQL",
+        "Docker",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI"
+      ]
+    },
+    {
+      "case_id": "SYN003",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #1.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN010",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #2.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN017",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #3.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN024",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với .NET, C#, SQL #4.",
+      "resume_summary": "CV mô tả project dùng REST API, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN031",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Flutter, Dart, Firebase #5.",
+      "resume_summary": "CV mô tả project dùng Flutter, Dart, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Python",
+        "Machine Learning",
+        "scikit-learn",
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN038",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #6.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, Authentication, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git",
+        "Authentication"
+      ],
+      "missing_critical_skills": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN045",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Node.js, Express, MongoDB #7.",
+      "resume_summary": "CV mô tả project dùng Node.js, Express, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "SQL",
+        "dashboard",
+        "data cleaning",
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN052",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #8.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN059",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #9.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN066",
+      "dataset_type": "synthetic",
+      "group": "role_mismatch",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #10.",
+      "resume_summary": "CV mô tả project dùng REST API, Git, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "25-50",
+      "reason": "Role family khác nhau nên cần penalty rõ dù vẫn có một ít keyword kỹ thuật chung.",
+      "skill_overlap": [
+        "REST API",
+        "Git"
+      ],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN004",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #1.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN011",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #2.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN018",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #3.",
+      "resume_summary": "CV mô tả project dùng Python, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "Python"
+      ],
+      "missing_critical_skills": [
+        "FastAPI",
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN025",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Flutter, Dart, Firebase #4.",
+      "resume_summary": "CV mô tả project dùng REST API, State Management, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "REST API",
+        "State Management"
+      ],
+      "missing_critical_skills": [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN032",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, FastAPI, SQL #5.",
+      "resume_summary": "CV mô tả project dùng Python, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "Python"
+      ],
+      "missing_critical_skills": [
+        "Machine Learning",
+        "scikit-learn",
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN039",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với React, TypeScript, Tailwind #6.",
+      "resume_summary": "CV mô tả project dùng REST API, State Management, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "REST API",
+        "State Management"
+      ],
+      "missing_critical_skills": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN046",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #7.",
+      "resume_summary": "CV mô tả project dùng Python, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "Python"
+      ],
+      "missing_critical_skills": [
+        "SQL",
+        "dashboard",
+        "data cleaning",
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN053",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #8.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN060",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với SQL, Excel, Power BI #9.",
+      "resume_summary": "CV mô tả project dùng SQL, dashboard, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN067",
+      "dataset_type": "synthetic",
+      "group": "cross_domain_transferable",
+      "candidate_profile": "Ứng viên có kinh nghiệm học tập/project với Python, scikit-learn, pandas #10.",
+      "resume_summary": "CV mô tả project dùng Python, có một phần kinh nghiệm thực hành và một số evidence kỹ thuật.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "medium",
+      "expected_score_range": "35-60",
+      "reason": "Có một số transferable skills nhưng chưa đủ evidence cho target role chính.",
+      "skill_overlap": [
+        "Python"
+      ],
+      "missing_critical_skills": [
+        "FastAPI",
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN005",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng .NET, C#, SQL nhưng CV thiếu chi tiết về trách nhiệm và output #1.",
+      "resume_summary": "CV nhắc đến C#, ASP.NET Core nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN012",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Node.js, Express, MongoDB nhưng CV thiếu chi tiết về trách nhiệm và output #2.",
+      "resume_summary": "CV nhắc đến Node.js, Express nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Node.js",
+        "Express"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN019",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Python, FastAPI, SQL nhưng CV thiếu chi tiết về trách nhiệm và output #3.",
+      "resume_summary": "CV nhắc đến Python, FastAPI nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN026",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng React, TypeScript, Tailwind nhưng CV thiếu chi tiết về trách nhiệm và output #4.",
+      "resume_summary": "CV nhắc đến React, TypeScript nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "React",
+        "TypeScript"
+      ],
+      "missing_critical_skills": [
+        "Next.js",
+        "REST API",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN033",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Python, scikit-learn, pandas nhưng CV thiếu chi tiết về trách nhiệm và output #5.",
+      "resume_summary": "CV nhắc đến Python, Machine Learning nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Python",
+        "Machine Learning"
+      ],
+      "missing_critical_skills": [
+        "scikit-learn",
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN040",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Flutter, Dart, Firebase nhưng CV thiếu chi tiết về trách nhiệm và output #6.",
+      "resume_summary": "CV nhắc đến Flutter, Dart nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Flutter",
+        "Dart"
+      ],
+      "missing_critical_skills": [
+        "Firebase",
+        "REST API",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN047",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng SQL, Excel, Power BI nhưng CV thiếu chi tiết về trách nhiệm và output #7.",
+      "resume_summary": "CV nhắc đến SQL, dashboard nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "SQL",
+        "dashboard"
+      ],
+      "missing_critical_skills": [
+        "data cleaning",
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN054",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng .NET, C#, SQL nhưng CV thiếu chi tiết về trách nhiệm và output #8.",
+      "resume_summary": "CV nhắc đến C#, ASP.NET Core nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN061",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Node.js, Express, MongoDB nhưng CV thiếu chi tiết về trách nhiệm và output #9.",
+      "resume_summary": "CV nhắc đến Node.js, Express nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Node.js",
+        "Express"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN068",
+      "dataset_type": "synthetic",
+      "group": "weak_cv",
+      "candidate_profile": "Ứng viên junior có nền tảng Python, FastAPI, SQL nhưng CV thiếu chi tiết về trách nhiệm và output #10.",
+      "resume_summary": "CV nhắc đến Python, FastAPI nhưng phần project chỉ ghi chung chung như built an app hoặc worked on system.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "35-55",
+      "reason": "Role có vẻ phù hợp nhưng CV thiếu evidence project/experience nên confidence thấp hơn.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN006",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc .NET, C#, SQL nhưng mô tả project còn rất mỏng #1.",
+      "resume_summary": "CV có danh sách keyword C#, ASP.NET Core, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN013",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Node.js, Express, MongoDB nhưng mô tả project còn rất mỏng #2.",
+      "resume_summary": "CV có danh sách keyword Node.js, Express, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Node.js",
+        "Express",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN020",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Python, FastAPI, SQL nhưng mô tả project còn rất mỏng #3.",
+      "resume_summary": "CV có danh sách keyword Python, FastAPI, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN027",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc React, TypeScript, Tailwind nhưng mô tả project còn rất mỏng #4.",
+      "resume_summary": "CV có danh sách keyword React, TypeScript, Next.js nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "React",
+        "TypeScript",
+        "Next.js"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN034",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Python, scikit-learn, pandas nhưng mô tả project còn rất mỏng #5.",
+      "resume_summary": "CV có danh sách keyword Python, Machine Learning, scikit-learn nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "Python, scikit-learn, pandas",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Python",
+        "Machine Learning",
+        "scikit-learn"
+      ],
+      "missing_critical_skills": [
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN041",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Flutter, Dart, Firebase nhưng mô tả project còn rất mỏng #6.",
+      "resume_summary": "CV có danh sách keyword Flutter, Dart, Firebase nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "Flutter, Dart, Firebase",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Flutter",
+        "Dart",
+        "Firebase"
+      ],
+      "missing_critical_skills": [
+        "REST API",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN048",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc SQL, Excel, Power BI nhưng mô tả project còn rất mỏng #7.",
+      "resume_summary": "CV có danh sách keyword SQL, dashboard, data cleaning nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "SQL",
+        "dashboard",
+        "data cleaning"
+      ],
+      "missing_critical_skills": [
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN055",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc .NET, C#, SQL nhưng mô tả project còn rất mỏng #8.",
+      "resume_summary": "CV có danh sách keyword C#, ASP.NET Core, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": ".NET, C#, SQL",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "C#",
+        "ASP.NET Core",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN062",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Node.js, Express, MongoDB nhưng mô tả project còn rất mỏng #9.",
+      "resume_summary": "CV có danh sách keyword Node.js, Express, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "Node.js, Express, MongoDB",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Node.js",
+        "Express",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN069",
+      "dataset_type": "synthetic",
+      "group": "keyword_stuffing",
+      "candidate_profile": "Ứng viên liệt kê nhiều keyword thuộc Python, FastAPI, SQL nhưng mô tả project còn rất mỏng #10.",
+      "resume_summary": "CV có danh sách keyword Python, FastAPI, REST API nhưng không mô tả project, nhiệm vụ kỹ thuật hoặc kết quả cụ thể.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "Python, FastAPI, SQL",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "weak",
+      "expected_score_range": "20-45",
+      "reason": "CV chứa keyword liên quan nhưng thiếu evidence meaningful usage; matcher không nên over-score.",
+      "skill_overlap": [
+        "Python",
+        "FastAPI",
+        "REST API"
+      ],
+      "missing_critical_skills": [
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN007",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #1.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #1.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN014",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #2.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #2.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN021",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #3.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #3.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI",
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    },
+    {
+      "case_id": "SYN028",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #4.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Frontend React Intern yêu cầu React, TypeScript, Next.js, REST API, Tailwind; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #4.",
+      "target_role": "Frontend React Intern",
+      "role_family": "frontend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "React, Next.js, TypeScript, REST API, Tailwind",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "REST API",
+        "Tailwind"
+      ]
+    },
+    {
+      "case_id": "SYN035",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #5.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho AI / Machine Learning Intern yêu cầu Python, Machine Learning, scikit-learn, pandas, model evaluation; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #5.",
+      "target_role": "AI / Machine Learning Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Python, Machine Learning, scikit-learn, pandas, model evaluation",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Python",
+        "Machine Learning",
+        "scikit-learn",
+        "pandas",
+        "model evaluation"
+      ]
+    },
+    {
+      "case_id": "SYN042",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #6.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Mobile Flutter Intern yêu cầu Flutter, Dart, Firebase, REST API, mobile UI; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #6.",
+      "target_role": "Mobile Flutter Intern",
+      "role_family": "mobile",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "Flutter, Dart, Firebase, REST API, mobile UI",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "REST API",
+        "mobile UI"
+      ]
+    },
+    {
+      "case_id": "SYN049",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #7.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Data Analyst Intern yêu cầu SQL, dashboard, data cleaning, Power BI, business analysis; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #7.",
+      "target_role": "Data Analyst Intern",
+      "role_family": "ai/data",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "SQL, dashboard, data cleaning, business analysis",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "SQL",
+        "dashboard",
+        "data cleaning",
+        "Power BI",
+        "business analysis"
+      ]
+    },
+    {
+      "case_id": "SYN056",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #8.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend .NET Intern yêu cầu C#, ASP.NET Core, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #8.",
+      "target_role": "Backend .NET Intern",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "C#",
+        "ASP.NET Core",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN063",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #9.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend Node.js Developer yêu cầu Node.js, Express, REST API, JWT, PostgreSQL; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #9.",
+      "target_role": "Backend Node.js Developer",
+      "role_family": "backend",
+      "candidate_stack": "React, TypeScript, Tailwind",
+      "jd_stack": "Node.js, Express, PostgreSQL, JWT, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Node.js",
+        "Express",
+        "REST API",
+        "JWT",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "case_id": "SYN070",
+      "dataset_type": "synthetic",
+      "group": "non_it_mismatch",
+      "candidate_profile": "Ứng viên chuyển ngành từ marketing/business, có quan tâm công nghệ nhưng chưa có project kỹ thuật rõ ràng #10.",
+      "resume_summary": "CV tập trung vào marketing, teamwork và phân tích khách hàng; chưa có evidence về lập trình, API, database hoặc deployment.",
+      "job_description_summary": "JD synthetic cho Backend Python/FastAPI Intern yêu cầu Python, FastAPI, REST API, PostgreSQL, Docker; ưu tiên ứng viên có project thực tế, hiểu tradeoff cơ bản và có khả năng trình bày evidence kỹ thuật #10.",
+      "target_role": "Backend Python/FastAPI Intern",
+      "role_family": "backend",
+      "candidate_stack": "SQL, Excel, Power BI",
+      "jd_stack": "Python, FastAPI, PostgreSQL, Docker, REST API",
+      "fit_label": "mismatch",
+      "expected_score_range": "10-35",
+      "reason": "Profile không có evidence kỹ thuật phù hợp với JD công nghệ; điểm nên thấp và confidence thấp.",
+      "skill_overlap": [],
+      "missing_critical_skills": [
+        "Python",
+        "FastAPI",
+        "REST API",
+        "PostgreSQL",
+        "Docker"
+      ]
+    }
+  ]
+}

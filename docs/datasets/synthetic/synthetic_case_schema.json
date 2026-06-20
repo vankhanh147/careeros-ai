@@ -1,0 +1,35 @@
+{
+  "schema_version": "careeros-synthetic-case-schema-v1",
+  "description": "Schema tối thiểu cho synthetic CV/JD matching case. Dữ liệu synthetic không phải real beta data.",
+  "required_fields": [
+    "case_id",
+    "candidate_profile",
+    "resume_summary",
+    "job_description_summary",
+    "target_role",
+    "role_family",
+    "candidate_stack",
+    "jd_stack",
+    "fit_label",
+    "expected_score_range",
+    "reason",
+    "skill_overlap",
+    "missing_critical_skills"
+  ],
+  "fit_label_values": ["good", "medium", "weak", "mismatch"],
+  "example": {
+    "case_id": "SYN001",
+    "candidate_profile": "Ứng viên có project Backend .NET ở mức intern.",
+    "resume_summary": "CV mô tả project ASP.NET Core, REST API, JWT và PostgreSQL.",
+    "job_description_summary": "JD synthetic yêu cầu Backend .NET Intern với ASP.NET Core, C#, REST API, JWT và PostgreSQL.",
+    "target_role": "Backend .NET Intern",
+    "role_family": "backend",
+    "candidate_stack": ".NET, C#, SQL",
+    "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+    "fit_label": "good",
+    "expected_score_range": "75-90",
+    "reason": "Cùng role/stack chính và có evidence kỹ thuật phù hợp.",
+    "skill_overlap": ["C#", "ASP.NET Core", "REST API", "JWT"],
+    "missing_critical_skills": ["PostgreSQL"]
+  }
+}
