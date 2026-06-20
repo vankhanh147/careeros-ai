@@ -40,9 +40,16 @@ export type LearningLoopSummary = {
   users_rerunning_analysis_after_roadmap: number;
 };
 
+export type FeedbackLabelSummary = {
+  total_feedback_labels: number;
+  agreed_labels: number;
+  disagreed_labels: number;
+};
+
 export type FounderInsights = {
   funnel: FunnelUsage;
   feedback: FeedbackTypeSummary[];
+  feedback_labels?: FeedbackLabelSummary;
   common_missing_skills: CommonMissingSkill[];
   match_health: MatchHealthSummary;
   learning_loop: LearningLoopSummary;

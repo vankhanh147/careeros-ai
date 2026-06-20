@@ -38,6 +38,7 @@ def test_founder_insights_empty_data_fallback(client):
     assert insights["funnel"]["profile_completed_users"] == 0
     assert insights["common_missing_skills"] == []
     assert insights["match_health"]["average_match_score"] == 0
+    assert insights["feedback_labels"]["total_feedback_labels"] == 0
 
 
 def test_founder_insights_aggregates_usage_feedback_missing_skills_and_learning_loop(client):
@@ -113,6 +114,9 @@ def test_founder_insights_aggregates_usage_feedback_missing_skills_and_learning_
     assert feedback["analysis"]["useful"] == 1
     assert feedback["analysis"]["useful_rate"] == 100
     assert feedback["roadmap"]["not_useful"] == 1
+    assert insights["feedback_labels"]["total_feedback_labels"] == 2
+    assert insights["feedback_labels"]["agreed_labels"] == 1
+    assert insights["feedback_labels"]["disagreed_labels"] == 1
     assert insights["common_missing_skills"]
     assert insights["match_health"]["total_analyses"] == 2
     assert insights["learning_loop"]["users_completing_roadmap_items"] == 1

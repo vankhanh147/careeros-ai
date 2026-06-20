@@ -1,0 +1,20 @@
+{
+  "schema_version": "careeros-feedback-label-v1",
+  "description": "Schema tối thiểu cho human feedback label dùng trong Phase 8.5 và các phase trainable matching sau này.",
+  "fields": {
+    "case_id": "ID case đã ẩn danh, ví dụ U011.",
+    "user_agreed": "true nếu user/reviewer đồng ý với kết quả phân tích.",
+    "user_disagreed": "true nếu user/reviewer không đồng ý với kết quả phân tích.",
+    "reason": "Lý do ngắn gọn, không chứa PII hoặc raw CV/JD text.",
+    "expected_score_range": "Khoảng điểm reviewer kỳ vọng, ví dụ 45-60.",
+    "reviewer_notes": "Ghi chú nội bộ đã ẩn danh."
+  },
+  "example": {
+    "case_id": "U011",
+    "user_agreed": false,
+    "user_disagreed": true,
+    "reason": "Điểm matching cao hơn cảm nhận thực tế.",
+    "expected_score_range": "45-60",
+    "reviewer_notes": "Cần kiểm tra stack mismatch và critical skill weighting."
+  }
+}

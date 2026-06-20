@@ -585,3 +585,18 @@ Safety:
 - `production_safe`
 
 This is evaluation-only metadata. It does not replace `match_score` or `scoring_breakdown.final_score`.
+## Phase 8.5 Founder Insights Addition
+
+`GET /api/founder/insights` keeps the existing response shape and adds aggregate `feedback_labels` metadata:
+
+```json
+{
+  "feedback_labels": {
+    "total_feedback_labels": 3,
+    "agreed_labels": 2,
+    "disagreed_labels": 1
+  }
+}
+```
+
+This is an additive field for future dataset readiness. It is founder-only, aggregate-only and does not expose feedback comments, CV text, JD text or user emails.

@@ -40,9 +40,16 @@ class LearningLoopSummary(BaseModel):
     users_rerunning_analysis_after_roadmap: int = 0
 
 
+class FeedbackLabelSummary(BaseModel):
+    total_feedback_labels: int = 0
+    agreed_labels: int = 0
+    disagreed_labels: int = 0
+
+
 class FounderInsightsResponse(BaseModel):
     funnel: FunnelUsage
     feedback: list[FeedbackTypeSummary] = Field(default_factory=list)
+    feedback_labels: FeedbackLabelSummary = Field(default_factory=FeedbackLabelSummary)
     common_missing_skills: list[CommonMissingSkill] = Field(default_factory=list)
     match_health: MatchHealthSummary
     learning_loop: LearningLoopSummary

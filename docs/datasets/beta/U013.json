@@ -1,0 +1,14 @@
+{
+  "case_id": "U013",
+  "dataset_type": "beta",
+  "status": "template_pending_real_case",
+  "role_family": null,
+  "candidate_stack": null,
+  "target_role": null,
+  "expected_fit": null,
+  "actual_score": null,
+  "confidence": null,
+  "user_feedback": null,
+  "review_notes": null,
+  "disagreement_notes": null
+}

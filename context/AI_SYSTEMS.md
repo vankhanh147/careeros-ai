@@ -301,3 +301,31 @@ Important boundary:
 - No fine-tuning.
 - No benchmark baseline change.
 - Hybrid candidate must be benchmarked before any future phase considers using it as production score.
+## Phase 8.5 Real Beta Dataset Foundation
+
+CareerOS AI now has a dataset foundation for future AI Intelligence phases:
+
+- `docs/datasets/` documents benchmark, beta and future training dataset formats.
+- `docs/datasets/beta/` contains U011-U013 templates for future anonymized real beta cases.
+- `docs/datasets/feedback_label_schema.json` defines minimal human feedback labels.
+- `backend/app/ai/dataset_export.py` exports safe JSON payloads for benchmark cases, feedback labels and analysis summaries.
+
+Current dataset export is intentionally lightweight:
+
+- It does not export raw CV text.
+- It does not export raw JD text.
+- It does not export email or direct PII.
+- It does not train a model.
+- It does not change matcher scoring.
+
+Founder insights now include aggregate feedback label counts:
+
+- total feedback labels.
+- agreed labels.
+- disagreed labels.
+
+Important boundary:
+
+- Useful/not useful feedback is only a weak label.
+- Human review is required before using beta labels for any trainable model.
+- Phase 9.0 should not start model training until anonymized real beta cases and disagreement reviews are available.

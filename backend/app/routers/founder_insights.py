@@ -18,6 +18,7 @@ from app.models.user import User
 from app.models.user_feedback import UserFeedback
 from app.schemas.founder_insights import (
     CommonMissingSkill,
+    FeedbackLabelSummary,
     FeedbackTypeSummary,
     FounderInsightsResponse,
     FunnelUsage,
@@ -43,6 +44,7 @@ def get_founder_insights(
     return FounderInsightsResponse(
         funnel=_build_funnel(db),
         feedback=_build_feedback_summary(db),
+        feedback_labels=_build_feedback_label_summary(db),
         common_missing_skills=_build_common_missing_skills(analyses),
         match_health=_build_match_health(analyses),
         learning_loop=_build_learning_loop(analyses, roadmaps),
@@ -104,6 +106,17 @@ def _build_feedback_summary(db: Session) -> list[FeedbackTypeSummary]:
             )
         )
     return summaries
+
+
+def _build_feedback_label_summary(db: Session) -> FeedbackLabelSummary:
+    total = db.query(UserFeedback).count()
+    agreed = db.query(UserFeedback).filter(UserFeedback.useful.is_(True)).count()
+    disagreed = max(total - agreed, 0)
+    return FeedbackLabelSummary(
+        total_feedback_labels=total,
+        agreed_labels=agreed,
+        disagreed_labels=disagreed,
+    )
 
 
 def _build_common_missing_skills(analyses: list[MatchAnalysis]) -> list[CommonMissingSkill]:

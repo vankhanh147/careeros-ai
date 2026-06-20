@@ -316,3 +316,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `backend/scripts/run_hybrid_benchmark_notes.py` for U01-U10 manual review.
 - Added backend tests for hybrid response, semantic fallback, taxonomy safety and final_score safety.
 - Kept production `match_score`, `final_score`, database schema and benchmark baseline unchanged.
+## 2026-06-21 - Phase 8.5 Real Beta Dataset Foundation
+
+- Added `docs/datasets/` with benchmark, beta and future training dataset definitions.
+- Added `docs/datasets/beta/` with U011-U013 template files for future anonymized real beta cases.
+- Added `docs/datasets/feedback_label_schema.json` for human feedback label format.
+- Added `backend/app/ai/dataset_export.py` for safe JSON export of benchmark cases, feedback labels and analysis summaries.
+- Added aggregate `feedback_labels` metadata to founder insights.
+- Added backend tests for dataset export and updated founder insights aggregation tests.
+- Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.

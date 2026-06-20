@@ -519,3 +519,26 @@ Completed:
 
 Current: Phase 8 - AI Intelligence Foundation.
 Next recommended: collect benchmark observations for `hybrid_score_candidate` before any Phase 8.5 decision about production scoring.
+## Phase 8.5 Update: Real Beta Dataset Foundation - Completed
+
+Date: 2026-06-21
+
+Phase 8.5 creates the data foundation for future trainable matching without changing production scoring, database schema, UI flow or existing API behavior.
+
+Completed:
+
+- Added `docs/datasets/` with dataset philosophy, benchmark/beta/training dataset definitions and standard evaluation formats.
+- Added `docs/datasets/beta/` with U011-U013 template JSON files for future anonymized real beta cases.
+- Added `docs/datasets/feedback_label_schema.json` for human feedback labels.
+- Added `backend/app/ai/dataset_export.py` to export benchmark cases, feedback labels and analysis summaries as safe JSON.
+- Added aggregate `feedback_labels` metadata to founder insights for total/agreed/disagreed feedback labels.
+- Added backend tests for dataset export and updated founder insights tests.
+
+Important boundary:
+
+- No production `match_score` or `final_score` changed.
+- No model training, LLM API, fine-tuning, vector database or new database schema was added.
+- Dataset files do not contain real beta user data yet; U011-U013 are templates pending anonymized cases.
+
+Current: Phase 8 - AI Intelligence Foundation.
+Next recommended: collect anonymized beta artifacts and review disagreement cases before Phase 9.0 Trainable Matching Model.
