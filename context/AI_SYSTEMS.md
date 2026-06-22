@@ -396,3 +396,34 @@ Important boundary:
 - It does not train a model.
 - It does not change production matcher scoring.
 - Future trainable matching should combine this data with benchmark U01-U10 and real anonymized beta labels.
+
+## Phase 9.0 Trainable Matching Model V1
+
+CareerOS AI now has a first trainable matching prototype in evaluation mode:
+
+- `backend/app/ml/features.py`
+- `backend/app/ml/matching_model.py`
+- `backend/app/ml/evaluate_model.py`
+- `backend/app/ml/matching_predictor.py`
+- `backend/scripts/train_matching_model.py`
+
+Model baseline:
+
+- TF-IDF vectorizer.
+- Logistic Regression classifier.
+- Predicts `fit_label`: `good`, `medium`, `weak`, `mismatch`.
+- Trained on `docs/datasets/synthetic/synthetic_cases.json`.
+- Artifacts saved under `backend/models/`.
+
+Runtime behavior:
+
+- Analysis responses include additive `ml_evaluation` metadata.
+- If artifacts are missing or fail to load, predictor returns `enabled=false` with a safe reason.
+- `ml_evaluation.production_safe=false`.
+- `match_score` and `scoring_breakdown.final_score` remain unchanged and remain the production source of truth.
+
+Current limitation:
+
+- Dataset is synthetic, not real beta data.
+- Model tends to overuse `medium` for some boundary `good` and `mismatch` cases.
+- Phase 9.1 should compare ML predictions against U01-U10 and anonymized beta labels before any production scoring discussion.

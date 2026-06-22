@@ -85,6 +85,17 @@ class HybridEvaluation(BaseModel):
     explanation_notes: list[str] = Field(default_factory=list)
     production_safe: bool = True
 
+
+class MLEvaluation(BaseModel):
+    enabled: bool = False
+    predicted_label: str | None = None
+    confidence: float | None = None
+    label_probabilities: dict[str, float] = Field(default_factory=dict)
+    model_version: str | None = None
+    production_safe: bool = False
+    note: str = "ML prediction chỉ dùng để đánh giá nội bộ, chưa thay thế điểm chính."
+    reason: str | None = None
+
 class MatchAnalysisResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -110,6 +121,7 @@ class MatchAnalysisResponse(BaseModel):
     taxonomy_insights: MatchTaxonomyInsights = Field(default_factory=MatchTaxonomyInsights)
     semantic_insights: SemanticInsights = Field(default_factory=SemanticInsights)
     hybrid_evaluation: HybridEvaluation
+    ml_evaluation: MLEvaluation = Field(default_factory=MLEvaluation)
     created_at: datetime
     updated_at: datetime
 

@@ -610,3 +610,28 @@ Important boundary:
 
 Current: Phase 8 - AI Intelligence Foundation.
 Next recommended: combine Synthetic Dataset V2 with real anonymized beta labels before Phase 9.0 Trainable Matching Model.
+
+## Phase 9.0 Update: Trainable Matching Model V1 - Completed
+
+Date: 2026-06-22
+
+Phase 9.0 adds the first trainable matching model prototype for CareerOS AI while keeping production scoring unchanged.
+
+Completed:
+
+- Added `backend/app/ml/` with feature extraction, TF-IDF + Logistic Regression training utilities, evaluation helpers and runtime predictor.
+- Added `backend/scripts/train_matching_model.py`.
+- Trained from `docs/datasets/synthetic/synthetic_cases.json` only; no real user data or PII is used.
+- Saved model artifacts in `backend/models/`.
+- Added additive `ml_evaluation` metadata to analysis responses.
+- Frontend `/analysis` displays a small `ML evaluation (thử nghiệm)` block.
+- Added tests for feature extraction, predictor fallback, mock artifact loading and analysis response metadata.
+
+Important boundary:
+
+- `match_score` and `scoring_breakdown.final_score` remain the production source of truth.
+- ML output is evaluation-only and `production_safe=false`.
+- No database schema, API-breaking change, LLM API, transformer fine-tuning, vector database or GPU requirement was introduced.
+
+Current: Phase 9 - Trainable Matching Evaluation.
+Next recommended: Phase 9.1 should run ML predictions against benchmark U01-U10 and real anonymized beta labels before any scoring decision.

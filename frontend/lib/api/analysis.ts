@@ -62,6 +62,18 @@ export type HybridEvaluation = {
   explanation_notes: string[];
   production_safe: boolean;
 };
+
+export type MLEvaluation = {
+  enabled: boolean;
+  predicted_label?: string | null;
+  confidence?: number | null;
+  label_probabilities: Record<string, number>;
+  model_version?: string | null;
+  production_safe: boolean;
+  note: string;
+  reason?: string | null;
+};
+
 export type MatchAnalysis = {
   id: number;
   user_id: number;
@@ -84,6 +96,7 @@ export type MatchAnalysis = {
   improvement_plan: string[];
   semantic_insights?: SemanticInsights;
   hybrid_evaluation?: HybridEvaluation;
+  ml_evaluation?: MLEvaluation;
   created_at: string;
   updated_at: string;
 };

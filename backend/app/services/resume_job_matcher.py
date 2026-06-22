@@ -8,6 +8,7 @@ from pypdf import PdfReader
 from app.ai.hybrid_evaluation import build_hybrid_evaluation
 from app.ai.semantic_matcher import build_semantic_insights
 from app.ai.taxonomy_insights import build_match_taxonomy_insights
+from app.ml.matching_predictor import predict_matching_fit
 
 SKILL_ALIASES = {
     "js": "javascript",
@@ -217,6 +218,18 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         taxonomy_insights=taxonomy_insights,
         scoring_breakdown=scoring_breakdown,
     )
+    ml_evaluation = predict_matching_fit(_build_ml_evaluation_payload(
+        resume_text=resume_text,
+        job_description_text=job_description_text,
+        jd_role_family=jd_role["primary"],
+        resume_stacks=resume_stacks,
+        jd_stacks=jd_stacks,
+        resume_skills=resume_skills,
+        jd_skills=jd_skills,
+        matched_skills=matched_skills,
+        missing_skills=missing_skills,
+        critical_skills=critical_skills,
+    ))
 
     return {
         "match_score": final_score,
@@ -236,6 +249,7 @@ def analyze_resume_job_match(resume_text: str, job_description_text: str) -> dic
         "taxonomy_insights": taxonomy_insights,
         "semantic_insights": semantic_insights,
         "hybrid_evaluation": hybrid_evaluation,
+        "ml_evaluation": ml_evaluation,
         "scoring_breakdown": scoring_breakdown,
     }
 
@@ -244,6 +258,32 @@ def build_text_preview(text: str, limit: int = PREVIEW_LENGTH) -> str:
     if len(cleaned) <= limit:
         return cleaned
     return f"{cleaned[:limit].rstrip()}..."
+
+
+def _build_ml_evaluation_payload(
+    *,
+    resume_text: str,
+    job_description_text: str,
+    jd_role_family: str,
+    resume_stacks: list[str],
+    jd_stacks: list[str],
+    resume_skills: list[str],
+    jd_skills: list[str],
+    matched_skills: list[str],
+    missing_skills: list[str],
+    critical_skills: list[str],
+) -> dict[str, object]:
+    missing_critical = [skill for skill in critical_skills if skill in set(missing_skills)]
+    return {
+        "resume_summary": build_text_preview(resume_text, limit=800),
+        "job_description_summary": build_text_preview(job_description_text, limit=800),
+        "target_role": jd_role_family,
+        "role_family": jd_role_family,
+        "candidate_stack": resume_stacks or resume_skills,
+        "jd_stack": jd_stacks or jd_skills,
+        "missing_critical_skills": missing_critical,
+        "skill_overlap": matched_skills,
+    }
 
 
 def extract_skills(text: str) -> list[str]:

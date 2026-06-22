@@ -425,6 +425,10 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
         <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Critical skills trong JD</h5>
         <TagList items={analysis.scoring_breakdown.critical_skills ?? []} emptyText="No clear critical skill detected." />
       </div>
+
+      <SemanticInsightBlock insight={analysis.semantic_insights} />
+      <HybridEvaluationBlock evaluation={analysis.hybrid_evaluation} semanticEnabled={Boolean(analysis.semantic_insights?.enabled)} />
+      <MLEvaluationBlock evaluation={analysis.ml_evaluation} />
     </div>
   );
 }
@@ -507,6 +511,40 @@ function HybridEvaluationBlock({ evaluation, semanticEnabled }: { evaluation?: M
     </section>
   );
 }
+
+function MLEvaluationBlock({ evaluation }: { evaluation?: MatchAnalysis["ml_evaluation"] }) {
+  if (!evaluation) return null;
+
+  const confidence = typeof evaluation.confidence === "number" ? `${Math.round(evaluation.confidence * 100)}%` : "Chưa có";
+  const predictedLabel = evaluation.predicted_label ?? "Chưa có";
+  const status = evaluation.enabled ? "Đang bật" : "Chưa có artifact";
+
+  return (
+    <section className="mt-5 rounded-md border border-sky-300/20 bg-sky-300/5 p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">ML evaluation (thử nghiệm)</h5>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Dự đoán này chỉ dùng để đánh giá nội bộ cho mô hình TF-IDF + Logistic Regression, chưa thay thế điểm phù hợp chính.
+          </p>
+        </div>
+        <div className="shrink-0 rounded-md border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
+          {status}
+        </div>
+      </div>
+
+      <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+        <TextItem label="Nhãn dự đoán" value={predictedLabel} />
+        <TextItem label="Độ tự tin" value={confidence} />
+        <TextItem label="Phiên bản model" value={evaluation.model_version ?? "Chưa có"} />
+      </dl>
+
+      <p className="mt-3 break-words text-sm text-slate-400">{evaluation.note}</p>
+      {evaluation.reason ? <p className="mt-2 break-words text-sm text-slate-500">Lý do: {evaluation.reason}</p> : null}
+    </section>
+  );
+}
+
 function PreviewBox({ title, text }: { title: string; text: string }) {
   return (
     <div className="min-w-0">

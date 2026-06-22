@@ -1,0 +1,19 @@
+{
+  "model_version": "matching_model_v1",
+  "trained_at": "2026-06-22T14:01:59.444443+00:00",
+  "dataset_path": "docs\\datasets\\synthetic\\synthetic_cases.json",
+  "case_count": 300,
+  "train_size": 225,
+  "test_size": 75,
+  "random_state": 42,
+  "test_size_ratio": 0.25,
+  "accuracy": 0.7333333333333333,
+  "labels": [
+    "good",
+    "medium",
+    "mismatch",
+    "weak"
+  ],
+  "production_safe": false,
+  "note": "Model chỉ dùng cho evaluation/prototype, chưa thay thế điểm production."
+}

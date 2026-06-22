@@ -14,6 +14,9 @@ def test_create_resume_and_jd_then_run_analysis(client):
     assert "skill_gap_summary" in analysis
     assert "prioritized_missing_skills" in analysis
     assert "improvement_plan" in analysis
+    assert "ml_evaluation" in analysis
+    assert analysis["ml_evaluation"]["production_safe"] is False
+    assert analysis["match_score"] == analysis["scoring_breakdown"]["final_score"]
     assert {
         "skill_score",
         "keyword_score",

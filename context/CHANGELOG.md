@@ -350,3 +350,15 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `docs/datasets/synthetic/STATISTICS.md`.
 - Updated generator, validator, schema, dataset card and tests.
 - Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.
+
+## 2026-06-22 - Phase 9.0 Trainable Matching Model V1
+
+- Added `backend/app/ml/` for trainable matching prototype utilities.
+- Added TF-IDF feature extraction and Logistic Regression classifier training.
+- Added `backend/scripts/train_matching_model.py` to train from Synthetic Dataset V2 and save artifacts.
+- Added model artifacts under `backend/models/`.
+- Added `context/PHASE_9_0_MODEL_EVAL.md` and `context/PHASE_9_0_TRAINABLE_MODEL_REPORT.md`.
+- Added additive `ml_evaluation` metadata to Resume/JD analysis responses.
+- Added compact frontend `/analysis` block for ML evaluation in Vietnamese.
+- Added backend tests for ML feature extraction, predictor fallback, mock artifact loading and analysis metadata.
+- Kept production `match_score`, `final_score`, database schema, LLM usage, fine-tuning and vector infrastructure unchanged.

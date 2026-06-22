@@ -1,0 +1,9 @@
+{
+  "labels": [
+    "good",
+    "medium",
+    "mismatch",
+    "weak"
+  ],
+  "model_version": "matching_model_v1"
+}
