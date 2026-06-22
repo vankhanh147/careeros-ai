@@ -1,5 +1,5 @@
 {
-  "schema_version": "careeros-synthetic-case-schema-v1",
+  "schema_version": "careeros-synthetic-case-schema-v2",
   "description": "Schema tối thiểu cho synthetic CV/JD matching case. Dữ liệu synthetic không phải real beta data.",
   "required_fields": [
     "case_id",
@@ -14,7 +14,9 @@
     "expected_score_range",
     "reason",
     "skill_overlap",
-    "missing_critical_skills"
+    "missing_critical_skills",
+    "seniority",
+    "category"
   ],
   "fit_label_values": ["good", "medium", "weak", "mismatch"],
   "example": {
@@ -26,6 +28,8 @@
     "role_family": "backend",
     "candidate_stack": ".NET, C#, SQL",
     "jd_stack": "ASP.NET Core, C#, PostgreSQL, JWT, REST API",
+    "seniority": "Intern",
+    "category": "exact_fit",
     "fit_label": "good",
     "expected_score_range": "75-90",
     "reason": "Cùng role/stack chính và có evidence kỹ thuật phù hợp.",

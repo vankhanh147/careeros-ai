@@ -17,21 +17,35 @@ Mục tiêu của dataset là chuẩn bị dữ liệu đánh giá cho Phase 9.0
 ## Files
 
 - `synthetic_case_schema.json`: schema tối thiểu cho một synthetic case.
-- `synthetic_cases.json`: 70 synthetic cases ban đầu.
+- `synthetic_cases.json`: 300 synthetic cases V2.
+- `STATISTICS.md`: phân phối role, label, category và seniority.
 
 ## Nhóm case
 
-Dataset ban đầu bao gồm 7 nhóm:
+Dataset V2 bao gồm 10 nhóm:
 
 - `exact_fit`
+- `strong_evidence`
 - `same_role_different_stack`
 - `role_mismatch`
 - `cross_domain_transferable`
 - `weak_cv`
 - `keyword_stuffing`
 - `non_it_mismatch`
+- `career_switch`
+- `missing_critical_skill`
 
-Mỗi nhóm có 10 case để kiểm tra các hành vi matching quan trọng.
+Mỗi nhóm có 30 case để kiểm tra các hành vi matching quan trọng.
+
+## Coverage V2
+
+Dataset V2 bổ sung:
+
+- seniority: Intern, Fresher, Junior, Mid-level;
+- roles: Backend, Frontend, Fullstack, Mobile, AI, Machine Learning, Data Analyst, Data Engineer, DevOps, QA và Cybersecurity;
+- career switch cases;
+- weak evidence cases;
+- strong evidence cases với deploy thật, CI/CD hoặc production experience synthetic.
 
 ## Cách tạo lại dataset
 

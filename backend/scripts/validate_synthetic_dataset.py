@@ -9,16 +9,34 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 DATASET_PATH = ROOT / "docs" / "datasets" / "synthetic" / "synthetic_cases.json"
 
-EXPECTED_CASE_COUNT = 70
-EXPECTED_GROUPS = {
+EXPECTED_CASE_COUNT = 300
+EXPECTED_CASES_PER_CATEGORY = 30
+EXPECTED_CATEGORIES = {
     "exact_fit",
+    "strong_evidence",
     "same_role_different_stack",
     "role_mismatch",
     "cross_domain_transferable",
     "weak_cv",
     "keyword_stuffing",
     "non_it_mismatch",
+    "career_switch",
+    "missing_critical_skill",
 }
+EXPECTED_ROLES = {
+    "Backend Developer",
+    "Frontend Developer",
+    "Fullstack Developer",
+    "Mobile Developer",
+    "AI Engineer",
+    "Machine Learning Engineer",
+    "Data Analyst",
+    "Data Engineer",
+    "DevOps Engineer",
+    "QA Engineer",
+    "Cybersecurity Analyst",
+}
+EXPECTED_SENIORITIES = {"Intern", "Fresher", "Junior", "Mid-level"}
 VALID_FIT_LABELS = {"good", "medium", "weak", "mismatch"}
 VALID_ROLE_FAMILIES = {"backend", "frontend", "fullstack", "mobile", "ai/data", "devops", "qa/testing", "cybersecurity", "general software"}
 REQUIRED_FIELDS = {
@@ -35,6 +53,8 @@ REQUIRED_FIELDS = {
     "reason",
     "skill_overlap",
     "missing_critical_skills",
+    "seniority",
+    "category",
 }
 MOJIBAKE_PATTERN = re.compile(
     "\u00c3|\u00c4|\u00e1\u00ba|\u00e1\u00bb|\u00c6|\u00c5|\u00c2|\ufffd|M\\?|Kh\\?|H\\?\\?|tr\\?|\\?\\?\\?"
@@ -67,15 +87,20 @@ def validate_dataset(payload: dict[str, Any]) -> dict[str, Any]:
     duplicate_ids = sorted([case_id for case_id, count in Counter(case_ids).items() if count > 1])
     if duplicate_ids:
         errors.append(f"case_id bị trùng: {', '.join(duplicate_ids)}.")
+    expected_ids = [f"SYN{number:03d}" for number in range(1, EXPECTED_CASE_COUNT + 1)]
+    if case_ids != expected_ids:
+        errors.append("case_id phải chạy tuần tự từ SYN001 đến SYN300.")
 
-    group_counts = Counter(str(case.get("group", "")) for case in cases if isinstance(case, dict))
-    if set(group_counts) != EXPECTED_GROUPS:
-        errors.append(f"Nhóm case không khớp expected groups: {sorted(group_counts)}.")
-    for group in EXPECTED_GROUPS:
-        if group_counts.get(group, 0) != 10:
-            errors.append(f"Nhóm {group} phải có 10 case, hiện có {group_counts.get(group, 0)}.")
+    category_counts = Counter(str(case.get("category", case.get("group", ""))) for case in cases if isinstance(case, dict))
+    if set(category_counts) != EXPECTED_CATEGORIES:
+        errors.append(f"Category không khớp expected categories: {sorted(category_counts)}.")
+    for category in EXPECTED_CATEGORIES:
+        if category_counts.get(category, 0) != EXPECTED_CASES_PER_CATEGORY:
+            errors.append(f"Category {category} phải có {EXPECTED_CASES_PER_CATEGORY} case, hiện có {category_counts.get(category, 0)}.")
 
     label_counts: Counter[str] = Counter()
+    role_counts: Counter[str] = Counter()
+    seniority_counts: Counter[str] = Counter()
     range_widths: dict[str, list[int]] = {}
 
     for index, case in enumerate(cases, start=1):
@@ -87,6 +112,7 @@ def validate_dataset(payload: dict[str, Any]) -> dict[str, Any]:
         if missing_fields:
             errors.append(f"{case_id} thiếu field: {', '.join(missing_fields)}.")
 
+        category = str(case.get("category", case.get("group", "")))
         fit_label = str(case.get("fit_label", ""))
         label_counts[fit_label] += 1
         if fit_label not in VALID_FIT_LABELS:
@@ -95,6 +121,16 @@ def validate_dataset(payload: dict[str, Any]) -> dict[str, Any]:
         role_family = str(case.get("role_family", ""))
         if role_family not in VALID_ROLE_FAMILIES:
             errors.append(f"{case_id} có role_family không hợp lệ: {role_family}.")
+
+        target_role = str(case.get("target_role", ""))
+        role_counts[target_role] += 1
+        if target_role not in EXPECTED_ROLES:
+            errors.append(f"{case_id} có target_role ngoài coverage expected: {target_role}.")
+
+        seniority = str(case.get("seniority", ""))
+        seniority_counts[seniority] += 1
+        if seniority not in EXPECTED_SENIORITIES:
+            errors.append(f"{case_id} có seniority không hợp lệ: {seniority}.")
 
         score_range = str(case.get("expected_score_range", ""))
         parsed_range = _parse_score_range(score_range)
@@ -135,23 +171,54 @@ def validate_dataset(payload: dict[str, Any]) -> dict[str, Any]:
         if RAW_SOURCE_PATTERN.search(text_blob):
             errors.append(f"{case_id} có dấu hiệu source thật hoặc raw JD/CV.")
 
-        if case.get("group") == "keyword_stuffing" and len(case.get("skill_overlap") or []) > 3:
+        if category == "keyword_stuffing" and len(case.get("skill_overlap") or []) > 3:
             warnings.append(f"{case_id} keyword_stuffing có quá nhiều overlap, dễ gây nhiễu.")
-        if case.get("group") == "exact_fit" and fit_label != "good":
-            errors.append(f"{case_id} thuộc exact_fit nhưng fit_label không phải good.")
-        if case.get("group") == "non_it_mismatch" and fit_label != "mismatch":
-            errors.append(f"{case_id} thuộc non_it_mismatch nhưng fit_label không phải mismatch.")
+        if category in {"exact_fit", "strong_evidence"} and fit_label != "good":
+            errors.append(f"{case_id} thuộc {category} nhưng fit_label không phải good.")
+        if category in {"non_it_mismatch", "career_switch", "role_mismatch"} and fit_label != "mismatch":
+            errors.append(f"{case_id} thuộc {category} nhưng fit_label không phải mismatch.")
+
+    _validate_role_balance(role_counts, errors, warnings)
+    _validate_seniority_balance(seniority_counts, errors, warnings)
 
     return {
         "errors": errors,
         "warnings": warnings,
         "summary": {
             "case_count": len(cases),
-            "group_counts": dict(sorted(group_counts.items())),
+            "category_counts": dict(sorted(category_counts.items())),
             "label_counts": dict(sorted(label_counts.items())),
+            "role_counts": dict(sorted(role_counts.items())),
+            "seniority_counts": dict(sorted(seniority_counts.items())),
             "expected_score_ranges": sorted(range_widths),
         },
     }
+
+
+def _validate_role_balance(role_counts: Counter[str], errors: list[str], warnings: list[str]) -> None:
+    missing_roles = sorted(EXPECTED_ROLES - set(role_counts))
+    if missing_roles:
+        errors.append(f"Thiếu role coverage: {', '.join(missing_roles)}.")
+    if role_counts:
+        min_count = min(role_counts.values())
+        max_count = max(role_counts.values())
+        if min_count < 20:
+            errors.append(f"Role coverage quá thấp: min={min_count}, cần >=20.")
+        if max_count - min_count > 8:
+            warnings.append(f"Role balance hơi lệch: min={min_count}, max={max_count}.")
+
+
+def _validate_seniority_balance(seniority_counts: Counter[str], errors: list[str], warnings: list[str]) -> None:
+    missing = sorted(EXPECTED_SENIORITIES - set(seniority_counts))
+    if missing:
+        errors.append(f"Thiếu seniority coverage: {', '.join(missing)}.")
+    if seniority_counts:
+        min_count = min(seniority_counts.values())
+        max_count = max(seniority_counts.values())
+        if min_count < 60:
+            errors.append(f"Seniority coverage quá thấp: min={min_count}, cần >=60.")
+        if max_count - min_count > 15:
+            warnings.append(f"Seniority balance hơi lệch: min={min_count}, max={max_count}.")
 
 
 def _parse_score_range(value: str) -> tuple[int, int] | None:
@@ -166,6 +233,8 @@ def _parse_score_range(value: str) -> tuple[int, int] | None:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     payload = load_dataset()
     result = validate_dataset(payload)
     print(json.dumps(result, ensure_ascii=False, indent=2))

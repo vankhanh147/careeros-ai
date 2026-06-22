@@ -1,20 +1,23 @@
-# Dataset Card - CareerOS AI Synthetic Dataset V1
+# Dataset Card - CareerOS AI Synthetic Dataset V2
 
 Date: 2026-06-21
 
 ## Dataset purpose
 
-Synthetic Dataset V1 hỗ trợ CareerOS AI đánh giá các hành vi Resume ↔ JD Matching trước khi có đủ real beta data đã ẩn danh.
+Synthetic Dataset V2 hỗ trợ CareerOS AI đánh giá các hành vi Resume ↔ JD Matching trước khi có đủ real beta data đã ẩn danh.
 
 Dataset này dùng để kiểm tra các pattern:
 
 - exact fit;
+- strong evidence;
 - same-role different-stack;
 - role mismatch;
 - cross-domain transferable;
 - weak CV;
 - keyword stuffing;
-- non-IT mismatch.
+- non-IT mismatch;
+- career switch;
+- missing critical skill.
 
 ## Source
 
@@ -37,6 +40,8 @@ Mỗi case chứa:
 - role family;
 - candidate stack;
 - JD stack;
+- seniority;
+- category;
 - fit label;
 - expected score range;
 - lý do label;
@@ -87,13 +92,20 @@ Dataset không chứa:
 
 Validator `backend/scripts/validate_synthetic_dataset.py` kiểm tra các dấu hiệu PII cơ bản trước khi dùng dataset.
 
+## Dataset size and coverage
+
+- Total cases: 300.
+- Categories: 10 categories, 30 cases each.
+- Seniority: Intern, Fresher, Junior, Mid-level.
+- Roles: Backend, Frontend, Fullstack, Mobile, AI, Machine Learning, Data Analyst, Data Engineer, DevOps, QA and Cybersecurity.
+
 ## Known limitations
 
 - Case còn dựa trên template nên wording có thể lặp.
 - Resume/JD chỉ là summary, chưa phải full artifact.
 - Không phản ánh đầy đủ độ nhiễu trong CV thật.
 - Không có human feedback từ user thật.
-- Một số role family như DevOps, QA và Cybersecurity chưa có coverage sâu trong dataset V1.
+- DevOps, QA và Cybersecurity đã có coverage V2, nhưng vẫn nên review thêm bằng real beta data.
 
 ## Known biases
 
@@ -103,4 +115,4 @@ Validator `backend/scripts/validate_synthetic_dataset.py` kiểm tra các dấu 
 
 ## Recommendation
 
-Chỉ dùng Synthetic Dataset V1 như một nguồn QA bổ sung. Trước Phase 9.0, cần kết hợp với real anonymized beta dataset và human-reviewed disagreement labels.
+Chỉ dùng Synthetic Dataset V2 như một nguồn QA bổ sung. Trước Phase 9.0, cần kết hợp với real anonymized beta dataset và human-reviewed disagreement labels.

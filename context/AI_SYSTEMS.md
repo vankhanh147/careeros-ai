@@ -375,3 +375,24 @@ Important boundary:
 - Synthetic dataset is still a QA supplement only.
 - It should not be used alone to train or replace production scoring.
 - Trainable matching requires real anonymized beta labels and human disagreement review.
+## Phase 8.8 Synthetic Dataset Expansion V2
+
+Synthetic Dataset V2 expands the internal dataset foundation:
+
+- `docs/datasets/synthetic/synthetic_cases.json` now contains 300 deterministic synthetic cases.
+- Case IDs run from `SYN001` to `SYN300`.
+- `docs/datasets/synthetic/STATISTICS.md` records role, label, category and seniority distribution.
+- `backend/scripts/validate_synthetic_dataset.py` now checks role and seniority coverage/balance.
+
+Coverage added:
+
+- Seniority: Intern, Fresher, Junior, Mid-level.
+- Roles: Backend, Frontend, Fullstack, Mobile, AI, Machine Learning, Data Analyst, Data Engineer, DevOps, QA and Cybersecurity.
+- Categories: exact fit, strong evidence, same-role different-stack, role mismatch, cross-domain transferable, weak CV, keyword stuffing, non-IT mismatch, career switch and missing critical skill.
+
+Important boundary:
+
+- Synthetic Dataset V2 is still not real beta data.
+- It does not train a model.
+- It does not change production matcher scoring.
+- Future trainable matching should combine this data with benchmark U01-U10 and real anonymized beta labels.

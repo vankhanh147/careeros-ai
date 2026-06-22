@@ -341,3 +341,12 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added `context/PHASE_8_7_DATASET_QUALITY_REPORT.md`.
 - Validator confirmed 70 cases, balanced groups, valid labels/ranges and no blocking quality issues.
 - No production scoring, database schema, UI, LLM usage, vector database or matcher logic was changed.
+## 2026-06-22 - Phase 8.8 Synthetic Dataset Expansion V2
+
+- Expanded synthetic dataset from 70 cases to 300 deterministic cases.
+- Added seniority coverage for Intern, Fresher, Junior and Mid-level.
+- Added role coverage for Backend, Frontend, Fullstack, Mobile, AI, Machine Learning, Data Analyst, Data Engineer, DevOps, QA and Cybersecurity.
+- Added categories for strong evidence, career switch and missing critical skill cases.
+- Added `docs/datasets/synthetic/STATISTICS.md`.
+- Updated generator, validator, schema, dataset card and tests.
+- Kept production scoring, `match_score`, `final_score`, database schema, LLM usage and vector infrastructure unchanged.
