@@ -635,3 +635,33 @@ Important boundary:
 
 Current: Phase 9 - Trainable Matching Evaluation.
 Next recommended: Phase 9.1 should run ML predictions against benchmark U01-U10 and real anonymized beta labels before any scoring decision.
+
+## Phase 9.1 Update: ML Benchmark & Disagreement Analysis - Completed
+
+Date: 2026-06-22
+
+Phase 9.1 evaluates Trainable Matching Model V1 against U01-U10 benchmark cases and Synthetic Dataset V2 without retraining the model or changing production scoring.
+
+Completed:
+
+- Added `backend/scripts/run_ml_benchmark_analysis.py`.
+- Generated `context/PHASE_9_1_ML_BENCHMARK_REPORT.md`.
+- Generated `docs/datasets/synthetic/ml_error_analysis_v1.md`.
+- Compared rule-based score, hybrid candidate and ML prediction for U01-U10.
+- Reused existing Phase 9.0 model artifacts from `backend/models/`.
+- Analyzed synthetic test-set errors using deterministic split.
+
+Findings:
+
+- U01-U10 ML predictions currently all return `good` with low confidence, so all benchmark cases are marked `needs_review`.
+- Synthetic test-set analysis confirms earlier Phase 9.0 limitation: `good -> medium` and `mismatch -> medium` are the main error patterns.
+- ML V1 remains useful only as an internal disagreement signal, not as a user-facing score.
+
+Important boundary:
+
+- No new model training was performed.
+- `match_score` and `scoring_breakdown.final_score` remain unchanged.
+- No database schema, API contract, frontend UI, LLM API, fine-tuning or vector database was introduced.
+
+Current: Phase 9 - Trainable Matching Evaluation.
+Next recommended: Phase 9.2 should focus on human-reviewed labels and dataset correction before any algorithm change.

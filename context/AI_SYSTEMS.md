@@ -427,3 +427,24 @@ Current limitation:
 - Dataset is synthetic, not real beta data.
 - Model tends to overuse `medium` for some boundary `good` and `mismatch` cases.
 - Phase 9.1 should compare ML predictions against U01-U10 and anonymized beta labels before any production scoring discussion.
+
+## Phase 9.1 ML Benchmark & Disagreement Analysis
+
+CareerOS AI now has an evaluation script for comparing ML V1 with the existing deterministic matcher:
+
+- `backend/scripts/run_ml_benchmark_analysis.py`
+- `context/PHASE_9_1_ML_BENCHMARK_REPORT.md`
+- `docs/datasets/synthetic/ml_error_analysis_v1.md`
+
+Current findings:
+
+- U01-U10 benchmark cases are evaluated with rule-based score, hybrid candidate and ML prediction.
+- Existing ML artifacts predict `good` for U01-U10 but with low confidence, so all cases are marked `needs_review`.
+- Synthetic test-set analysis shows the main error patterns are `good -> medium` and `mismatch -> medium`.
+
+Important boundary:
+
+- Phase 9.1 does not train a new model.
+- ML remains an internal evaluation/disagreement signal.
+- Production score remains `match_score` from the rule-based matcher.
+- Hybrid candidate and ML prediction must not be presented as final user-facing truth.

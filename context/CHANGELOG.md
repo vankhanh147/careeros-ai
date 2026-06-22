@@ -362,3 +362,13 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Added compact frontend `/analysis` block for ML evaluation in Vietnamese.
 - Added backend tests for ML feature extraction, predictor fallback, mock artifact loading and analysis metadata.
 - Kept production `match_score`, `final_score`, database schema, LLM usage, fine-tuning and vector infrastructure unchanged.
+
+## 2026-06-22 - Phase 9.1 ML Benchmark & Disagreement Analysis
+
+- Added `backend/scripts/run_ml_benchmark_analysis.py`.
+- Evaluated ML V1 on U01-U10 benchmark cases using existing model artifacts.
+- Generated `context/PHASE_9_1_ML_BENCHMARK_REPORT.md`.
+- Generated `docs/datasets/synthetic/ml_error_analysis_v1.md`.
+- Recorded disagreement status between rule-based score, hybrid candidate and ML prediction.
+- Analyzed Synthetic Dataset V2 test-set confusion/error patterns without retraining.
+- Kept production `match_score`, `final_score`, database schema, API contract, frontend UI, LLM usage, fine-tuning and vector infrastructure unchanged.
