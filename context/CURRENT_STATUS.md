@@ -665,3 +665,38 @@ Important boundary:
 
 Current: Phase 9 - Trainable Matching Evaluation.
 Next recommended: Phase 9.2 should focus on human-reviewed labels and dataset correction before any algorithm change.
+
+## Phase 9.2 Update: Feature Engineering & Hybrid Dataset V1 - Completed
+
+Date: 2026-06-25
+
+Phase 9.2 xây dựng hybrid training dataset và offline hybrid model bằng cách kết hợp text features với structured signals từ rule-based matcher, taxonomy, semantic/hybrid metadata và synthetic dataset metadata.
+
+Đã hoàn thành:
+
+- Mở rộng `backend/app/ml/features.py` với hybrid structured feature extraction.
+- Thêm `backend/scripts/build_hybrid_training_dataset.py`.
+- Thêm `backend/scripts/validate_hybrid_training_dataset.py`.
+- Thêm `backend/scripts/train_matching_model_hybrid.py`.
+- Sinh `docs/datasets/synthetic/hybrid_training_dataset.json` với 300 rows.
+- Sinh `docs/datasets/synthetic/hybrid_feature_schema.json`.
+- Train hybrid artifacts riêng trong `backend/models/` mà không overwrite V1 artifacts.
+- Tạo `context/PHASE_9_2_HYBRID_FEATURE_EVAL.md` và `context/PHASE_9_2_FEATURE_ENGINEERING_REPORT.md`.
+
+Kết quả:
+
+- Text-only V1 accuracy: 0.733, macro F1: 0.719.
+- Hybrid feature model accuracy: 0.947, macro F1: 0.947.
+- `good -> medium` errors dropped from 8 to 0.
+- `mismatch -> medium` errors dropped from 11 to 4.
+- `weak` errors stayed at 0.
+
+Ranh giới quan trọng:
+
+- Không thay production scoring.
+- `match_score` và `final_score` giữ nguyên.
+- Không đổi database schema, API contract, frontend UI, không thêm LLM API, fine-tuning hoặc vector database.
+- Hybrid model chỉ dùng cho offline evaluation.
+
+Current: Phase 9 - Trainable Matching Evaluation.
+Next recommended: Phase 9.3 nên chạy hybrid artifact trên benchmark U01-U10 và làm ablation/human-label review trước khi cân nhắc runtime integration.

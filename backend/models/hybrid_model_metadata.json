@@ -1,0 +1,27 @@
+{
+  "model_version": "hybrid_matching_model_v1",
+  "model_type": "RandomForestClassifier",
+  "feature_mode": "tfidf_text_plus_structured_features",
+  "trained_at": "2026-06-24T17:25:51.341026+00:00",
+  "source_dataset": "docs\\datasets\\synthetic\\hybrid_training_dataset.json",
+  "case_count": 300,
+  "train_size": 225,
+  "test_size": 75,
+  "random_state": 42,
+  "production_safe": false,
+  "note": "Hybrid model chỉ dùng cho offline evaluation, chưa thay thế điểm production.",
+  "hybrid_metrics": {
+    "accuracy": 0.9466666666666667,
+    "macro_f1": 0.9467787114845938,
+    "good_to_medium": 0,
+    "mismatch_to_medium": 4,
+    "weak_errors": 0
+  },
+  "text_only_v1_metrics": {
+    "accuracy": 0.7333333333333333,
+    "macro_f1": 0.719435817805383,
+    "good_to_medium": 8,
+    "mismatch_to_medium": 11,
+    "weak_errors": 0
+  }
+}

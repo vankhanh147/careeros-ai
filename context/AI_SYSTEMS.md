@@ -448,3 +448,32 @@ Important boundary:
 - ML remains an internal evaluation/disagreement signal.
 - Production score remains `match_score` from the rule-based matcher.
 - Hybrid candidate and ML prediction must not be presented as final user-facing truth.
+
+## Phase 9.2 Feature Engineering & Hybrid Dataset V1
+
+CareerOS AI hiện có hybrid feature dataset và offline hybrid model phục vụ evaluation:
+
+- `backend/scripts/build_hybrid_training_dataset.py`
+- `backend/scripts/validate_hybrid_training_dataset.py`
+- `backend/scripts/train_matching_model_hybrid.py`
+- `docs/datasets/synthetic/hybrid_training_dataset.json`
+- `docs/datasets/synthetic/hybrid_feature_schema.json`
+
+Nhóm feature:
+
+- Điểm số và số lượng tín hiệu từ rule-based matcher.
+- Tín hiệu taxonomy alignment và skill overlap.
+- Tín hiệu semantic/hybrid metadata.
+- Metadata từ synthetic dataset như seniority, category, target role và stack.
+
+Hành vi model:
+
+- Hybrid artifact tách riêng khỏi text-only artifact V1.
+- Hybrid model dùng TF-IDF text features kết hợp DictVectorizer structured features với RandomForestClassifier baseline.
+- Hybrid model chỉ dùng cho offline evaluation và chưa tích hợp vào analysis response.
+
+Nhận định hiện tại:
+
+- Hybrid model cải thiện accuracy và macro F1 trên synthetic test-set so với text-only V1.
+- Cải thiện này nhiều khả năng đến từ rule-based teacher signals, nên chưa thể xem là ML intelligence độc lập.
+- Production score vẫn là `match_score` từ rule-based matcher.

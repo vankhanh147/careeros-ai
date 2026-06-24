@@ -1,0 +1,73 @@
+{
+  "schema_version": "careeros-hybrid-training-dataset-v1",
+  "language": "vi",
+  "feature_source": "synthetic dataset + rule-based matcher metadata",
+  "structured_feature_keys": [
+    "rule_based_score",
+    "skill_score",
+    "keyword_score",
+    "role_alignment_score",
+    "evidence_score",
+    "confidence",
+    "length_sanity",
+    "critical_skill_count",
+    "missing_critical_skill_count",
+    "matched_skill_count",
+    "missing_skill_count",
+    "role_family_match",
+    "stack_group_match_count",
+    "normalized_skill_overlap_count",
+    "related_skill_support_count",
+    "semantic_available",
+    "semantic_similarity",
+    "hybrid_score_candidate",
+    "taxonomy_component",
+    "confidence_adjustment",
+    "seniority_level",
+    "category",
+    "target_role",
+    "candidate_stack",
+    "jd_stack"
+  ],
+  "numeric_features": [
+    "rule_based_score",
+    "skill_score",
+    "keyword_score",
+    "role_alignment_score",
+    "evidence_score",
+    "confidence",
+    "length_sanity",
+    "critical_skill_count",
+    "missing_critical_skill_count",
+    "matched_skill_count",
+    "missing_skill_count",
+    "role_family_match",
+    "stack_group_match_count",
+    "normalized_skill_overlap_count",
+    "related_skill_support_count",
+    "semantic_available",
+    "semantic_similarity",
+    "hybrid_score_candidate",
+    "taxonomy_component",
+    "confidence_adjustment"
+  ],
+  "categorical_features": [
+    "seniority_level",
+    "category",
+    "target_role",
+    "candidate_stack",
+    "jd_stack"
+  ],
+  "required_row_fields": [
+    "case_id",
+    "text_input",
+    "structured_features",
+    "label",
+    "source_category",
+    "expected_score_range"
+  ],
+  "notes": [
+    "Dataset này dùng cho evaluation/training offline, không thay production scoring.",
+    "semantic_similarity sẽ bằng 0 khi semantic model disabled hoặc không khả dụng."
+  ]
+}

@@ -372,3 +372,13 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Recorded disagreement status between rule-based score, hybrid candidate and ML prediction.
 - Analyzed Synthetic Dataset V2 test-set confusion/error patterns without retraining.
 - Kept production `match_score`, `final_score`, database schema, API contract, frontend UI, LLM usage, fine-tuning and vector infrastructure unchanged.
+
+## 2026-06-25 - Phase 9.2 Feature Engineering & Hybrid Dataset V1
+
+- Mở rộng `backend/app/ml/features.py` với structured hybrid feature extraction.
+- Thêm script build dataset, validate dataset và train hybrid model.
+- Sinh `docs/datasets/synthetic/hybrid_training_dataset.json` và `hybrid_feature_schema.json`.
+- Train artifact offline riêng: `hybrid_matching_model.joblib`, `hybrid_matching_vectorizer.joblib`, `hybrid_model_metadata.json`.
+- Tạo `context/PHASE_9_2_HYBRID_FEATURE_EVAL.md` và `context/PHASE_9_2_FEATURE_ENGINEERING_REPORT.md`.
+- Hybrid feature model cải thiện synthetic test accuracy từ 0.733 lên 0.947 và giảm các lỗi boundary chính.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API contract, frontend UI, LLM usage, fine-tuning và vector infrastructure.
