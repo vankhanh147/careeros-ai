@@ -1,0 +1,17 @@
+{
+  "model_name": "hybrid_matching_model",
+  "model_version": "hybrid_matching_model_v1",
+  "dataset_version": "dataset_v2",
+  "feature_version": "hybrid_features_v1",
+  "accuracy": 0.947,
+  "macro_f1": 0.947,
+  "created_at": "2026-06-25",
+  "training_command": "python scripts/train_matching_model_hybrid.py",
+  "artifact_paths": [
+    "backend/models/hybrid_matching_model.joblib",
+    "backend/models/hybrid_matching_vectorizer.joblib",
+    "backend/models/hybrid_model_metadata.json"
+  ],
+  "production_safe": false,
+  "notes": "Hybrid model chỉ dùng cho offline evaluation. Không thay thế rule-based match_score."
+}

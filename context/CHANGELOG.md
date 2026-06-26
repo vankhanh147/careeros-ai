@@ -382,3 +382,22 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Tạo `context/PHASE_9_2_HYBRID_FEATURE_EVAL.md` và `context/PHASE_9_2_FEATURE_ENGINEERING_REPORT.md`.
 - Hybrid feature model cải thiện synthetic test accuracy từ 0.733 lên 0.947 và giảm các lỗi boundary chính.
 - Giữ nguyên production `match_score`, `final_score`, database schema, API contract, frontend UI, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 9.3 Hybrid Model Benchmark & Ablation Study
+
+- Thêm `backend/scripts/run_hybrid_ablation_study.py` để chạy ablation study offline.
+- So sánh text-only baseline, structured không có `rule_based_score`, structured core only và full hybrid.
+- Sinh `context/PHASE_9_3_ABLATION_STUDY_REPORT.md` và `docs/datasets/synthetic/ablation_results_v1.md`.
+- Sinh metadata riêng `backend/models/hybrid_ablation_metadata.json` mà không overwrite artifact Phase 9.0/9.2.
+- Thêm tests cho ablation script, feature exclusion, metrics output và artifact safety.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API contract, frontend UI, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 10.0 AI Training Infrastructure Foundation
+
+- Tạo ML workspace offline tại ackend/ml/ với configs, datasets, experiments, models, registry và reports.
+- Thêm dataset metadata, model registry records, experiment template, evaluation report template và training config.
+- Thêm ackend/app/ml/training_infra.py để parse/validate metadata JSON.
+- Thêm tests cho metadata load, dataset version parser, model registry parser, experiment parser và training config parser.
+- Tạo docs docs/ml/README.md, docs/ml/model_registry.md, docs/ml/dataset_versioning.md, docs/ml/experiment_tracking.md.
+- Tạo context/PHASE_10_0_TRAINING_INFRA_REPORT.md.
+- Giữ nguyên production match_score, inal_score, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.

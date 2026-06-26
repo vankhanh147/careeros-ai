@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-06-26T04:25:27.692430+00:00",
+  "source_dataset": "docs\\datasets\\synthetic\\hybrid_training_dataset.json",
+  "train_size": 225,
+  "test_size": 75,
+  "random_state": 42,
+  "production_safe": false,
+  "configs": {
+    "text_only": {
+      "title": "A. Text-only baseline",
+      "metrics": {
+        "accuracy": 0.8666666666666667,
+        "macro_f1": 0.8680555555555556,
+        "good_to_medium": 0,
+        "mismatch_to_medium": 10,
+        "weak_errors": 0
+      }
+    },
+    "structured_without_rule_score": {
+      "title": "B. Structured không có rule_based_score",
+      "metrics": {
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "good_to_medium": 0,
+        "mismatch_to_medium": 0,
+        "weak_errors": 0
+      }
+    },
+    "structured_core_only": {
+      "title": "C. Structured core only",
+      "metrics": {
+        "accuracy": 0.56,
+        "macro_f1": 0.5358685833235144,
+        "good_to_medium": 3,
+        "mismatch_to_medium": 5,
+        "weak_errors": 8
+      }
+    },
+    "full_hybrid": {
+      "title": "D. Full hybrid",
+      "metrics": {
+        "accuracy": 0.9466666666666667,
+        "macro_f1": 0.9467787114845938,
+        "good_to_medium": 0,
+        "mismatch_to_medium": 4,
+        "weak_errors": 0
+      }
+    }
+  }
+}

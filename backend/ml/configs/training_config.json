@@ -1,0 +1,12 @@
+{
+  "config_id": "training_config_v1",
+  "dataset_version": "dataset_v2",
+  "feature_version": "hybrid_features_v1",
+  "classifier": "RandomForestClassifier",
+  "random_seed": 42,
+  "split_ratio": {
+    "train": 0.75,
+    "test": 0.25
+  },
+  "notes": "Config nền tảng cho training offline. Không dùng để thay production scoring."
+}

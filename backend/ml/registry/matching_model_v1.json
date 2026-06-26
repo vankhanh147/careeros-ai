@@ -1,0 +1,17 @@
+{
+  "model_name": "matching_model",
+  "model_version": "matching_model_v1",
+  "dataset_version": "dataset_v2",
+  "feature_version": "text_features_v1",
+  "accuracy": 0.733,
+  "macro_f1": 0.719,
+  "created_at": "2026-06-22",
+  "training_command": "python scripts/train_matching_model.py",
+  "artifact_paths": [
+    "backend/models/matching_model.joblib",
+    "backend/models/matching_vectorizer.joblib",
+    "backend/models/model_metadata.json"
+  ],
+  "production_safe": false,
+  "notes": "Model V1 chỉ dùng làm evaluation signal, chưa thay production scoring."
+}

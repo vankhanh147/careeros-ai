@@ -700,3 +700,63 @@ Ranh giới quan trọng:
 
 Current: Phase 9 - Trainable Matching Evaluation.
 Next recommended: Phase 9.3 nên chạy hybrid artifact trên benchmark U01-U10 và làm ablation/human-label review trước khi cân nhắc runtime integration.
+
+## Phase 9.3 Update: Hybrid Model Benchmark & Ablation Study - Completed
+
+Date: 2026-06-26
+
+Phase 9.3 đánh giá Hybrid Matching Model bằng ablation study offline. Phase này không thay production scoring, không đổi `match_score`, `final_score`, database schema, API contract hoặc frontend.
+
+Đã hoàn thành:
+
+- Thêm `backend/scripts/run_hybrid_ablation_study.py`.
+- So sánh 4 cấu hình: text-only baseline, structured không có `rule_based_score`, structured core only và full hybrid.
+- Sinh `context/PHASE_9_3_ABLATION_STUDY_REPORT.md`.
+- Sinh `docs/datasets/synthetic/ablation_results_v1.md`.
+- Sinh metadata riêng `backend/models/hybrid_ablation_metadata.json`.
+- Thêm tests cho import script, feature exclusion, metrics output và artifact safety.
+
+Kết quả chính:
+
+- Text-only baseline accuracy: 0.867, macro F1: 0.868.
+- Structured không có `rule_based_score` accuracy: 1.000, macro F1: 1.000.
+- Structured core only accuracy: 0.560, macro F1: 0.536.
+- Full hybrid accuracy: 0.947, macro F1: 0.947.
+
+Nhận định:
+
+- Model không chỉ phụ thuộc vào `rule_based_score`; nhiều component structured features đã đủ mạnh trên synthetic split.
+- Kết quả 1.000 của cấu hình structured không có `rule_based_score` cũng là cảnh báo về độ dễ của synthetic dataset và khả năng leakage từ feature thiết kế.
+- Chưa nên productionize hybrid/ML model. Rule-based matcher vẫn là source of truth.
+
+Current: Phase 9 - Trainable Matching Evaluation.
+Next recommended: Phase 9.4 nên tập trung vào human-reviewed real beta labels và ablation trên dữ liệu ẩn danh trước khi cân nhắc runtime evaluation.
+
+## Phase 10.0 Update: AI Training Infrastructure Foundation - Completed
+
+Date: 2026-06-26
+
+Phase 10.0 mở đầu CareerOS AI V2 bằng cách tạo nền tảng AI Training Infrastructure offline. Phase này không thay production scoring, không đổi match_score, inal_score, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo ML workspace ackend/ml/ với datasets/, experiments/, models/, 
+egistry/, 
+eports/ và configs/.
+- Tạo dataset metadata ackend/ml/datasets/dataset_v2_metadata.json.
+- Tạo model registry records cho matching_model_v1 và hybrid_matching_model_v1.
+- Tạo experiment template và evaluation report template.
+- Tạo training config foundation.
+- Thêm parser/validator metadata trong ackend/app/ml/training_infra.py.
+- Thêm tests cho dataset parser, registry parser, experiment parser và training config parser.
+- Tạo docs docs/ml/ và report context/PHASE_10_0_TRAINING_INFRA_REPORT.md.
+
+Ranh giới quan trọng:
+
+- Không train model mới.
+- Không tích hợp model vào runtime.
+- Không dùng LLM, fine-tuning hoặc vector database.
+- Model registry hiện là JSON local, chưa phải service.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.1 nên tập trung vào dataset promotion workflow và real beta labels đã ẩn danh.

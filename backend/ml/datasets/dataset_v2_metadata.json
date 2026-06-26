@@ -1,0 +1,11 @@
+{
+  "dataset_id": "careeros_synthetic_matching",
+  "version": "dataset_v2",
+  "created_at": "2026-06-22",
+  "source": "docs/datasets/synthetic/synthetic_cases.json",
+  "total_cases": 300,
+  "synthetic_cases": 300,
+  "benchmark_cases": 0,
+  "beta_cases": 0,
+  "notes": "Synthetic Dataset V2 phục vụ evaluation/training prototype. Chưa chứa real beta data hoặc PII."
+}

@@ -122,3 +122,12 @@ Do not add unless explicitly requested:
 - Do not introduce mojibake in new files or touched files. If encoding corruption is found in the current scope, fix it before finishing the phase.
 - Future multilingual support should target `vi` and `en`, but language toggle/i18n infrastructure should wait for a dedicated phase to avoid premature complexity.
 - Detailed standard lives in `context/LANGUAGE_ENCODING_STANDARD.md`.
+
+
+## Phase 10.0 AI Training Infrastructure Decisions
+
+- ML training infrastructure được đặt trong ackend/ml/ để tách khỏi production app code trong ackend/app/.
+- Dataset, model registry, experiment và evaluation report dùng JSON metadata trước, chưa cần database hoặc MLflow.
+- Model registry record không đồng nghĩa model được productionize. Mọi model vẫn cần benchmark, beta validation và review trước khi ảnh hưởng user-facing score.
+- Không dùng training infrastructure để thay match_score hoặc inal_score.
+- Real beta labels trong tương lai phải được ẩn danh và versioned thành dataset mới, không sửa im lặng dataset version cũ.

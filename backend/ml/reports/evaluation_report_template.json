@@ -1,0 +1,17 @@
+{
+  "report_id": "evaluation_report_template",
+  "dataset_version": "dataset_v2",
+  "model_version": "draft",
+  "metrics": {
+    "accuracy": null,
+    "macro_f1": null,
+    "precision": {},
+    "recall": {},
+    "confusion_matrix": []
+  },
+  "error_analysis": {
+    "summary": "",
+    "top_error_patterns": []
+  },
+  "notes": "Template chuẩn cho evaluation report offline."
+}

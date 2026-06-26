@@ -1,0 +1,17 @@
+{
+  "experiment_id": "exp_template",
+  "model": {
+    "model_name": "matching_model",
+    "model_version": "draft"
+  },
+  "dataset": {
+    "dataset_id": "careeros_synthetic_matching",
+    "version": "dataset_v2"
+  },
+  "metrics": {
+    "accuracy": null,
+    "macro_f1": null
+  },
+  "notes": "Template cho experiment offline. Không dùng làm production deployment record.",
+  "status": "draft"
+}

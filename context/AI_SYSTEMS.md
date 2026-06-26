@@ -477,3 +477,55 @@ Nhận định hiện tại:
 - Hybrid model cải thiện accuracy và macro F1 trên synthetic test-set so với text-only V1.
 - Cải thiện này nhiều khả năng đến từ rule-based teacher signals, nên chưa thể xem là ML intelligence độc lập.
 - Production score vẫn là `match_score` từ rule-based matcher.
+
+## Phase 9.3 Hybrid Model Benchmark & Ablation Study
+
+CareerOS AI hiện có ablation study offline cho hybrid matching model:
+
+- `backend/scripts/run_hybrid_ablation_study.py`
+- `context/PHASE_9_3_ABLATION_STUDY_REPORT.md`
+- `docs/datasets/synthetic/ablation_results_v1.md`
+- `backend/models/hybrid_ablation_metadata.json`
+
+Các cấu hình được so sánh:
+
+- Text-only baseline.
+- Structured không có `rule_based_score`.
+- Structured core only.
+- Full hybrid.
+
+Kết quả chính trên synthetic test split:
+
+- Text-only baseline: accuracy 0.867, macro F1 0.868.
+- Structured không có `rule_based_score`: accuracy 1.000, macro F1 1.000.
+- Structured core only: accuracy 0.560, macro F1 0.536.
+- Full hybrid: accuracy 0.947, macro F1 0.947.
+
+Nhận định AI:
+
+- Hybrid model có học từ structured component features, không chỉ từ `rule_based_score`.
+- Tuy nhiên synthetic dataset có thể còn quá dễ hoặc chứa leakage từ feature thiết kế.
+- Kết quả ablation không đủ để productionize ML/hybrid scoring.
+- Production score vẫn là rule-based `match_score`.
+
+## Phase 10.0 AI Training Infrastructure Foundation
+
+CareerOS AI V2 hiện có training infrastructure foundation offline:
+
+- ackend/ml/ làm ML workspace metadata.
+- ackend/app/ml/training_infra.py parse/validate dataset, model registry, experiment và training config metadata.
+- docs/ml/ mô tả dataset versioning, model registry và experiment tracking.
+
+Nền tảng này hỗ trợ vòng đời:
+
+`	ext
+Dataset -> Training -> Evaluation -> Model Registry -> Versioning -> Deployment decision
+`
+
+Ranh giới AI:
+
+- Phase 10.0 không train model mới.
+- Không thay production scoring.
+- Không đưa ML/hybrid model vào runtime.
+- Không thêm LLM, fine-tuning hoặc vector database.
+- Registry hiện là JSON local để phục vụ quy trình AI startup ở mức MVP.
