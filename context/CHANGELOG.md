@@ -425,3 +425,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm sample review cases template trong `backend/ml/reviews/sample_review_cases.json`.
 - Thêm `docs/ml/label_quality.md` và report `context/PHASE_10_2_LABEL_QA_REPORT.md`.
 - Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 10.3 Dataset Assembly & Export Pipeline
+
+- Thêm `backend/scripts/build_training_dataset.py` để gom synthetic, benchmark và approved beta labels thành artifact training dataset.
+- Sinh `backend/ml/datasets/training_dataset_v3.json` với 310 cases.
+- Sinh manifest `backend/ml/datasets/training_dataset_manifest.json` với SHA256 fingerprint.
+- Sinh statistics `backend/ml/reports/training_dataset_statistics.json`.
+- Thêm tài liệu `docs/ml/training_dataset.md` và report `context/PHASE_10_3_DATASET_ASSEMBLY_REPORT.md`.
+- Thêm tests cho duplicate detection, validation failure, export artifact, manifest, statistics, fingerprint và dry-run.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.

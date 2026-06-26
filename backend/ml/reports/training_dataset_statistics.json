@@ -1,0 +1,44 @@
+{
+  "dataset_version": "dataset_v3",
+  "total_cases": 310,
+  "role_distribution": {
+    "ai/data": 109,
+    "backend": 34,
+    "cybersecurity": 27,
+    "devops": 27,
+    "frontend": 31,
+    "fullstack": 28,
+    "mobile": 27,
+    "qa/testing": 27
+  },
+  "category_distribution": {
+    "career_switch": 30,
+    "cross_domain_transferable": 33,
+    "exact_fit": 32,
+    "keyword_stuffing": 30,
+    "missing_critical_skill": 30,
+    "non_it_mismatch": 31,
+    "role_mismatch": 33,
+    "same_role_different_stack": 31,
+    "strong_evidence": 30,
+    "weak_cv": 30
+  },
+  "label_distribution": {
+    "good": 62,
+    "medium": 62,
+    "mismatch": 91,
+    "weak": 95
+  },
+  "seniority_distribution": {
+    "Fresher": 76,
+    "Intern": 75,
+    "Junior": 75,
+    "Mid-level": 74,
+    "unknown": 10
+  },
+  "source_distribution": {
+    "benchmark": 10,
+    "synthetic": 300
+  },
+  "approved_beta_percent": 0.0
+}

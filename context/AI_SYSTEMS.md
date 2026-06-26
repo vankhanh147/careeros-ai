@@ -584,3 +584,31 @@ Ranh giới AI:
 - Không thay production scoring.
 - Không đưa ML/hybrid model vào runtime.
 - Không thêm LLM, fine-tuning hoặc vector database.
+
+## Phase 10.3 Dataset Assembly Pipeline
+
+CareerOS AI V2 hiện có training dataset artifact offline:
+
+- `backend/ml/datasets/training_dataset_v3.json`
+- `backend/ml/datasets/training_dataset_manifest.json`
+- `backend/ml/reports/training_dataset_statistics.json`
+- `backend/scripts/build_training_dataset.py`
+
+Assembly hiện gom:
+
+- 300 synthetic cases từ Synthetic Dataset V2.
+- 10 benchmark cases U01-U10.
+- 0 approved beta cases vì chưa có real beta labels đã review.
+
+AI training rule mới:
+
+- Training script tương lai nên đọc từ `training_dataset_v3.json` thay vì đọc trực tiếp nhiều source rời rạc.
+- Manifest hash là fingerprint để biết artifact có thay đổi hay không.
+- Nếu có duplicate case, duplicate content hash, invalid label, PII hoặc mojibake, assembly phải fail trước khi export.
+
+Ranh giới AI:
+
+- Không train model mới.
+- Không thay production scoring.
+- Không đưa dataset artifact vào runtime.
+- Không thêm LLM, fine-tuning hoặc vector database.

@@ -149,3 +149,11 @@ Do not add unless explicitly requested:
 - Review metadata phải có reviewer, review time, label confidence, disagreement reason và notes.
 - Label QA là offline metadata pipeline, không phải production API hoặc admin UI.
 - Không promote hoặc train từ case có PII/mojibake hoặc thiếu human review metadata.
+
+## Phase 10.3 Dataset Assembly Decisions
+
+- Training dataset artifact chính cho phase tiếp theo là `backend/ml/datasets/training_dataset_v3.json`.
+- Training/evaluation scripts tương lai nên đọc artifact đã assembly, không đọc trực tiếp từng source dataset rời rạc nếu không có lý do rõ.
+- Artifact phải có manifest và SHA256 fingerprint.
+- Assembly phải fail nếu phát hiện duplicate case ID, duplicate content hash, invalid label, source invalid, PII hoặc mojibake.
+- Beta labels chỉ được đưa vào artifact khi đã approved, anonymized và có metadata review hợp lệ.

@@ -813,3 +813,36 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.3 nên tập trung vào dataset assembly/export từ approved labels sang dataset artifact versioned.
+
+## Phase 10.3 Update: Dataset Assembly & Export Pipeline - Completed
+
+Date: 2026-06-26
+
+Phase 10.3 thêm Dataset Assembly Pipeline để gom synthetic dataset, benchmark dataset và approved beta labels thành một training dataset artifact duy nhất. Phase này không train model, không đổi production scoring, không đổi `match_score`, `final_score`, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo script `backend/scripts/build_training_dataset.py`.
+- Sinh artifact `backend/ml/datasets/training_dataset_v3.json`.
+- Sinh manifest `backend/ml/datasets/training_dataset_manifest.json`.
+- Sinh statistics `backend/ml/reports/training_dataset_statistics.json`.
+- Tạo tài liệu `docs/ml/training_dataset.md`.
+- Tạo report `context/PHASE_10_3_DATASET_ASSEMBLY_REPORT.md`.
+- Thêm tests cho duplicate detection, validation failure, export artifact, manifest, statistics, fingerprint và dry-run.
+
+Artifact hiện tại:
+
+- synthetic_count: 300
+- benchmark_count: 10
+- beta_count: 0
+- total_cases: 310
+- artifact_hash: `bae979d135761bb1895a6da735aa3a305b9a849ee9a173809cb9fa9c2568c990`
+
+Ranh giới quan trọng:
+
+- Chưa có real approved beta labels trong artifact.
+- Dataset artifact dùng cho training/evaluation offline, chưa ảnh hưởng runtime.
+- Không train model mới trong Phase 10.3.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.4 nên chuẩn hóa training job contract để mọi script training đọc từ `training_dataset_v3.json` thay vì source dataset rời rạc.

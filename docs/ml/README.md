@@ -31,6 +31,7 @@ Phase 10.0 chỉ tạo foundation. Không model nào được đưa vào product
 - Experiment tracking: ghi lại thử nghiệm training/evaluation offline.
 - Training config: chuẩn hóa seed, split ratio, feature version và classifier.
 - Evaluation report format: chuẩn hóa accuracy, macro F1, confusion matrix, precision, recall và error analysis.
+- Training dataset assembly: gom synthetic, benchmark và approved beta labels thành một artifact training duy nhất.
 
 ## Ranh giới production
 
@@ -53,3 +54,9 @@ Phase 10.0 chỉ tạo foundation. Không model nào được đưa vào product
 - `docs/ml/label_review_schema.md`: schema metadata và workflow trạng thái label review.
 - `docs/ml/label_quality.md`: nguyên tắc quality label, human review và không train từ feedback thô.
 - `backend/scripts/validate_label_review_pipeline.py`: script QA offline cho review cases.
+
+## Tài liệu Phase 10.3
+
+- docs/ml/training_dataset.md: workflow assembly, validation, manifest, fingerprint và statistics.
+- backend/scripts/build_training_dataset.py: script build training dataset artifact offline.
+- backend/ml/datasets/training_dataset_v3.json: artifact training dataset hiện tại.

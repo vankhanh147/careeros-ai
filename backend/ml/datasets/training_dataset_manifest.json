@@ -1,0 +1,16 @@
+{
+  "dataset_version": "dataset_v3",
+  "synthetic_count": 300,
+  "benchmark_count": 10,
+  "beta_count": 0,
+  "total_cases": 310,
+  "source_files": {
+    "synthetic": "docs\\datasets\\synthetic\\synthetic_cases.json",
+    "benchmark": "docs\\benchmark-v1\\benchmark_cases.md",
+    "beta_reviews": ""
+  },
+  "artifact_name": "training_dataset_v3.json",
+  "artifact_hash": "bae979d135761bb1895a6da735aa3a305b9a849ee9a173809cb9fa9c2568c990",
+  "statistics_file": "ml\\reports\\training_dataset_statistics.json",
+  "notes": "Training dataset artifact v3 được assembly offline; không thay production scoring."
+}
