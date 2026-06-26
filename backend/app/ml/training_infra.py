@@ -54,6 +54,39 @@ REQUIRED_TRAINING_CONFIG_FIELDS = {
     "dataset_version",
 }
 
+
+LABEL_REVIEW_STATUSES = {
+    "NEW",
+    "ANONYMIZED",
+    "UNDER_REVIEW",
+    "APPROVED",
+    "PROMOTED",
+    "TRAINABLE",
+}
+
+LABEL_REVIEW_TRANSITIONS = {
+    "NEW": {"ANONYMIZED"},
+    "ANONYMIZED": {"UNDER_REVIEW"},
+    "UNDER_REVIEW": {"APPROVED"},
+    "APPROVED": {"PROMOTED"},
+    "PROMOTED": {"TRAINABLE"},
+    "TRAINABLE": set(),
+}
+
+TRAINING_APPROVAL_STATUSES = {"APPROVED", "PROMOTED", "TRAINABLE"}
+
+REQUIRED_LABEL_REVIEW_FIELDS = {
+    "case_id",
+    "dataset_version",
+    "review_status",
+    "reviewer",
+    "review_time",
+    "label_confidence",
+    "disagreement_reason",
+    "notes",
+    "approved_for_training",
+    "anonymized",
+}
 REQUIRED_PROMOTION_CONFIG_FIELDS = {
     "source_dataset_version",
     "target_dataset_version",
@@ -70,7 +103,8 @@ MOJIBAKE_PATTERN = re.compile(
     r"\u00c3|\u00c2|\u00e1\u00ba|\u00e1\u00bb|\u00c4|\u00c6|\u00c5|\ufffd|M\?|Kh\?|H\?\?|tr\?|\?\?\?"
 )
 EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-PHONE_PATTERN = re.compile(r"(?<!\d)(?:\+?\d[\d\s().-]{7,}\d)(?!\d)")
+PHONE_PATTERN = re.compile(r"(?<!\d)(?:\+?\d[\d\s().-]{8,}\d)(?!\d)")
+ISO_TIMESTAMP_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?")
 
 
 def load_json_metadata(path: str | Path) -> dict[str, Any]:
@@ -126,6 +160,119 @@ def parse_training_config(path: str | Path) -> dict[str, Any]:
     if round(float(train) + float(test), 5) != 1.0:
         raise ValueError("split_ratio.train + split_ratio.test phải bằng 1.0.")
     return config
+
+
+
+
+def parse_label_review_schema(path: str | Path) -> dict[str, Any]:
+    schema = load_json_metadata(path)
+    required = schema.get("required_fields")
+    statuses = schema.get("allowed_statuses")
+    if not isinstance(required, list) or not set(REQUIRED_LABEL_REVIEW_FIELDS).issubset(set(required)):
+        raise ValueError("label review schema thiếu required_fields bắt buộc.")
+    if not isinstance(statuses, list) or set(statuses) != LABEL_REVIEW_STATUSES:
+        raise ValueError("label review schema có allowed_statuses không hợp lệ.")
+    return schema
+
+
+def load_label_review_cases(path: str | Path) -> list[dict[str, Any]]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    if isinstance(payload, list):
+        cases = payload
+    elif isinstance(payload, dict):
+        cases = payload.get("cases", [])
+    else:
+        raise ValueError("Review dataset phải là JSON array hoặc object có field cases.")
+    if not isinstance(cases, list):
+        raise ValueError("Review dataset field cases phải là list.")
+    return [dict(case) for case in cases if isinstance(case, dict)]
+
+
+def validate_label_review_case(case: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    missing = sorted(field for field in REQUIRED_LABEL_REVIEW_FIELDS if field not in case)
+    if missing:
+        errors.append(f"Thiếu field bắt buộc: {', '.join(missing)}")
+        return errors
+
+    status = str(case["review_status"])
+    reviewer = str(case.get("reviewer") or "").strip()
+    serialized = json.dumps(case, ensure_ascii=False)
+
+    if status not in LABEL_REVIEW_STATUSES:
+        errors.append(f"review_status không hợp lệ: {status}")
+    if MOJIBAKE_PATTERN.search(serialized):
+        errors.append("Case có dấu hiệu mojibake.")
+    pii_scan_text = ISO_TIMESTAMP_PATTERN.sub("", serialized)
+    if EMAIL_PATTERN.search(serialized) or PHONE_PATTERN.search(pii_scan_text):
+        errors.append("Case có dấu hiệu PII.")
+    if not isinstance(case["approved_for_training"], bool):
+        errors.append("approved_for_training phải là boolean.")
+    if not isinstance(case["anonymized"], bool):
+        errors.append("anonymized phải là boolean.")
+    if not isinstance(case["label_confidence"], (int, float)) or not 0 <= float(case["label_confidence"]) <= 1:
+        errors.append("label_confidence phải nằm trong khoảng 0..1.")
+    if status in {"UNDER_REVIEW", "APPROVED", "PROMOTED", "TRAINABLE"} and not reviewer:
+        errors.append("reviewer bắt buộc từ trạng thái UNDER_REVIEW trở đi.")
+    if status in TRAINING_APPROVAL_STATUSES and case["anonymized"] is not True:
+        errors.append("anonymized=true là bắt buộc trước khi APPROVED/PROMOTED/TRAINABLE.")
+    if case["approved_for_training"] is True and status not in TRAINING_APPROVAL_STATUSES:
+        errors.append("approved_for_training chỉ được true khi status là APPROVED, PROMOTED hoặc TRAINABLE.")
+    if case["approved_for_training"] is True and case["anonymized"] is not True:
+        errors.append("approved_for_training=true yêu cầu anonymized=true.")
+
+    previous_status = case.get("previous_status")
+    if previous_status:
+        if previous_status not in LABEL_REVIEW_STATUSES:
+            errors.append(f"previous_status không hợp lệ: {previous_status}")
+        elif status != previous_status and status not in LABEL_REVIEW_TRANSITIONS[previous_status]:
+            errors.append(f"Transition không hợp lệ: {previous_status} -> {status}")
+
+    return errors
+
+
+def validate_label_review_cases(cases: list[dict[str, Any]]) -> dict[str, Any]:
+    case_results: list[dict[str, Any]] = []
+    total_errors = 0
+    total_warnings = 0
+    ready_count = 0
+
+    for index, case in enumerate(cases, start=1):
+        errors = validate_label_review_case(case)
+        warnings: list[str] = []
+        status = str(case.get("review_status", ""))
+        if status == "NEW":
+            warnings.append("Case mới chưa được ẩn danh hoặc review.")
+        if status == "ANONYMIZED" and not str(case.get("reviewer") or "").strip():
+            warnings.append("Case đã ẩn danh nhưng chưa có reviewer.")
+        ready = not errors and case.get("approved_for_training") is True and status in {"APPROVED", "PROMOTED", "TRAINABLE"}
+        if ready:
+            ready_count += 1
+        total_errors += len(errors)
+        total_warnings += len(warnings)
+        case_results.append(
+            {
+                "index": index,
+                "case_id": case.get("case_id", f"case_{index}"),
+                "review_status": status,
+                "errors": errors,
+                "warnings": warnings,
+                "ready_for_promotion": ready,
+            }
+        )
+
+    return {
+        "total_cases": len(cases),
+        "ready_for_promotion_count": ready_count,
+        "errors_count": total_errors,
+        "warnings_count": total_warnings,
+        "ready_for_promotion": total_errors == 0 and ready_count > 0,
+        "case_results": case_results,
+    }
+
+
+def validate_label_review_file(path: str | Path) -> dict[str, Any]:
+    return validate_label_review_cases(load_label_review_cases(path))
 
 
 def parse_promotion_config(path: str | Path) -> dict[str, Any]:
@@ -233,7 +380,8 @@ def validate_beta_cases(cases: list[dict[str, Any]], *, require_human_review: bo
         serialized = json.dumps(case, ensure_ascii=False)
         if MOJIBAKE_PATTERN.search(serialized):
             raise ValueError(f"Beta case #{index} có dấu hiệu mojibake.")
-        if EMAIL_PATTERN.search(serialized) or PHONE_PATTERN.search(serialized):
+        pii_scan_text = ISO_TIMESTAMP_PATTERN.sub("", serialized)
+        if EMAIL_PATTERN.search(serialized) or PHONE_PATTERN.search(pii_scan_text):
             raise ValueError(f"Beta case #{index} có dấu hiệu PII.")
         if require_human_review:
             review = case.get("human_review") or case.get("review_metadata")

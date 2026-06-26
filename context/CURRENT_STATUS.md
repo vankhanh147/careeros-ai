@@ -164,7 +164,9 @@ Project vẫn đang ở giai đoạn MVP-first, chưa phải production hardenin
 - Dashboard labels đã Việt hóa: “Không gian nghề nghiệp”, “Phân tích gần nhất”, “Roadmap gần nhất”, “Phiên phỏng vấn gần nhất”.
 - Interview status frontend map `in_progress` thành “Đang luyện”, score null thành “Chưa hoàn thành”.
 - Layout dùng `overflow-x-hidden`, `min-w-0`, `break-words`, `break-all` cho text/path/URL dài.
-- Frontend `npm run lint` và `npm run build` pass sau Phase 5.1.
+- Frontend 
+pm run lint` và 
+pm run build` pass sau Phase 5.1.
 
 ### Phase 5.2: Backend Validation + Error Handling + Logging Foundation - Completed
 
@@ -270,8 +272,10 @@ Completed polish:
 
 Checks:
 
-- `npm run lint` passed.
-- `npm run build` passed.
+- 
+pm run lint` passed.
+- 
+pm run build` passed.
 
 Current phase:
 
@@ -653,7 +657,8 @@ Completed:
 
 Findings:
 
-- U01-U10 ML predictions currently all return `good` with low confidence, so all benchmark cases are marked `needs_review`.
+- U01-U10 ML predictions currently all return `good` with low confidence, so all benchmark cases are marked 
+eeds_review`.
 - Synthetic test-set analysis confirms earlier Phase 9.0 limitation: `good -> medium` and `mismatch -> medium` are the main error patterns.
 - ML V1 remains useful only as an internal disagreement signal, not as a user-facing score.
 
@@ -783,3 +788,28 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.2 nên tập trung vào beta label schema, anonymization checklist và review workflow trước khi đưa real beta data vào dataset promotion.
+
+## Phase 10.2 Update: Label Review & Quality Assurance Pipeline - Completed
+
+Date: 2026-06-26
+
+Phase 10.2 thêm pipeline review label và QA metadata cho AI Training Infrastructure. Phase này không train model, không đổi production scoring, không đổi `match_score`, `final_score`, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo label review schema tại `docs/ml/label_review_schema.md` và `backend/ml/configs/label_review_schema.json`.
+- Chuẩn hóa workflow trạng thái: `NEW -> ANONYMIZED -> UNDER_REVIEW -> APPROVED -> PROMOTED -> TRAINABLE`.
+- Mở rộng `backend/app/ml/training_infra.py` với parser/validator cho review metadata.
+- Tạo script `backend/scripts/validate_label_review_pipeline.py`.
+- Tạo sample review dataset `backend/ml/reviews/sample_review_cases.json`.
+- Tạo tài liệu `docs/ml/label_quality.md`.
+- Tạo report `context/PHASE_10_2_LABEL_QA_REPORT.md`.
+
+Ranh giới quan trọng:
+
+- Feedback thô chưa được xem là training label.
+- Beta labels phải ẩn danh và có human review trước khi approved.
+- Label QA chỉ là metadata pipeline offline, chưa tác động runtime.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.3 nên tập trung vào dataset assembly/export từ approved labels sang dataset artifact versioned.

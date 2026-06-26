@@ -185,7 +185,9 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Improved documents upload/JD form hints and disabled states.
 - Improved action button disabled states on analysis, roadmap and interview flows.
 - Reduced feedback block intrusiveness and prevented repeated feedback submissions after success.
-- Frontend checks passed: `npm run lint`, `npm run build`.
+- Frontend checks passed: 
+pm run lint`, 
+pm run build`.
 
 ## Phase 6.5: Matching Scoring V2
 
@@ -229,7 +231,9 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Updated `docs/benchmark-v1/expected_results_v2.md` with V2.1 scores, confidence, role families, stack groups, critical skills and notes.
 - Updated `docs/benchmark-v1/benchmark_cases.md` with known V2.1 scores.
 - Added `context/PHASE_7_2_CALIBRATION_REPORT.md`.
-- Calibrated matcher lightly to ignore negated skill mentions such as `no C#`, `no React`, `without Docker` and `kh?ng c? backend`.
+- Calibrated matcher lightly to ignore negated skill mentions such as 
+o C#`, 
+o React`, `without Docker` and `kh?ng c? backend`.
 - Adjusted role-family detection so mobile and ai/data profiles are not mislabeled as backend when backend evidence is only generic API/auth/data overlap.
 - Added backend regression tests for negation handling and mobile cross-domain matching.
 
@@ -410,4 +414,14 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 - Tạo `docs/ml/dataset_promotion.md` và cập nhật `docs/ml/README.md`.
 - Tạo `context/PHASE_10_1_DATASET_PROMOTION_REPORT.md`.
 - Thêm tests cho promotion config parser, dry-run không tạo file, duplicate target version, missing beta path và missing human review metadata.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 10.2 Label Review & Quality Assurance Pipeline
+
+- Thêm label review schema JSON và documentation cho review metadata.
+- Chuẩn hóa workflow trạng thái `NEW -> ANONYMIZED -> UNDER_REVIEW -> APPROVED -> PROMOTED -> TRAINABLE`.
+- Mở rộng `backend/app/ml/training_infra.py` với validator metadata review, status transition, anonymization, confidence, PII và mojibake checks.
+- Thêm script `backend/scripts/validate_label_review_pipeline.py` để kiểm tra review cases offline.
+- Thêm sample review cases template trong `backend/ml/reviews/sample_review_cases.json`.
+- Thêm `docs/ml/label_quality.md` và report `context/PHASE_10_2_LABEL_QA_REPORT.md`.
 - Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.

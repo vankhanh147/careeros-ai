@@ -140,3 +140,12 @@ Do not add unless explicitly requested:
 - Nếu `require_human_review=true`, beta case phải có `human_review.reviewed=true` hoặc metadata tương đương.
 - Beta source có dấu hiệu PII hoặc mojibake phải bị chặn trước khi promotion.
 - Dataset draft không đồng nghĩa production-safe và không tự động train/evaluate model.
+
+## Phase 10.2 Label Review Decisions
+
+- Feedback thô không được dùng trực tiếp làm training label.
+- Beta/training cases phải đi qua workflow `NEW -> ANONYMIZED -> UNDER_REVIEW -> APPROVED -> PROMOTED -> TRAINABLE`.
+- `approved_for_training=true` chỉ hợp lệ khi case đã ẩn danh và status là `APPROVED`, `PROMOTED` hoặc `TRAINABLE`.
+- Review metadata phải có reviewer, review time, label confidence, disagreement reason và notes.
+- Label QA là offline metadata pipeline, không phải production API hoặc admin UI.
+- Không promote hoặc train từ case có PII/mojibake hoặc thiếu human review metadata.

@@ -32,7 +32,11 @@ Current skill matching:
 
 - Case-insensitive.
 - Dictionary gồm frontend, backend, fullstack, React, Next.js, Node.js, Express, FastAPI, Django, Flask, Python, Java, C#, ASP.NET Core, .NET, SQL, PostgreSQL, MySQL, MongoDB, Docker, Git, GitHub, REST API, JWT, authentication, TypeScript, JavaScript, HTML, CSS, Tailwind, Flutter, Firebase, Supabase, machine learning, AI, NLP và các skill mở rộng như Redis, GraphQL, OAuth, testing, CI/CD, cloud, SQLAlchemy, etc.
-- Aliases hiện có: `js`, `ts`, `dotnet`, `postgres`, `asp net`, `asp.net`, `nextjs`, `next js`, `nodejs`, `node js`, `tailwind css`.
+- Aliases hiện có: `js`, `ts`, `dotnet`, `postgres`, `asp net`, `asp.net`, 
+extjs`, 
+ext js`, 
+odejs`, 
+ode js`, `tailwind css`.
 
 Scoring hiện tại:
 
@@ -174,7 +178,9 @@ This benchmark does not add a new AI module, does not use LLM APIs and does not 
 
 Matching V2.1 is the current benchmarked matcher baseline. It keeps the Phase 6.5 deterministic architecture and adds only small calibration:
 
-- Negation-aware skill detection: skill mentions inside short negated clauses such as `no C#`, `no React`, `without Docker` or `kh?ng c? backend` do not count as matched skills.
+- Negation-aware skill detection: skill mentions inside short negated clauses such as 
+o C#`, 
+o React`, `without Docker` or `kh?ng c? backend` do not count as matched skills.
 - Negation-aware evidence scoring: negated skill mentions do not increase evidence score.
 - Specialized role-family correction: mobile and ai/data profiles can become primary role family when backend signals are only generic API/auth/data overlap and no strong backend stack signal exists.
 
@@ -439,7 +445,8 @@ CareerOS AI now has an evaluation script for comparing ML V1 with the existing d
 Current findings:
 
 - U01-U10 benchmark cases are evaluated with rule-based score, hybrid candidate and ML prediction.
-- Existing ML artifacts predict `good` for U01-U10 but with low confidence, so all cases are marked `needs_review`.
+- Existing ML artifacts predict `good` for U01-U10 but with low confidence, so all cases are marked 
+eeds_review`.
 - Synthetic test-set analysis shows the main error patterns are `good -> medium` and `mismatch -> medium`.
 
 Important boundary:
@@ -552,4 +559,28 @@ Ranh giới AI:
 - Không train model mới.
 - Không thay production scoring.
 - Không đưa dataset mới vào runtime.
+- Không thêm LLM, fine-tuning hoặc vector database.
+
+## Phase 10.2 Label Review & QA Pipeline
+
+CareerOS AI V2 hiện có pipeline QA cho labels trước khi dataset promotion hoặc training offline:
+
+- `backend/ml/configs/label_review_schema.json`
+- `backend/ml/reviews/sample_review_cases.json`
+- `backend/scripts/validate_label_review_pipeline.py`
+- `docs/ml/label_review_schema.md`
+- `docs/ml/label_quality.md`
+
+AI training data rule:
+
+- Feedback thô không được dùng trực tiếp làm training label.
+- Beta labels phải được ẩn danh trước khi approved.
+- Human review metadata là bắt buộc trước khi một case được xem là ready for promotion/training.
+- Validator chặn PII, mojibake, status transition không hợp lệ và label confidence ngoài khoảng `0..1`.
+
+Ranh giới AI:
+
+- Không train model mới.
+- Không thay production scoring.
+- Không đưa ML/hybrid model vào runtime.
 - Không thêm LLM, fine-tuning hoặc vector database.

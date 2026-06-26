@@ -1,0 +1,36 @@
+{
+  "schema_id": "careeros_label_review_schema_v1",
+  "version": "1.0",
+  "language": "vi",
+  "required_fields": [
+    "case_id",
+    "dataset_version",
+    "review_status",
+    "reviewer",
+    "review_time",
+    "label_confidence",
+    "disagreement_reason",
+    "notes",
+    "approved_for_training",
+    "anonymized"
+  ],
+  "allowed_statuses": [
+    "NEW",
+    "ANONYMIZED",
+    "UNDER_REVIEW",
+    "APPROVED",
+    "PROMOTED",
+    "TRAINABLE"
+  ],
+  "label_confidence_range": {
+    "min": 0,
+    "max": 1
+  },
+  "rules": {
+    "approved_for_training_requires_status": ["APPROVED", "PROMOTED", "TRAINABLE"],
+    "approved_for_training_requires_anonymized": true,
+    "reviewer_required_from_status": "UNDER_REVIEW",
+    "pii_allowed": false,
+    "mojibake_allowed": false
+  }
+}

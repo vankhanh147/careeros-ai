@@ -1,0 +1,32 @@
+{
+  "dataset_version": "dataset_v3_draft",
+  "description": "Template review label giả lập, không chứa dữ liệu thật hoặc PII.",
+  "cases": [
+    {
+      "case_id": "BETA_TEMPLATE_001",
+      "dataset_version": "dataset_v3_draft",
+      "previous_status": "UNDER_REVIEW",
+      "review_status": "APPROVED",
+      "reviewer": "internal_reviewer",
+      "review_time": "2026-06-26T00:00:00Z",
+      "label_confidence": 0.86,
+      "disagreement_reason": "Rule-based score và human expectation cùng đánh giá medium fit.",
+      "notes": "Case mẫu đã ẩn danh, chỉ dùng để kiểm tra pipeline QA.",
+      "approved_for_training": true,
+      "anonymized": true
+    },
+    {
+      "case_id": "BETA_TEMPLATE_002",
+      "dataset_version": "dataset_v3_draft",
+      "previous_status": "NEW",
+      "review_status": "ANONYMIZED",
+      "reviewer": "",
+      "review_time": "2026-06-26T00:00:00Z",
+      "label_confidence": 0.0,
+      "disagreement_reason": "",
+      "notes": "Case mẫu đã qua bước ẩn danh nhưng chưa review, chưa được dùng để training.",
+      "approved_for_training": false,
+      "anonymized": true
+    }
+  ]
+}
