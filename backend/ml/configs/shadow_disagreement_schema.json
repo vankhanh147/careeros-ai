@@ -1,0 +1,23 @@
+{
+  "schema_id": "careeros-shadow-disagreement-v1",
+  "required_fields": [
+    "event_id",
+    "timestamp",
+    "analysis_id",
+    "rule_based_score",
+    "ml_prediction",
+    "hybrid_candidate",
+    "disagreement_type",
+    "severity",
+    "stored_raw_text",
+    "reviewed"
+  ],
+  "allowed_severity": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "stored_raw_text": false,
+  "reviewed": false,
+  "notes": "Schema future-only. Phase 11.0 chưa ghi disagreement log trong runtime."
+}

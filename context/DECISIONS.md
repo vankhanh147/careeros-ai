@@ -194,3 +194,12 @@ Do not add unless explicitly requested:
 - Write mode bắt buộc reviewer, không overwrite audit cũ và được phép ghi audit FAIL để giữ traceability.
 - `production_change_allowed=false` là invariant bắt buộc.
 - Release Ready offline không đồng nghĩa Production; runtime/shadow/deployment thuộc Phase 11 trở đi.
+
+## Phase 11.0 Shadow Evaluation Decisions
+
+- Shadow architecture phải tồn tại trước runtime shadow inference.
+- Config mặc định là `enabled=false`, `mode=disabled`, `sample_rate=0`.
+- `allow_user_facing_output=false`, `store_raw_text=false` và `production_score_source=rule_based` là invariant bắt buộc.
+- Thiếu/invalid candidate không được crash hoặc fallback sang model khác; plan phải hạ về disabled.
+- Valid candidate chỉ tạo plan; Phase 11.0 vẫn giữ `runtime_activation_allowed=false`.
+- Disagreement schema là future contract, chưa có logging/storage runtime.

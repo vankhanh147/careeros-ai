@@ -694,3 +694,20 @@ AI governance rule mới:
 - Audit không cấp quyền deploy hoặc thay runtime.
 - Audit FAIL vẫn được ghi để giữ lịch sử trung thực.
 - Không có model nào được xem là production chỉ vì checklist PASS.
+
+## Phase 11.0 Shadow Evaluation Architecture
+
+CareerOS AI V2 hiện có shadow planning layer offline:
+
+- Config mặc định disabled.
+- Safety validator khóa user-facing output và raw text storage.
+- Candidate check yêu cầu registry status candidate, version khớp và `production_safe=false`.
+- No-candidate behavior hạ plan về disabled với WARNING.
+- Future disagreement schema chỉ lưu metadata tối thiểu.
+
+AI runtime boundary:
+
+- Production vẫn dùng `rule_based_matcher_v2.1`.
+- Không có shadow inference trong request path.
+- Không thay `match_score`, `final_score`, suggestion hoặc generated content.
+- `runtime_activation_allowed=false` trong mọi plan Phase 11.0.

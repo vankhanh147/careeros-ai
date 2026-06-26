@@ -951,3 +951,30 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation hoàn thành qua Phase 10.7.
 Next recommended: Chỉ bước sang Phase 11.0 khi có candidate thật và beta evidence; ưu tiên thiết kế shadow evaluation/rollback boundary trước runtime integration.
+
+## Phase 11.0 Update: Shadow Evaluation Architecture & Safety Boundary - Completed
+
+Date: 2026-06-27
+
+Phase 11.0 tạo contract, config, validator và planning CLI cho shadow evaluation. Phase này chưa chạy runtime shadow inference và không thay production behavior.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/shadow_evaluation.py`.
+- Tạo `backend/scripts/plan_shadow_evaluation.py`.
+- Tạo config `backend/ml/configs/shadow_evaluation_config.json`.
+- Tạo schema `backend/ml/configs/shadow_disagreement_schema.json`.
+- Tạo tests `backend/tests/test_shadow_evaluation.py`.
+- Tạo tài liệu `docs/ml/shadow_evaluation.md`.
+- Tạo report `context/PHASE_11_0_SHADOW_EVALUATION_REPORT.md`.
+
+Safety boundary:
+
+- Production score source luôn là rule-based.
+- Không lưu raw text.
+- Không cho phép user-facing shadow output.
+- Thiếu candidate trả plan disabled an toàn.
+- Mọi plan giữ runtime activation bị khóa.
+
+Current: CareerOS AI V2 - Shadow Evaluation Architecture Foundation.
+Next recommended: Phase 11.1 chỉ nên xây offline shadow harness khi có candidate thật vượt release audit; chưa tích hợp production request path.

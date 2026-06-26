@@ -474,3 +474,12 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho PASS, WARNING, FAIL, missing artifact, incomplete checklist, dry-run, write mode và production boundary.
 - Tạo `docs/ml/release_readiness.md`, `docs/ml/audit_trail.md` và report Phase 10.7.
 - Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.
+
+## 2026-06-27 - Phase 11.0 Shadow Evaluation Architecture & Safety Boundary
+
+- Thêm `backend/app/ml/shadow_evaluation.py` để validate config và tạo shadow plan offline.
+- Thêm `backend/scripts/plan_shadow_evaluation.py` hỗ trợ dry-run/write mode.
+- Thêm config mặc định disabled và future disagreement schema.
+- Thêm tests cho safety invariants, invalid sample rate, no-candidate fallback và valid candidate plan.
+- Tạo `docs/ml/shadow_evaluation.md` và report Phase 11.0.
+- Không chạy runtime inference, không deploy model và không thay production scoring/API/UI.

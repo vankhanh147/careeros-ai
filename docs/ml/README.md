@@ -98,3 +98,13 @@ Decision record luôn có `production_change_allowed=false`. Phase 10.6 không d
 - `backend/ml/audits/`: output directory của audit trail.
 
 Release Ready chỉ có nghĩa quy trình offline đủ bằng chứng. Nó không đồng nghĩa Production.
+
+## Tài liệu Phase 11.0
+
+- `docs/ml/shadow_evaluation.md`: architecture, contract và safety boundary.
+- `backend/app/ml/shadow_evaluation.py`: config validator và shadow plan builder.
+- `backend/scripts/plan_shadow_evaluation.py`: planning CLI dry-run/write mode.
+- `backend/ml/configs/shadow_evaluation_config.json`: config mặc định disabled.
+- `backend/ml/configs/shadow_disagreement_schema.json`: schema disagreement future-only.
+
+Phase 11.0 chưa chạy shadow inference. Mọi plan đều giữ `runtime_activation_allowed=false` và production tiếp tục dùng rule-based matcher.

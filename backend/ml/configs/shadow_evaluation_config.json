@@ -1,0 +1,14 @@
+{
+  "config_id": "shadow_evaluation_config_v1",
+  "enabled": false,
+  "candidate_model_version": "",
+  "candidate_registry_path": "",
+  "mode": "disabled",
+  "sample_rate": 0.0,
+  "max_latency_ms": 200,
+  "log_disagreements_only": true,
+  "store_raw_text": false,
+  "production_score_source": "rule_based",
+  "allow_user_facing_output": false,
+  "notes": "Default an toàn cho Phase 11.0. Config này không bật runtime shadow inference."
+}
