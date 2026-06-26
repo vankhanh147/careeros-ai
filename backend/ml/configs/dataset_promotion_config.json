@@ -1,0 +1,11 @@
+{
+  "source_dataset_version": "dataset_v2",
+  "target_dataset_version": "dataset_v3",
+  "include_synthetic": true,
+  "include_benchmark": false,
+  "include_beta": false,
+  "beta_source_path": "",
+  "minimum_beta_cases": 0,
+  "require_human_review": true,
+  "notes": "Config mẫu để promote dataset_v2 sang dataset_v3 dạng draft. Phase 10.1 mặc định chưa include beta data."
+}

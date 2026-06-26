@@ -8,6 +8,8 @@ prediction behavior.
 from __future__ import annotations
 
 import json
+import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +54,24 @@ REQUIRED_TRAINING_CONFIG_FIELDS = {
     "dataset_version",
 }
 
+REQUIRED_PROMOTION_CONFIG_FIELDS = {
+    "source_dataset_version",
+    "target_dataset_version",
+    "include_synthetic",
+    "include_benchmark",
+    "include_beta",
+    "beta_source_path",
+    "minimum_beta_cases",
+    "require_human_review",
+    "notes",
+}
+
+MOJIBAKE_PATTERN = re.compile(
+    r"\u00c3|\u00c2|\u00e1\u00ba|\u00e1\u00bb|\u00c4|\u00c6|\u00c5|\ufffd|M\?|Kh\?|H\?\?|tr\?|\?\?\?"
+)
+EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+PHONE_PATTERN = re.compile(r"(?<!\d)(?:\+?\d[\d\s().-]{7,}\d)(?!\d)")
+
 
 def load_json_metadata(path: str | Path) -> dict[str, Any]:
     payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
@@ -61,7 +81,10 @@ def load_json_metadata(path: str | Path) -> dict[str, Any]:
 
 
 def parse_dataset_metadata(path: str | Path) -> dict[str, Any]:
-    metadata = load_json_metadata(path)
+    return parse_dataset_metadata_dict(load_json_metadata(path))
+
+
+def parse_dataset_metadata_dict(metadata: dict[str, Any]) -> dict[str, Any]:
     _require_fields(metadata, REQUIRED_DATASET_FIELDS, "dataset metadata")
     _require_non_negative_int(metadata, "total_cases")
     _require_non_negative_int(metadata, "synthetic_cases")
@@ -105,6 +128,119 @@ def parse_training_config(path: str | Path) -> dict[str, Any]:
     return config
 
 
+def parse_promotion_config(path: str | Path) -> dict[str, Any]:
+    config = load_json_metadata(path)
+    _require_fields(config, REQUIRED_PROMOTION_CONFIG_FIELDS, "promotion config")
+    _require_bool(config, "include_synthetic")
+    _require_bool(config, "include_benchmark")
+    _require_bool(config, "include_beta")
+    _require_bool(config, "require_human_review")
+    _require_non_negative_int(config, "minimum_beta_cases")
+    if not str(config["source_dataset_version"]).strip():
+        raise ValueError("source_dataset_version không được rỗng.")
+    if not str(config["target_dataset_version"]).strip():
+        raise ValueError("target_dataset_version không được rỗng.")
+    return config
+
+
+def validate_dataset_promotion(
+    config: dict[str, Any],
+    *,
+    datasets_dir: str | Path,
+    root_dir: str | Path,
+) -> dict[str, Any]:
+    datasets_path = Path(datasets_dir)
+    root_path = Path(root_dir)
+    source_version = str(config["source_dataset_version"])
+    target_version = str(config["target_dataset_version"])
+    source_path = datasets_path / f"{source_version}_metadata.json"
+    target_path = datasets_path / f"{target_version}_metadata.json"
+
+    if source_version == target_version:
+        raise ValueError("target_dataset_version không được trùng source_dataset_version.")
+    if not source_path.exists():
+        raise ValueError(f"Không tìm thấy source dataset metadata: {source_path}")
+    if target_path.exists():
+        raise ValueError(f"target_dataset_version đã tồn tại: {target_version}")
+
+    source_metadata = parse_dataset_metadata(source_path)
+    beta_cases: list[dict[str, Any]] = []
+    beta_source_path = str(config.get("beta_source_path") or "").strip()
+    if config["include_beta"]:
+        if not beta_source_path:
+            raise ValueError("include_beta=true yêu cầu beta_source_path.")
+        beta_path = _resolve_path(root_path, beta_source_path)
+        if not beta_path.exists():
+            raise ValueError(f"Không tìm thấy beta_source_path: {beta_source_path}")
+        beta_cases = load_beta_cases(beta_path)
+        if len(beta_cases) < int(config["minimum_beta_cases"]):
+            raise ValueError("Số beta cases thấp hơn minimum_beta_cases.")
+        validate_beta_cases(
+            beta_cases,
+            require_human_review=bool(config["require_human_review"]),
+        )
+
+    synthetic_cases = source_metadata["synthetic_cases"] if config["include_synthetic"] else 0
+    benchmark_cases = source_metadata["benchmark_cases"] if config["include_benchmark"] else 0
+    beta_case_count = len(beta_cases) if config["include_beta"] else 0
+    total_cases = synthetic_cases + benchmark_cases + beta_case_count
+    target_metadata = {
+        "dataset_id": source_metadata["dataset_id"],
+        "version": target_version,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "source": source_metadata["source"],
+        "total_cases": total_cases,
+        "synthetic_cases": synthetic_cases,
+        "benchmark_cases": benchmark_cases,
+        "beta_cases": beta_case_count,
+        "status": "draft",
+        "production_safe": False,
+        "promoted_from": source_version,
+        "promotion_config": {
+            "include_synthetic": config["include_synthetic"],
+            "include_benchmark": config["include_benchmark"],
+            "include_beta": config["include_beta"],
+            "beta_source_path": beta_source_path,
+            "require_human_review": config["require_human_review"],
+        },
+        "notes": str(config.get("notes") or ""),
+    }
+    parse_dataset_metadata_dict(target_metadata)
+    return {
+        "source_path": str(source_path),
+        "target_path": str(target_path),
+        "source_metadata": source_metadata,
+        "target_metadata": target_metadata,
+        "beta_case_count": beta_case_count,
+    }
+
+
+def load_beta_cases(path: str | Path) -> list[dict[str, Any]]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    if isinstance(payload, list):
+        cases = payload
+    elif isinstance(payload, dict):
+        cases = payload.get("cases", [])
+    else:
+        raise ValueError("Beta source phải là JSON array hoặc object có field cases.")
+    if not isinstance(cases, list):
+        raise ValueError("Beta source field cases phải là list.")
+    return [dict(case) for case in cases if isinstance(case, dict)]
+
+
+def validate_beta_cases(cases: list[dict[str, Any]], *, require_human_review: bool) -> None:
+    for index, case in enumerate(cases, start=1):
+        serialized = json.dumps(case, ensure_ascii=False)
+        if MOJIBAKE_PATTERN.search(serialized):
+            raise ValueError(f"Beta case #{index} có dấu hiệu mojibake.")
+        if EMAIL_PATTERN.search(serialized) or PHONE_PATTERN.search(serialized):
+            raise ValueError(f"Beta case #{index} có dấu hiệu PII.")
+        if require_human_review:
+            review = case.get("human_review") or case.get("review_metadata")
+            if not isinstance(review, dict) or review.get("reviewed") is not True:
+                raise ValueError(f"Beta case #{index} thiếu human review metadata.")
+
+
 def _require_fields(payload: dict[str, Any], fields: set[str], label: str) -> None:
     missing = sorted(field for field in fields if field not in payload)
     if missing:
@@ -121,3 +257,15 @@ def _require_score(payload: dict[str, Any], field: str) -> None:
     value = payload[field]
     if not isinstance(value, (int, float)) or not 0 <= float(value) <= 1:
         raise ValueError(f"{field} phải nằm trong khoảng 0..1.")
+
+
+def _require_bool(payload: dict[str, Any], field: str) -> None:
+    if not isinstance(payload[field], bool):
+        raise ValueError(f"{field} phải là boolean.")
+
+
+def _resolve_path(root_dir: Path, path: str) -> Path:
+    candidate = Path(path)
+    if candidate.is_absolute():
+        return candidate
+    return root_dir / candidate

@@ -512,15 +512,15 @@ Nhận định AI:
 
 CareerOS AI V2 hiện có training infrastructure foundation offline:
 
-- ackend/ml/ làm ML workspace metadata.
-- ackend/app/ml/training_infra.py parse/validate dataset, model registry, experiment và training config metadata.
-- docs/ml/ mô tả dataset versioning, model registry và experiment tracking.
+- `backend/ml/` làm ML workspace metadata.
+- `backend/app/ml/training_infra.py` parse/validate dataset, model registry, experiment và training config metadata.
+- `docs/ml/` mô tả dataset versioning, model registry và experiment tracking.
 
 Nền tảng này hỗ trợ vòng đời:
 
-`	ext
+```text
 Dataset -> Training -> Evaluation -> Model Registry -> Versioning -> Deployment decision
-`
+```
 
 Ranh giới AI:
 
@@ -529,3 +529,27 @@ Ranh giới AI:
 - Không đưa ML/hybrid model vào runtime.
 - Không thêm LLM, fine-tuning hoặc vector database.
 - Registry hiện là JSON local để phục vụ quy trình AI startup ở mức MVP.
+
+## Phase 10.1 Dataset Promotion Workflow
+
+CareerOS AI V2 hiện có workflow promote dataset metadata có kiểm soát:
+
+- `backend/ml/configs/dataset_promotion_config.json`
+- `backend/scripts/promote_dataset_version.py`
+- `docs/ml/dataset_promotion.md`
+
+Workflow hỗ trợ:
+
+- Dry-run để in kế hoạch promote mà không tạo file.
+- Write mode tạo dataset metadata draft, không overwrite version cũ.
+- Validate source dataset tồn tại và target dataset chưa tồn tại.
+- Validate beta source nếu `include_beta=true`.
+- Yêu cầu human review metadata nếu `require_human_review=true`.
+- Scan PII/mojibake ở beta cases trước khi promotion.
+
+Ranh giới AI:
+
+- Không train model mới.
+- Không thay production scoring.
+- Không đưa dataset mới vào runtime.
+- Không thêm LLM, fine-tuning hoặc vector database.

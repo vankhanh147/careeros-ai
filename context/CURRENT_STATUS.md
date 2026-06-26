@@ -736,20 +736,18 @@ Next recommended: Phase 9.4 nên tập trung vào human-reviewed real beta label
 
 Date: 2026-06-26
 
-Phase 10.0 mở đầu CareerOS AI V2 bằng cách tạo nền tảng AI Training Infrastructure offline. Phase này không thay production scoring, không đổi match_score, inal_score, database schema, API production hoặc UI production.
+Phase 10.0 mở đầu CareerOS AI V2 bằng cách tạo nền tảng AI Training Infrastructure offline. Phase này không thay production scoring, không đổi `match_score`, `final_score`, database schema, API production hoặc UI production.
 
 Đã hoàn thành:
 
-- Tạo ML workspace ackend/ml/ với datasets/, experiments/, models/, 
-egistry/, 
-eports/ và configs/.
-- Tạo dataset metadata ackend/ml/datasets/dataset_v2_metadata.json.
+- Tạo ML workspace `backend/ml/` với `datasets/`, `experiments/`, `models/`, `registry/`, `reports/` và `configs`.
+- Tạo dataset metadata `backend/ml/datasets/dataset_v2_metadata.json`.
 - Tạo model registry records cho matching_model_v1 và hybrid_matching_model_v1.
 - Tạo experiment template và evaluation report template.
 - Tạo training config foundation.
-- Thêm parser/validator metadata trong ackend/app/ml/training_infra.py.
+- Thêm parser/validator metadata trong `backend/app/ml/training_infra.py`.
 - Thêm tests cho dataset parser, registry parser, experiment parser và training config parser.
-- Tạo docs docs/ml/ và report context/PHASE_10_0_TRAINING_INFRA_REPORT.md.
+- Tạo docs `docs/ml/` và report `context/PHASE_10_0_TRAINING_INFRA_REPORT.md`.
 
 Ranh giới quan trọng:
 
@@ -760,3 +758,28 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.1 nên tập trung vào dataset promotion workflow và real beta labels đã ẩn danh.
+
+## Phase 10.1 Update: Dataset Promotion Workflow - Completed
+
+Date: 2026-06-26
+
+Phase 10.1 thêm workflow promote dataset có kiểm soát để sau này tạo dataset version mới từ synthetic/benchmark/beta labels đã ẩn danh. Phase này không train model, không đổi production scoring, không đổi `match_score`, `final_score`, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo config mẫu `backend/ml/configs/dataset_promotion_config.json`.
+- Tạo script `backend/scripts/promote_dataset_version.py` với dry-run mode.
+- Mở rộng `backend/app/ml/training_infra.py` với promotion config parser, promotion validator và beta case validation.
+- Tạo tài liệu `docs/ml/dataset_promotion.md`.
+- Tạo report `context/PHASE_10_1_DATASET_PROMOTION_REPORT.md`.
+- Thêm tests cho config parser, dry-run, duplicate target version, missing beta path và missing human review metadata.
+
+Ranh giới quan trọng:
+
+- Dry-run không tạo file metadata mới.
+- Write mode chỉ tạo dataset metadata draft với `status: draft` và `production_safe: false`.
+- Không overwrite dataset version cũ.
+- Không lưu PII hoặc beta cases có dấu hiệu mojibake.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.2 nên tập trung vào beta label schema, anonymization checklist và review workflow trước khi đưa real beta data vào dataset promotion.

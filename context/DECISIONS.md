@@ -126,8 +126,17 @@ Do not add unless explicitly requested:
 
 ## Phase 10.0 AI Training Infrastructure Decisions
 
-- ML training infrastructure được đặt trong ackend/ml/ để tách khỏi production app code trong ackend/app/.
+- ML training infrastructure được đặt trong `backend/ml/` để tách khỏi production app code trong `backend/app/`.
 - Dataset, model registry, experiment và evaluation report dùng JSON metadata trước, chưa cần database hoặc MLflow.
 - Model registry record không đồng nghĩa model được productionize. Mọi model vẫn cần benchmark, beta validation và review trước khi ảnh hưởng user-facing score.
-- Không dùng training infrastructure để thay match_score hoặc inal_score.
+- Không dùng training infrastructure để thay `match_score` hoặc `final_score`.
 - Real beta labels trong tương lai phải được ẩn danh và versioned thành dataset mới, không sửa im lặng dataset version cũ.
+
+## Phase 10.1 Dataset Promotion Decisions
+
+- Dataset version mới phải được tạo qua metadata draft, không sửa im lặng metadata version cũ.
+- Dry-run là bước mặc định để review kế hoạch promote trước khi ghi file.
+- `include_beta=true` bắt buộc có `beta_source_path` tồn tại.
+- Nếu `require_human_review=true`, beta case phải có `human_review.reviewed=true` hoặc metadata tương đương.
+- Beta source có dấu hiệu PII hoặc mojibake phải bị chặn trước khi promotion.
+- Dataset draft không đồng nghĩa production-safe và không tự động train/evaluate model.

@@ -394,10 +394,20 @@ This changelog summarizes completed CareerOS AI phases based on the current code
 
 ## 2026-06-26 - Phase 10.0 AI Training Infrastructure Foundation
 
-- Tạo ML workspace offline tại ackend/ml/ với configs, datasets, experiments, models, registry và reports.
+- Tạo ML workspace offline tại `backend/ml/` với configs, datasets, experiments, models, registry và reports.
 - Thêm dataset metadata, model registry records, experiment template, evaluation report template và training config.
-- Thêm ackend/app/ml/training_infra.py để parse/validate metadata JSON.
+- Thêm `backend/app/ml/training_infra.py` để parse/validate metadata JSON.
 - Thêm tests cho metadata load, dataset version parser, model registry parser, experiment parser và training config parser.
-- Tạo docs docs/ml/README.md, docs/ml/model_registry.md, docs/ml/dataset_versioning.md, docs/ml/experiment_tracking.md.
-- Tạo context/PHASE_10_0_TRAINING_INFRA_REPORT.md.
-- Giữ nguyên production match_score, inal_score, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.
+- Tạo docs `docs/ml/README.md`, `docs/ml/model_registry.md`, `docs/ml/dataset_versioning.md`, `docs/ml/experiment_tracking.md`.
+- Tạo `context/PHASE_10_0_TRAINING_INFRA_REPORT.md`.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 10.1 Dataset Promotion Workflow
+
+- Thêm `backend/ml/configs/dataset_promotion_config.json` làm config mẫu cho dataset promotion.
+- Thêm `backend/scripts/promote_dataset_version.py` hỗ trợ `--dry-run` và write mode tạo metadata draft.
+- Mở rộng `backend/app/ml/training_infra.py` với promotion config parser, validation target/source version, beta source validation, PII/mojibake scan và human review check.
+- Tạo `docs/ml/dataset_promotion.md` và cập nhật `docs/ml/README.md`.
+- Tạo `context/PHASE_10_1_DATASET_PROMOTION_REPORT.md`.
+- Thêm tests cho promotion config parser, dry-run không tạo file, duplicate target version, missing beta path và missing human review metadata.
+- Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.

@@ -25,6 +25,7 @@ Phase 10.0 chỉ tạo foundation. Không model nào được đưa vào product
 ## Thành phần chính
 
 - Dataset versioning: quản lý nguồn dữ liệu và số lượng case theo version.
+- Dataset promotion: tạo dataset version mới bằng dry-run/write workflow có validation.
 - Model registry: lưu metadata model artifact và metrics.
 - Experiment tracking: ghi lại thử nghiệm training/evaluation offline.
 - Training config: chuẩn hóa seed, split ratio, feature version và classifier.
