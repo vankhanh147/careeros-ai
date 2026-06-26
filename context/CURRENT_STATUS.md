@@ -898,3 +898,29 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.6 nên tạo Model Comparison & Deployment Decision Record offline, không tự động deploy.
+
+## Phase 10.6 Update: Model Comparison & Deployment Decision Record - Completed
+
+Date: 2026-06-27
+
+Phase 10.6 thêm workflow offline để so sánh model candidate với baseline `rule_based_matcher_v2.1` và ghi Deployment Decision Record. Phase này không deploy model, không đổi production scoring, `match_score`, `final_score`, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/model_comparison.py`.
+- Tạo `backend/scripts/create_deployment_decision.py`.
+- Tạo schema `backend/ml/configs/deployment_decision_schema.json`.
+- Tạo output directory `backend/ml/decisions/`.
+- Tạo tests `backend/tests/test_deployment_decision.py`.
+- Tạo tài liệu `docs/ml/deployment_decision.md`.
+- Tạo report `context/PHASE_10_6_DEPLOYMENT_DECISION_REPORT.md`.
+
+Ranh giới quan trọng:
+
+- Candidate metrics không được so sánh trực tiếp với production `match_score`.
+- Thiếu candidate tạo recommendation `keep_baseline`.
+- `approve_candidate` không đồng nghĩa deploy.
+- Mọi decision record giữ `production_change_allowed=false`.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.7 nên chuẩn hóa Model Release Readiness Checklist và immutable decision audit trước mọi runtime experiment.

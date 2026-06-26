@@ -1,0 +1,36 @@
+{
+  "schema_id": "careeros-deployment-decision-v1",
+  "required_fields": [
+    "decision_id",
+    "candidate_model_version",
+    "baseline_version",
+    "dataset_version",
+    "dataset_hash",
+    "comparison_summary",
+    "risk_level",
+    "decision",
+    "reviewer",
+    "decision_time",
+    "rationale",
+    "required_followups",
+    "production_change_allowed"
+  ],
+  "allowed_comparison_statuses": [
+    "better",
+    "worse",
+    "inconclusive"
+  ],
+  "allowed_risk_levels": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "allowed_decisions": [
+    "keep_baseline",
+    "keep_shadow",
+    "approve_candidate",
+    "reject_candidate"
+  ],
+  "production_change_allowed": false,
+  "notes": "Phase 10.6 chỉ ghi decision record offline. Không cho phép thay đổi production."
+}

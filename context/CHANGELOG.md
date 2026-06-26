@@ -454,3 +454,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho missing artifact, hash mismatch, missing evaluation, duplicate registry, candidate promotion và dry-run.
 - Tạo `docs/ml/model_review_gate.md` và report `context/PHASE_10_5_MODEL_REVIEW_REPORT.md`.
 - Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.
+
+## 2026-06-27 - Phase 10.6 Model Comparison & Deployment Decision Record
+
+- Thêm `backend/app/ml/model_comparison.py` để so sánh candidate với baseline offline.
+- Thêm `backend/scripts/create_deployment_decision.py` hỗ trợ dry-run và write mode.
+- Thêm schema `backend/ml/configs/deployment_decision_schema.json`.
+- Thêm decision output directory `backend/ml/decisions/`.
+- Thêm tests cho no-candidate, candidate tốt/thấp, production boundary, dry-run và write mode.
+- Tạo `docs/ml/deployment_decision.md` và report Phase 10.6.
+- Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.

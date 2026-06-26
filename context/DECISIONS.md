@@ -176,3 +176,12 @@ Do not add unless explicitly requested:
 - Metrics trong warning margin tạo WARNING; người review vẫn phải cân nhắc trước deployment decision.
 - Write mode chỉ được cập nhật `candidate` hoặc `rejected`, luôn giữ `production_safe=false`.
 - Không có auto promotion hoặc code path chuyển model sang production trong Phase 10.5.
+
+## Phase 10.6 Deployment Decision Decisions
+
+- Production baseline được định danh là `rule_based_matcher_v2.1`.
+- Chỉ registry có `status=candidate` mới được so sánh; no-candidate mode chỉ được `keep_baseline`.
+- Candidate classification metrics không được so sánh trực tiếp với production `match_score`.
+- Thiếu benchmark/review evidence tạo kết luận `inconclusive`, không được coi là candidate tốt hơn.
+- Write mode bắt buộc có reviewer và không overwrite decision record cũ.
+- Mọi record luôn có `production_change_allowed=false`; Phase 10.6 không có deployment path.

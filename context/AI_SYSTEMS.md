@@ -660,3 +660,20 @@ AI training rule mới:
 - Draft phải qua review gate mới được xem là candidate.
 - Candidate không được tự động trở thành production.
 - Phase 10.5 không train, không inference và không thay production scoring.
+
+## Phase 10.6 Model Comparison & Deployment Decision Record
+
+CareerOS AI V2 hiện có comparison workflow offline:
+
+- Baseline: `rule_based_matcher_v2.1`.
+- Candidate: registry có `status=candidate`.
+- Evidence: evaluation metrics, benchmark results, model review outcome, dataset version/hash và known limitations.
+- Output: comparison status, risk level, recommendation và decision record.
+
+AI governance rule mới:
+
+- Candidate không đồng nghĩa production.
+- Metrics classifier không được đánh đồng với production `match_score`.
+- Thiếu candidate hoặc thiếu evidence phải giữ baseline/shadow.
+- `production_change_allowed` luôn là `false` trong Phase 10.6.
+- Không train, inference, deploy hoặc thay runtime matcher.

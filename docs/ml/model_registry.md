@@ -53,3 +53,11 @@ draft → under_review → candidate
 Review gate đối chiếu artifact, dataset hash, experiment, evaluation report, metrics và benchmark policy trước khi cập nhật trạng thái. `candidate` không đồng nghĩa `production`; Phase 10.5 không có code path chuyển model thành production.
 
 Chi tiết: `docs/ml/model_review_gate.md`.
+
+## Deployment Decision Record từ Phase 10.6
+
+Model có status `candidate` mới được đưa vào comparison workflow. Candidate được so sánh với baseline `rule_based_matcher_v2.1` bằng metrics, benchmark evidence, dataset version/hash, review outcome và known limitations.
+
+Kết quả được ghi thành decision record offline. `approve_candidate` không đồng nghĩa model được deploy hoặc trở thành production.
+
+Chi tiết: `docs/ml/deployment_decision.md`.

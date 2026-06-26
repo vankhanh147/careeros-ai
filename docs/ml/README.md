@@ -77,3 +77,13 @@ Từ Phase 10.4, training script mới không được đọc trực tiếp từ
 - `backend/ml/configs/model_review_config.json`: ngưỡng accuracy, macro F1 và benchmark policy.
 
 Model chỉ được xem là candidate sau khi vượt review gate. Candidate vẫn có `production_safe=false` và không được tự động đưa vào runtime.
+
+## Tài liệu Phase 10.6
+
+- `docs/ml/deployment_decision.md`: model comparison, risk assessment và decision record.
+- `backend/app/ml/model_comparison.py`: comparison logic offline.
+- `backend/scripts/create_deployment_decision.py`: CLI dry-run/write mode.
+- `backend/ml/configs/deployment_decision_schema.json`: schema decision record.
+- `backend/ml/decisions/`: output directory cho decision records.
+
+Decision record luôn có `production_change_allowed=false`. Phase 10.6 không deploy và không thay runtime.
