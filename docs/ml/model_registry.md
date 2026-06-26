@@ -61,3 +61,9 @@ Model có status `candidate` mới được đưa vào comparison workflow. Cand
 Kết quả được ghi thành decision record offline. `approve_candidate` không đồng nghĩa model được deploy hoặc trở thành production.
 
 Chi tiết: `docs/ml/deployment_decision.md`.
+
+## Release Audit từ Phase 10.7
+
+Candidate và deployment decision phải đi qua Release Readiness Checklist trước khi được xem là release ready offline. Audit kiểm tra dataset hash, artifacts, experiment, evaluation, review, decision, quality evidence và production boundary.
+
+Chi tiết: `docs/ml/release_readiness.md` và `docs/ml/audit_trail.md`.

@@ -87,3 +87,14 @@ Model chỉ được xem là candidate sau khi vượt review gate. Candidate v�
 - `backend/ml/decisions/`: output directory cho decision records.
 
 Decision record luôn có `production_change_allowed=false`. Phase 10.6 không deploy và không thay runtime.
+
+## Tài liệu Phase 10.7
+
+- `docs/ml/release_readiness.md`: checklist 21 mục cho dataset, training, review, quality và governance.
+- `docs/ml/audit_trail.md`: audit lifecycle, dry-run/write mode và production boundary.
+- `backend/app/ml/release_audit.py`: checklist validator và audit record builder.
+- `backend/scripts/run_release_audit.py`: CLI audit offline.
+- `backend/ml/configs/audit_record_schema.json`: schema audit record.
+- `backend/ml/audits/`: output directory của audit trail.
+
+Release Ready chỉ có nghĩa quy trình offline đủ bằng chứng. Nó không đồng nghĩa Production.

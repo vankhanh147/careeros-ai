@@ -464,3 +464,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho no-candidate, candidate tốt/thấp, production boundary, dry-run và write mode.
 - Tạo `docs/ml/deployment_decision.md` và report Phase 10.6.
 - Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.
+
+## 2026-06-27 - Phase 10.7 Release Readiness Checklist & Audit Trail
+
+- Thêm `backend/app/ml/release_audit.py` với checklist 21 mục và outcome PASS/WARNING/FAIL.
+- Thêm `backend/scripts/run_release_audit.py` hỗ trợ dry-run/write mode.
+- Thêm schema `backend/ml/configs/audit_record_schema.json`.
+- Thêm output directory `backend/ml/audits/`.
+- Thêm tests cho PASS, WARNING, FAIL, missing artifact, incomplete checklist, dry-run, write mode và production boundary.
+- Tạo `docs/ml/release_readiness.md`, `docs/ml/audit_trail.md` và report Phase 10.7.
+- Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.

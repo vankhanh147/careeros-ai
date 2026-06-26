@@ -677,3 +677,20 @@ AI governance rule mới:
 - Thiếu candidate hoặc thiếu evidence phải giữ baseline/shadow.
 - `production_change_allowed` luôn là `false` trong Phase 10.6.
 - Không train, inference, deploy hoặc thay runtime matcher.
+
+## Phase 10.7 Release Readiness & Audit Trail
+
+CareerOS AI V2 hiện có audit pipeline offline:
+
+- Xác minh dataset version/hash và approved labels.
+- Xác minh training config, experiment, evaluation và model artifacts.
+- Xác minh review PASS, registry candidate và deployment decision.
+- Xác minh quality evidence, UTF-8, mojibake và PII.
+- Xác minh `production_safe=false` và `production_change_allowed=false`.
+
+AI governance rule mới:
+
+- Release Ready chỉ mô tả mức sẵn sàng offline.
+- Audit không cấp quyền deploy hoặc thay runtime.
+- Audit FAIL vẫn được ghi để giữ lịch sử trung thực.
+- Không có model nào được xem là production chỉ vì checklist PASS.

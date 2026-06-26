@@ -185,3 +185,12 @@ Do not add unless explicitly requested:
 - Thiếu benchmark/review evidence tạo kết luận `inconclusive`, không được coi là candidate tốt hơn.
 - Write mode bắt buộc có reviewer và không overwrite decision record cũ.
 - Mọi record luôn có `production_change_allowed=false`; Phase 10.6 không có deployment path.
+
+## Phase 10.7 Release Audit Decisions
+
+- Release checklist có 21 mục bắt buộc và mỗi mục phải có PASS/WARNING/FAIL cùng lý do.
+- Thiếu quality command evidence tạo WARNING; script không tự khai command đã pass.
+- Dataset hash, UTF-8, mojibake và PII được script kiểm tra trực tiếp.
+- Write mode bắt buộc reviewer, không overwrite audit cũ và được phép ghi audit FAIL để giữ traceability.
+- `production_change_allowed=false` là invariant bắt buộc.
+- Release Ready offline không đồng nghĩa Production; runtime/shadow/deployment thuộc Phase 11 trở đi.

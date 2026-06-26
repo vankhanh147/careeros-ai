@@ -1,0 +1,23 @@
+{
+  "schema_id": "careeros-release-audit-v1",
+  "required_fields": [
+    "audit_id",
+    "timestamp",
+    "reviewer",
+    "dataset_version",
+    "model_version",
+    "registry_version",
+    "decision_id",
+    "checklist_result",
+    "notes",
+    "passed",
+    "production_change_allowed"
+  ],
+  "allowed_check_statuses": [
+    "PASS",
+    "WARNING",
+    "FAIL"
+  ],
+  "production_change_allowed": false,
+  "notes": "Release readiness chỉ có ý nghĩa offline. Audit record không cấp quyền thay đổi production."
+}

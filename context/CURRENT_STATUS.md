@@ -924,3 +924,30 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.7 nên chuẩn hóa Model Release Readiness Checklist và immutable decision audit trước mọi runtime experiment.
+
+## Phase 10.7 Update: Release Readiness Checklist & Audit Trail - Completed
+
+Date: 2026-06-27
+
+Phase 10.7 hoàn thiện audit trail offline cho AI Training Infrastructure. Phase này không deploy model, không thêm runtime inference và không thay production scoring.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/release_audit.py`.
+- Tạo `backend/scripts/run_release_audit.py`.
+- Tạo schema `backend/ml/configs/audit_record_schema.json`.
+- Tạo output directory `backend/ml/audits/`.
+- Tạo checklist 21 mục theo Dataset, Training, Model Review, Quality và Governance.
+- Thêm tests `backend/tests/test_release_audit.py`.
+- Tạo `docs/ml/release_readiness.md` và `docs/ml/audit_trail.md`.
+- Tạo report `context/PHASE_10_7_RELEASE_AUDIT_REPORT.md`.
+
+Ranh giới quan trọng:
+
+- Release Ready offline không đồng nghĩa Production.
+- Audit FAIL vẫn được phép ghi để giữ traceability.
+- Write mode bắt buộc reviewer.
+- Mọi audit record giữ `production_change_allowed=false`.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation hoàn thành qua Phase 10.7.
+Next recommended: Chỉ bước sang Phase 11.0 khi có candidate thật và beta evidence; ưu tiên thiết kế shadow evaluation/rollback boundary trước runtime integration.
