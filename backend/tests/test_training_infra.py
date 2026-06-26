@@ -42,7 +42,7 @@ def test_parse_training_config():
     config = parse_training_config(ML_WORKSPACE / "configs" / "training_config.json")
 
     assert config["random_seed"] == 42
-    assert config["dataset_version"] == "dataset_v2"
+    assert config["dataset_version"] == "dataset_v3"
     assert config["split_ratio"]["train"] == 0.75
 
 

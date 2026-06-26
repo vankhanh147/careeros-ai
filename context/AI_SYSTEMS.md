@@ -612,3 +612,25 @@ Ranh giới AI:
 - Không thay production scoring.
 - Không đưa dataset artifact vào runtime.
 - Không thêm LLM, fine-tuning hoặc vector database.
+
+## Phase 10.4 Training Job Contract
+
+CareerOS AI V2 hiện có training job contract offline:
+
+- `docs/ml/training_job_contract.md`
+- `backend/scripts/run_training_job.py`
+- `backend/ml/configs/training_config.json`
+
+AI training rule mới:
+
+- Training script mới phải đọc từ `backend/ml/datasets/training_dataset_v3.json` và manifest.
+- Training script mới không được đọc trực tiếp từ synthetic, benchmark hoặc beta raw sources.
+- Manifest hash là gate bắt buộc trước khi train.
+- Model version đã tồn tại thì job phải fail, không overwrite.
+- Registry draft luôn `production_safe=false`.
+
+Ranh giới AI:
+
+- Không thay production scoring.
+- Không đưa model mới vào runtime.
+- Không thêm LLM, fine-tuning hoặc vector database.

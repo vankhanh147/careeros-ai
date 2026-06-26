@@ -157,3 +157,13 @@ Do not add unless explicitly requested:
 - Artifact phải có manifest và SHA256 fingerprint.
 - Assembly phải fail nếu phát hiện duplicate case ID, duplicate content hash, invalid label, source invalid, PII hoặc mojibake.
 - Beta labels chỉ được đưa vào artifact khi đã approved, anonymized và có metadata review hợp lệ.
+
+## Phase 10.4 Training Job Contract Decisions
+
+- Training job mới chỉ được đọc dataset artifact đã assembly và manifest, không đọc source dataset rời rạc.
+- `artifact_hash` trong manifest là validation gate bắt buộc.
+- `dataset_version` phải khớp giữa config, artifact và manifest.
+- `model_version` là immutable; nếu registry hoặc artifact directory đã tồn tại thì training job phải fail.
+- Dry-run là cách verify mặc định trước khi ghi artifact.
+- Registry draft từ training job luôn `production_safe=false` và không tự động được dùng cho runtime.
+- Phase 10.4 ưu tiên LogisticRegression baseline để giữ training job nhẹ, deterministic và dễ kiểm thử.

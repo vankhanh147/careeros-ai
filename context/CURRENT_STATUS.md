@@ -846,3 +846,28 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.4 nên chuẩn hóa training job contract để mọi script training đọc từ `training_dataset_v3.json` thay vì source dataset rời rạc.
+
+## Phase 10.4 Update: Training Job Contract - Completed
+
+Date: 2026-06-26
+
+Phase 10.4 chuẩn hóa Training Job Contract cho CareerOS AI V2. Từ phase này, training job mới phải đọc từ `backend/ml/datasets/training_dataset_v3.json` và `backend/ml/datasets/training_dataset_manifest.json`, không đọc trực tiếp từ synthetic/benchmark/beta raw sources.
+
+Đã hoàn thành:
+
+- Tạo tài liệu `docs/ml/training_job_contract.md`.
+- Tạo runner `backend/scripts/run_training_job.py`.
+- Cập nhật `backend/ml/configs/training_config.json` sang `dataset_v3` và `matching_job_contract_v1`.
+- Thêm tests `backend/tests/test_training_job_contract.py`.
+- Cập nhật docs ML registry, experiment tracking và README.
+- Tạo report `context/PHASE_10_4_TRAINING_JOB_CONTRACT_REPORT.md`.
+
+Ranh giới quan trọng:
+
+- Không thay production scoring.
+- Không thay `match_score` hoặc `final_score`.
+- Không đổi database schema, API production hoặc UI production.
+- Dry-run là verification mặc định; chạy thật sẽ tạo registry draft `production_safe=false`.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.5 nên thêm Model Registry Review Gate trước khi bất kỳ model offline nào được xem là candidate.

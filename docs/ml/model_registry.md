@@ -25,3 +25,18 @@ Mỗi model registry record nên có:
 Registry trong Phase 10.0 chỉ là file JSON local, chưa phải model serving system.
 
 Model có trong registry không đồng nghĩa được dùng làm production score. Mọi quyết định production phải qua benchmark, beta validation và review riêng.
+
+## Registry draft từ Training Job Contract
+
+Từ Phase 10.4, `run_training_job.py` có thể tạo registry draft tại:
+
+- `backend/ml/registry/{model_version}.json`
+
+Registry draft phải có:
+
+- `dataset_hash`
+- `artifact_paths`
+- `status=draft`
+- `production_safe=false`
+
+Nếu `model_version` đã tồn tại, training job phải fail và không overwrite artifact cũ.

@@ -435,3 +435,12 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tài liệu `docs/ml/training_dataset.md` và report `context/PHASE_10_3_DATASET_ASSEMBLY_REPORT.md`.
 - Thêm tests cho duplicate detection, validation failure, export artifact, manifest, statistics, fingerprint và dry-run.
 - Giữ nguyên production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning và vector infrastructure.
+
+## 2026-06-26 - Phase 10.4 Training Job Contract
+
+- Thêm `docs/ml/training_job_contract.md` để chuẩn hóa input, output, validation và exit code rules cho training job.
+- Thêm `backend/scripts/run_training_job.py` với dry-run mode, artifact hash validation, dataset version validation và duplicate model version protection.
+- Cập nhật `backend/ml/configs/training_config.json` sang `dataset_v3`, `LogisticRegression`, `matching_job_contract_v1`.
+- Thêm tests `backend/tests/test_training_job_contract.py` cho config, hash, duplicate version, dry-run và metadata output.
+- Cập nhật `docs/ml/README.md`, `docs/ml/model_registry.md`, `docs/ml/experiment_tracking.md`.
+- Không thay production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning hoặc vector infrastructure.
