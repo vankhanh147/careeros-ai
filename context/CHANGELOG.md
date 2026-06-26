@@ -444,3 +444,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests `backend/tests/test_training_job_contract.py` cho config, hash, duplicate version, dry-run và metadata output.
 - Cập nhật `docs/ml/README.md`, `docs/ml/model_registry.md`, `docs/ml/experiment_tracking.md`.
 - Không thay production `match_score`, `final_score`, database schema, API production, UI production, LLM usage, fine-tuning hoặc vector infrastructure.
+
+## 2026-06-27 - Phase 10.5 Model Registry Review Gate
+
+- Thêm `backend/app/ml/model_review.py` để review registry metadata và artifacts offline.
+- Thêm `backend/scripts/review_model_registry.py` với dry-run/write mode.
+- Thêm `backend/ml/configs/model_review_config.json` cho metrics threshold và benchmark policy.
+- Chuẩn hóa outcome `PASS`, `WARNING`, `FAIL` và status `candidate`/`rejected`.
+- Thêm tests cho missing artifact, hash mismatch, missing evaluation, duplicate registry, candidate promotion và dry-run.
+- Tạo `docs/ml/model_review_gate.md` và report `context/PHASE_10_5_MODEL_REVIEW_REPORT.md`.
+- Giữ nguyên production scoring, runtime inference, database schema, API production và UI production.

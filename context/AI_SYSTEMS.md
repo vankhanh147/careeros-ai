@@ -634,3 +634,29 @@ Ranh giới AI:
 - Không thay production scoring.
 - Không đưa model mới vào runtime.
 - Không thêm LLM, fine-tuning hoặc vector database.
+
+## Phase 10.5 Model Registry Review Gate
+
+CareerOS AI V2 hiện có review gate offline:
+
+- `backend/app/ml/model_review.py`
+- `backend/scripts/review_model_registry.py`
+- `backend/ml/configs/model_review_config.json`
+- `docs/ml/model_review_gate.md`
+
+Gate kiểm tra:
+
+- Registry và model artifacts.
+- Dataset version/hash với manifest.
+- Feature version.
+- Experiment record và evaluation report.
+- Accuracy, macro F1 và benchmark policy.
+- Duplicate model version.
+- `production_safe=false`.
+
+AI training rule mới:
+
+- Train xong chỉ tạo registry draft.
+- Draft phải qua review gate mới được xem là candidate.
+- Candidate không được tự động trở thành production.
+- Phase 10.5 không train, không inference và không thay production scoring.

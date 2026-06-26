@@ -40,3 +40,16 @@ Registry draft phải có:
 - `production_safe=false`
 
 Nếu `model_version` đã tồn tại, training job phải fail và không overwrite artifact cũ.
+
+## Review gate từ Phase 10.5
+
+Registry lifecycle offline:
+
+```text
+draft → under_review → candidate
+                     ↘ rejected
+```
+
+Review gate đối chiếu artifact, dataset hash, experiment, evaluation report, metrics và benchmark policy trước khi cập nhật trạng thái. `candidate` không đồng nghĩa `production`; Phase 10.5 không có code path chuyển model thành production.
+
+Chi tiết: `docs/ml/model_review_gate.md`.

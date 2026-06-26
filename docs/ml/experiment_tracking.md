@@ -50,3 +50,7 @@ Record tối thiểu gồm:
 - `production_safe=false`
 
 Dry-run không ghi experiment record.
+
+## Liên kết với Model Review Gate
+
+Từ Phase 10.5, experiment record là bằng chứng bắt buộc của registry review. Gate kiểm tra `model_version` và `dataset_hash` trong experiment phải khớp registry. Thiếu experiment hoặc metadata không khớp sẽ là FAIL.

@@ -1,0 +1,16 @@
+{
+  "config_id": "model_review_config_v1",
+  "registry_path": "backend/ml/registry/matching_job_contract_v1.json",
+  "dataset_manifest_path": "backend/ml/datasets/training_dataset_manifest.json",
+  "minimum_accuracy": 0.7,
+  "minimum_macro_f1": 0.7,
+  "warning_margin": 0.05,
+  "benchmark_required": true,
+  "required_evaluation_fields": [
+    "accuracy",
+    "macro_f1",
+    "classification_report",
+    "confusion_matrix"
+  ],
+  "notes": "Review gate offline. Candidate không đồng nghĩa production và production_safe luôn false."
+}

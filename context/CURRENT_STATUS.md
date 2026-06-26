@@ -871,3 +871,30 @@ Ranh giới quan trọng:
 
 Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
 Next recommended: Phase 10.5 nên thêm Model Registry Review Gate trước khi bất kỳ model offline nào được xem là candidate.
+
+## Phase 10.5 Update: Model Registry Review Gate - Completed
+
+Date: 2026-06-27
+
+Phase 10.5 thêm review gate offline giữa registry draft và model candidate. Phase này không train model, không đổi production scoring, `match_score`, `final_score`, database schema, API production hoặc UI production.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/model_review.py`.
+- Tạo `backend/scripts/review_model_registry.py`.
+- Tạo config `backend/ml/configs/model_review_config.json`.
+- Chuẩn hóa outcome `PASS`, `WARNING`, `FAIL`.
+- Chuẩn hóa lifecycle `draft -> under_review -> candidate/rejected`.
+- Validate artifacts, dataset version/hash, feature version, experiment, evaluation, metrics, benchmark policy và duplicate registry.
+- Thêm tests `backend/tests/test_model_review_gate.py`.
+- Tạo tài liệu `docs/ml/model_review_gate.md`.
+- Tạo report `context/PHASE_10_5_MODEL_REVIEW_REPORT.md`.
+
+Ranh giới quan trọng:
+
+- Candidate luôn giữ `production_safe=false`.
+- Không có auto promotion sang production.
+- Repository hiện chưa có training job artifact thật; dry-run mặc định báo registry chưa tồn tại đúng với trạng thái hiện tại.
+
+Current: CareerOS AI V2 - AI Training Infrastructure Foundation.
+Next recommended: Phase 10.6 nên tạo Model Comparison & Deployment Decision Record offline, không tự động deploy.

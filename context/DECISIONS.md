@@ -167,3 +167,12 @@ Do not add unless explicitly requested:
 - Dry-run là cách verify mặc định trước khi ghi artifact.
 - Registry draft từ training job luôn `production_safe=false` và không tự động được dùng cho runtime.
 - Phase 10.4 ưu tiên LogisticRegression baseline để giữ training job nhẹ, deterministic và dễ kiểm thử.
+
+## Phase 10.5 Model Registry Review Decisions
+
+- Model registry draft không được xem là candidate chỉ vì training hoàn tất.
+- Candidate criteria được cấu hình trong `model_review_config.json`, không hardcode vào production.
+- Missing artifact, hash mismatch, missing evaluation/experiment và production boundary violation là FAIL.
+- Metrics trong warning margin tạo WARNING; người review vẫn phải cân nhắc trước deployment decision.
+- Write mode chỉ được cập nhật `candidate` hoặc `rejected`, luôn giữ `production_safe=false`.
+- Không có auto promotion hoặc code path chuyển model sang production trong Phase 10.5.

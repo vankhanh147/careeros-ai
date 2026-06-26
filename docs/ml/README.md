@@ -68,3 +68,12 @@ Phase 10.0 chỉ tạo foundation. Không model nào được đưa vào product
 - `backend/ml/configs/training_config.json`: config hiện trỏ tới `dataset_v3` và `matching_job_contract_v1`.
 
 Từ Phase 10.4, training script mới không được đọc trực tiếp từ synthetic/benchmark/beta raw sources. Training phải đi qua artifact `backend/ml/datasets/training_dataset_v3.json` và manifest tương ứng.
+
+## Tài liệu Phase 10.5
+
+- `docs/ml/model_review_gate.md`: review rules, candidate criteria và production boundary.
+- `backend/app/ml/model_review.py`: module review registry metadata/artifacts offline.
+- `backend/scripts/review_model_registry.py`: CLI review hỗ trợ dry-run và write mode.
+- `backend/ml/configs/model_review_config.json`: ngưỡng accuracy, macro F1 và benchmark policy.
+
+Model chỉ được xem là candidate sau khi vượt review gate. Candidate vẫn có `production_safe=false` và không được tự động đưa vào runtime.
