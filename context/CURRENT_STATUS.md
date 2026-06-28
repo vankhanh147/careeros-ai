@@ -978,3 +978,29 @@ Safety boundary:
 
 Current: CareerOS AI V2 - Shadow Evaluation Architecture Foundation.
 Next recommended: Phase 11.1 chỉ nên xây offline shadow harness khi có candidate thật vượt release audit; chưa tích hợp production request path.
+
+## Phase 11.1 Update: Offline Shadow Evaluation Harness - Completed
+
+Date: 2026-06-28
+
+Phase 11.1 thêm harness offline để so sánh rule-based, hybrid signal và candidate ML trên training dataset artifact. Không có production request integration.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/shadow_harness.py`.
+- Tạo `backend/scripts/run_shadow_harness.py`.
+- Tạo tests `backend/tests/test_shadow_harness.py`.
+- Tạo tài liệu `docs/ml/shadow_harness.md`.
+- Tạo report `context/PHASE_11_1_SHADOW_HARNESS_REPORT.md`.
+- Hỗ trợ report `backend/ml/reports/shadow_summary.json` trong write mode.
+
+Ranh giới:
+
+- Không tự dùng prototype model cũ làm candidate.
+- Candidate chỉ load từ registry `status=candidate`.
+- Comparison records không chứa raw CV/JD text.
+- Production score source vẫn là rule-based.
+- Không runtime shadow hoặc production inference.
+
+Current: CareerOS AI V2 - Offline Shadow Evaluation Foundation.
+Next recommended: Phase 11.2 chỉ nên xây disagreement review queue/acceptance thresholds offline khi có candidate thật.

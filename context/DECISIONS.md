@@ -203,3 +203,12 @@ Do not add unless explicitly requested:
 - Thiếu/invalid candidate không được crash hoặc fallback sang model khác; plan phải hạ về disabled.
 - Valid candidate chỉ tạo plan; Phase 11.0 vẫn giữ `runtime_activation_allowed=false`.
 - Disagreement schema là future contract, chưa có logging/storage runtime.
+
+## Phase 11.1 Offline Shadow Harness Decisions
+
+- Training dataset artifact là input duy nhất của harness; benchmark được nhận diện qua `source=benchmark`.
+- Candidate chỉ được load từ registry có `status=candidate` và `production_safe=false`.
+- Agreement yêu cầu rule, hybrid và ML cùng label.
+- Candidate/rule better được đánh giá theo khoảng cách label tới expected label, không thay score.
+- Report chỉ lưu case ID và comparison metadata, không lưu raw CV/JD text.
+- Thiếu candidate phải chạy baseline-only và giữ baseline, không fallback sang prototype artifact cũ.

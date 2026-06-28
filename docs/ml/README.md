@@ -108,3 +108,12 @@ Release Ready chỉ có nghĩa quy trình offline đủ bằng chứng. Nó khô
 - `backend/ml/configs/shadow_disagreement_schema.json`: schema disagreement future-only.
 
 Phase 11.0 chưa chạy shadow inference. Mọi plan đều giữ `runtime_activation_allowed=false` và production tiếp tục dùng rule-based matcher.
+
+## Tài liệu Phase 11.1
+
+- `docs/ml/shadow_harness.md`: offline comparison workflow và human review flow.
+- `backend/app/ml/shadow_harness.py`: dataset loader, candidate loader và comparison metrics.
+- `backend/scripts/run_shadow_harness.py`: CLI dry-run/write mode.
+- `backend/tests/test_shadow_harness.py`: tests cho baseline-only, candidate và disagreement.
+
+Harness chỉ chạy offline. Report không lưu raw CV/JD text và không thay production score.

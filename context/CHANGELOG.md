@@ -483,3 +483,12 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho safety invariants, invalid sample rate, no-candidate fallback và valid candidate plan.
 - Tạo `docs/ml/shadow_evaluation.md` và report Phase 11.0.
 - Không chạy runtime inference, không deploy model và không thay production scoring/API/UI.
+
+## 2026-06-28 - Phase 11.1 Offline Shadow Evaluation Harness
+
+- Thêm `backend/app/ml/shadow_harness.py` để so sánh rule, hybrid và candidate labels offline.
+- Thêm `backend/scripts/run_shadow_harness.py` với dry-run/write mode.
+- Thêm metrics agreement, disagreement, candidate/rule better, confidence, confusion và review required.
+- Thêm tests cho baseline-only, candidate available, disagreement summary, privacy và no-candidate fallback.
+- Tạo `docs/ml/shadow_harness.md` và report Phase 11.1.
+- Không runtime shadow, không production inference và không thay scoring/API/UI.

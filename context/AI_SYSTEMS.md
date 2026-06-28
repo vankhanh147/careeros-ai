@@ -711,3 +711,21 @@ AI runtime boundary:
 - Không có shadow inference trong request path.
 - Không thay `match_score`, `final_score`, suggestion hoặc generated content.
 - `runtime_activation_allowed=false` trong mọi plan Phase 11.0.
+
+## Phase 11.1 Offline Shadow Evaluation Harness
+
+CareerOS AI V2 hiện có offline harness:
+
+- Đọc `training_dataset_v3.json`, gồm synthetic và benchmark cases.
+- Chạy rule-based matcher trên summary text offline.
+- Chỉ load candidate model từ registry `status=candidate`.
+- So sánh expected/rule/hybrid/ML labels.
+- Tính agreement, disagreement, confidence, confusion và review-required signals.
+- Không lưu raw resume/JD summaries trong report.
+
+AI boundary:
+
+- No-candidate trả `baseline_only` và `keep baseline`.
+- Không tự dùng model prototype Phase 9 làm candidate.
+- Không thay `match_score`, `final_score` hoặc user-facing response.
+- `production_change_allowed=false`.
