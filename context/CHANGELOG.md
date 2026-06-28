@@ -501,3 +501,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho no-source, filtering, severity, raw-text safety, dry-run và write mode.
 - Tạo `docs/ml/shadow_review_queue.md` và report Phase 11.2.
 - Không runtime shadow, không production inference và không dùng disagreement trực tiếp làm training label.
+
+## 2026-06-28 - Phase 11.3 Shadow Review Resolution Export
+
+- Thêm resolution schema, export module và CLI offline.
+- Chỉ export queue items có status `promoted_to_label_review`.
+- Mapping sang Label Review Draft với `ANONYMIZED -> UNDER_REVIEW`.
+- Chặn missing reviewer/notes, confidence invalid, duplicate case, raw text, PII, mojibake và training approval.
+- Thêm tests dry-run/write mode và compatibility với Label Review validator.
+- Tạo `docs/ml/shadow_review_resolution.md` và report Phase 11.3.
+- Không runtime shadow, production inference hoặc thay scoring/API/UI.

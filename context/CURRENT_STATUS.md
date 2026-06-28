@@ -1030,3 +1030,29 @@ Ranh giới:
 
 Current: CareerOS AI V2 - Offline Shadow Review Foundation.
 Next recommended: Phase 11.3 nên chuẩn hóa review resolution/export sang Label Review Pipeline offline.
+
+## Phase 11.3 Update: Shadow Review Resolution Export - Completed
+
+Date: 2026-06-28
+
+Phase 11.3 thêm pipeline offline để export shadow review items đã resolve sang Label Review Draft. Không có automatic training approval.
+
+Đã hoàn thành:
+
+- Tạo `backend/ml/configs/shadow_review_resolution_schema.json`.
+- Tạo `backend/app/ml/shadow_review_resolution.py`.
+- Tạo `backend/scripts/export_shadow_review_resolutions.py`.
+- Tạo tests `backend/tests/test_shadow_review_resolution.py`.
+- Tạo tài liệu `docs/ml/shadow_review_resolution.md`.
+- Tạo report `context/PHASE_11_3_SHADOW_REVIEW_RESOLUTION_REPORT.md`.
+
+Ranh giới:
+
+- Chỉ export item `promoted_to_label_review`.
+- Draft bắt đầu ở `UNDER_REVIEW`, không phải APPROVED.
+- `approved_for_training=false` ở mọi cấp.
+- Không lưu raw CV/JD text.
+- No-queue trả status an toàn và không ghi file.
+
+Current: CareerOS AI V2 - Shadow Review Resolution Foundation.
+Next recommended: Phase 11.4 nên chạy Label Review QA dry-run trên draft trước dataset promotion planning.

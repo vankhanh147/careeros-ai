@@ -747,3 +747,20 @@ AI data boundary:
 - `approved_for_label_review` không đồng nghĩa training approval.
 - Disagreement không được dùng trực tiếp làm training label.
 - Dataset promotion vẫn phải đi qua label review/anonymization workflow.
+
+## Phase 11.3 Shadow Review Resolution Export
+
+CareerOS AI V2 hiện có offline resolution handoff:
+
+- Input từ `shadow_review_queue.json`.
+- Chỉ lấy items đã `promoted_to_label_review`.
+- Tạo resolution metadata và Label Review Draft cases.
+- Draft dùng transition `ANONYMIZED -> UNDER_REVIEW`.
+- Label Review validator hiện có chấp nhận draft output.
+
+AI data boundary:
+
+- `approved_for_label_review=true` chỉ cho phép vào Label Review Pipeline.
+- `approved_for_training=false` luôn được giữ.
+- Không tự động tạo APPROVED/PROMOTED/TRAINABLE status.
+- Không export raw CV/JD text hoặc PII.

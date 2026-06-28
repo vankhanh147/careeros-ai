@@ -221,3 +221,12 @@ Do not add unless explicitly requested:
 - Queue không lưu raw text và luôn giữ `approved_for_training=false`.
 - `promoted_to_label_review` chỉ là bàn giao sang human label review, không phải dataset promotion.
 - No-source mode không ghi queue artifact để tránh tạo bằng chứng rỗng gây hiểu nhầm.
+
+## Phase 11.3 Shadow Resolution Decisions
+
+- Resolution export chỉ nhận queue item `promoted_to_label_review`.
+- Reviewer, notes, review time, resolved label, confidence và anonymization là bắt buộc.
+- Export chứa cả traceability items và `cases` tương thích Label Review Pipeline.
+- Label Review Draft bắt đầu ở `UNDER_REVIEW` với `previous_status=ANONYMIZED`.
+- `approved_for_training=false` là invariant ở queue, export item và draft case.
+- No-queue mode không ghi artifact để tránh tạo draft rỗng gây hiểu nhầm.

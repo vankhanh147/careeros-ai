@@ -127,3 +127,13 @@ Harness chỉ chạy offline. Report không lưu raw CV/JD text và không thay 
 - `backend/tests/test_shadow_review_queue.py`: tests no-source, filtering, validation và output.
 
 Queue chỉ là review signal. Không item nào được dùng trực tiếp làm training label.
+
+## Tài liệu Phase 11.3
+
+- `docs/ml/shadow_review_resolution.md`: resolution export và Label Review Draft mapping.
+- `backend/app/ml/shadow_review_resolution.py`: export builder và validator.
+- `backend/scripts/export_shadow_review_resolutions.py`: CLI dry-run/write mode.
+- `backend/ml/configs/shadow_review_resolution_schema.json`: export schema.
+- `backend/tests/test_shadow_review_resolution.py`: safety và compatibility tests.
+
+Label Review Draft luôn bắt đầu ở `UNDER_REVIEW` và giữ `approved_for_training=false`.
