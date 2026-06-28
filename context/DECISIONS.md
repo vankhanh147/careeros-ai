@@ -230,3 +230,12 @@ Do not add unless explicitly requested:
 - Label Review Draft bắt đầu ở `UNDER_REVIEW` với `previous_status=ANONYMIZED`.
 - `approved_for_training=false` là invariant ở queue, export item và draft case.
 - No-queue mode không ghi artifact để tránh tạo draft rỗng gây hiểu nhầm.
+
+## Phase 11.4 Label Review Bridge Decisions
+
+- Bridge phải reuse Label Review validator hiện có, không tạo rule set cạnh tranh.
+- Draft UNDER_REVIEW hợp lệ được xem là ready for review nhưng chưa promotion-ready.
+- Promotion bị chặn khi có errors hoặc không có ready case.
+- Bridge chỉ tạo QA report và phải giữ input draft bất biến.
+- No-draft mode không ghi report để tránh readiness artifact rỗng.
+- `promotion_allowed=false` và `training_allowed=false` là invariant Phase 11.4.

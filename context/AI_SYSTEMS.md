@@ -764,3 +764,20 @@ AI data boundary:
 - `approved_for_training=false` luôn được giữ.
 - Không tự động tạo APPROVED/PROMOTED/TRAINABLE status.
 - Không export raw CV/JD text hoặc PII.
+
+## Phase 11.4 Label Review Draft QA Bridge
+
+CareerOS AI V2 hiện có QA bridge:
+
+- Input từ `shadow_label_review_draft.json`.
+- Tái sử dụng Label Review validator Phase 10.2.
+- Tách rõ ready-for-review và ready-for-promotion.
+- Tổng hợp promotion blockers deterministic.
+- Kiểm tra input immutability trong CLI.
+
+AI data boundary:
+
+- QA report không sửa label hoặc workflow status.
+- `promotion_allowed=false`.
+- `training_allowed=false`.
+- Không tự động promotion hoặc training.

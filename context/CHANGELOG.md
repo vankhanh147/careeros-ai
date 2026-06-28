@@ -511,3 +511,12 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests dry-run/write mode và compatibility với Label Review validator.
 - Tạo `docs/ml/shadow_review_resolution.md` và report Phase 11.3.
 - Không runtime shadow, production inference hoặc thay scoring/API/UI.
+
+## 2026-06-28 - Phase 11.4 Label Review Draft QA Bridge
+
+- Thêm QA bridge dùng lại `validate_label_review_cases` Phase 10.2.
+- Thêm summary total/errors/warnings/readiness/blockers/recommendation.
+- Thêm CLI no-draft, dry-run và write mode.
+- Thêm tests cho valid/invalid draft, promotion blockers, invalid approval và draft immutability.
+- Tạo `docs/ml/label_review_bridge.md` và report Phase 11.4.
+- Không dataset promotion, model training, runtime inference hoặc thay production behavior.

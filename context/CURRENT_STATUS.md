@@ -1056,3 +1056,28 @@ Ranh giới:
 
 Current: CareerOS AI V2 - Shadow Review Resolution Foundation.
 Next recommended: Phase 11.4 nên chạy Label Review QA dry-run trên draft trước dataset promotion planning.
+
+## Phase 11.4 Update: Label Review Draft QA Bridge - Completed
+
+Date: 2026-06-28
+
+Phase 11.4 thêm bridge offline để validate Shadow Label Review Draft bằng Label Review QA validator hiện có.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/label_review_bridge.py`.
+- Tạo `backend/scripts/validate_shadow_label_review_draft.py`.
+- Tạo tests `backend/tests/test_label_review_bridge.py`.
+- Tạo tài liệu `docs/ml/label_review_bridge.md`.
+- Tạo report `context/PHASE_11_4_LABEL_REVIEW_BRIDGE_REPORT.md`.
+
+Ranh giới:
+
+- Bridge không sửa draft.
+- Draft hợp lệ ở UNDER_REVIEW chỉ ready for review.
+- Không tự set training approval.
+- Không tự Dataset Promotion.
+- Thiếu draft trả no_draft và không ghi report.
+
+Current: CareerOS AI V2 - Label Review QA Bridge Foundation.
+Next recommended: Phase 11.5 nên tạo Dataset Promotion Planning Bridge dry-run, không tự promote/train.

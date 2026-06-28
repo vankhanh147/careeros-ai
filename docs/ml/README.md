@@ -137,3 +137,12 @@ Queue chỉ là review signal. Không item nào được dùng trực tiếp là
 - `backend/tests/test_shadow_review_resolution.py`: safety và compatibility tests.
 
 Label Review Draft luôn bắt đầu ở `UNDER_REVIEW` và giữ `approved_for_training=false`.
+
+## Tài liệu Phase 11.4
+
+- `docs/ml/label_review_bridge.md`: QA bridge và promotion readiness rules.
+- `backend/app/ml/label_review_bridge.py`: validator bridge và blocker summary.
+- `backend/scripts/validate_shadow_label_review_draft.py`: CLI dry-run/write mode.
+- `backend/tests/test_label_review_bridge.py`: readiness, safety và immutability tests.
+
+Bridge chỉ đánh giá draft. `promotion_allowed=false` và `training_allowed=false` luôn được giữ.
