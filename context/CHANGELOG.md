@@ -492,3 +492,12 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho baseline-only, candidate available, disagreement summary, privacy và no-candidate fallback.
 - Tạo `docs/ml/shadow_harness.md` và report Phase 11.1.
 - Không runtime shadow, không production inference và không thay scoring/API/UI.
+
+## 2026-06-28 - Phase 11.2 Shadow Disagreement Review Queue
+
+- Thêm shadow review queue schema, builder, validator và CLI.
+- Phân loại rule/candidate/expected disagreements, low confidence, benchmark anomaly và no-candidate.
+- Thêm severity low/medium/high và deterministic review guidance.
+- Thêm tests cho no-source, filtering, severity, raw-text safety, dry-run và write mode.
+- Tạo `docs/ml/shadow_review_queue.md` và report Phase 11.2.
+- Không runtime shadow, không production inference và không dùng disagreement trực tiếp làm training label.

@@ -1004,3 +1004,29 @@ Ranh giới:
 
 Current: CareerOS AI V2 - Offline Shadow Evaluation Foundation.
 Next recommended: Phase 11.2 chỉ nên xây disagreement review queue/acceptance thresholds offline khi có candidate thật.
+
+## Phase 11.2 Update: Shadow Disagreement Review Queue - Completed
+
+Date: 2026-06-28
+
+Phase 11.2 thêm review queue offline để gom shadow comparison records cần human review. Không có production/runtime integration.
+
+Đã hoàn thành:
+
+- Tạo `backend/ml/configs/shadow_review_queue_schema.json`.
+- Tạo `backend/app/ml/shadow_review_queue.py`.
+- Tạo `backend/scripts/build_shadow_review_queue.py`.
+- Tạo tests `backend/tests/test_shadow_review_queue.py`.
+- Tạo tài liệu `docs/ml/shadow_review_queue.md`.
+- Tạo report `context/PHASE_11_2_SHADOW_REVIEW_QUEUE_REPORT.md`.
+
+Ranh giới:
+
+- Chỉ lấy records có `review_required=true`.
+- Queue không lưu raw CV/JD text.
+- Queue luôn giữ `approved_for_training=false`.
+- Promotion chỉ bàn giao sang Label Review Pipeline.
+- Thiếu shadow summary trả `no_source_report`, không crash và không ghi file.
+
+Current: CareerOS AI V2 - Offline Shadow Review Foundation.
+Next recommended: Phase 11.3 nên chuẩn hóa review resolution/export sang Label Review Pipeline offline.

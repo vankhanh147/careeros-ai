@@ -212,3 +212,12 @@ Do not add unless explicitly requested:
 - Candidate/rule better được đánh giá theo khoảng cách label tới expected label, không thay score.
 - Report chỉ lưu case ID và comparison metadata, không lưu raw CV/JD text.
 - Thiếu candidate phải chạy baseline-only và giữ baseline, không fallback sang prototype artifact cũ.
+
+## Phase 11.2 Shadow Review Queue Decisions
+
+- Shadow queue chỉ lấy records có `review_required=true`.
+- Benchmark anomaly hoặc label lệch từ hai bậc trở lên được ưu tiên high severity.
+- Low confidence và disagreement một bậc dùng medium severity.
+- Queue không lưu raw text và luôn giữ `approved_for_training=false`.
+- `promoted_to_label_review` chỉ là bàn giao sang human label review, không phải dataset promotion.
+- No-source mode không ghi queue artifact để tránh tạo bằng chứng rỗng gây hiểu nhầm.

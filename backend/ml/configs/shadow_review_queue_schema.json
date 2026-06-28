@@ -1,0 +1,53 @@
+{
+  "schema_id": "careeros-shadow-review-queue-v1",
+  "required_queue_fields": [
+    "queue_id",
+    "created_at",
+    "source_report",
+    "status",
+    "total_items",
+    "items",
+    "recommendation",
+    "stored_raw_text"
+  ],
+  "required_item_fields": [
+    "item_id",
+    "case_id",
+    "source",
+    "expected_label",
+    "rule_label",
+    "candidate_label",
+    "hybrid_label",
+    "disagreement_type",
+    "severity",
+    "review_reason",
+    "recommended_action",
+    "review_status",
+    "reviewer",
+    "notes",
+    "approved_for_label_review",
+    "stored_raw_text"
+  ],
+  "allowed_review_statuses": [
+    "pending",
+    "under_review",
+    "resolved",
+    "rejected",
+    "promoted_to_label_review"
+  ],
+  "allowed_severity": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "allowed_disagreement_types": [
+    "rule_vs_candidate",
+    "rule_vs_expected",
+    "candidate_vs_expected",
+    "low_confidence",
+    "benchmark_anomaly",
+    "no_candidate"
+  ],
+  "stored_raw_text": false,
+  "notes": "Queue chỉ là tín hiệu human review. Không được dùng trực tiếp làm training label."
+}

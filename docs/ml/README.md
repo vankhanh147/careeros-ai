@@ -117,3 +117,13 @@ Phase 11.0 chưa chạy shadow inference. Mọi plan đều giữ `runtime_activ
 - `backend/tests/test_shadow_harness.py`: tests cho baseline-only, candidate và disagreement.
 
 Harness chỉ chạy offline. Report không lưu raw CV/JD text và không thay production score.
+
+## Tài liệu Phase 11.2
+
+- `docs/ml/shadow_review_queue.md`: review queue, severity và human review flow.
+- `backend/app/ml/shadow_review_queue.py`: queue builder và validator.
+- `backend/scripts/build_shadow_review_queue.py`: CLI dry-run/write mode.
+- `backend/ml/configs/shadow_review_queue_schema.json`: queue schema.
+- `backend/tests/test_shadow_review_queue.py`: tests no-source, filtering, validation và output.
+
+Queue chỉ là review signal. Không item nào được dùng trực tiếp làm training label.

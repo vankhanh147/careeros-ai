@@ -729,3 +729,21 @@ AI boundary:
 - Không tự dùng model prototype Phase 9 làm candidate.
 - Không thay `match_score`, `final_score` hoặc user-facing response.
 - `production_change_allowed=false`.
+
+## Phase 11.2 Shadow Disagreement Review Queue
+
+CareerOS AI V2 hiện có offline disagreement triage:
+
+- Input từ `shadow_summary.json`.
+- Chỉ lấy comparison records có `review_required=true`.
+- Phân loại disagreement type và severity deterministic.
+- Không lưu raw text hoặc PII.
+- Queue item bắt đầu ở `pending`.
+- Human-reviewed item có thể bàn giao sang Label Review Pipeline.
+
+AI data boundary:
+
+- `approved_for_training=false` trong toàn bộ shadow queue.
+- `approved_for_label_review` không đồng nghĩa training approval.
+- Disagreement không được dùng trực tiếp làm training label.
+- Dataset promotion vẫn phải đi qua label review/anonymization workflow.
