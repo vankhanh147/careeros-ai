@@ -520,3 +520,13 @@ o React`, `without Docker` and `kh?ng c? backend`.
 - Thêm tests cho valid/invalid draft, promotion blockers, invalid approval và draft immutability.
 - Tạo `docs/ml/label_review_bridge.md` và report Phase 11.4.
 - Không dataset promotion, model training, runtime inference hoặc thay production behavior.
+
+## 2026-06-29 - Phase 11.5 Dataset Promotion Planning Bridge
+
+- Thêm promotion planning module và CLI offline.
+- Revalidate QA report, source draft và current manifest.
+- Tính target dataset version, estimated size, ready/blocked cases và blockers.
+- Chặn stale QA, invalid workflow approval, duplicate, PII, mojibake và encoding issues.
+- Thêm tests no-report, valid/blocked plan, duplicate, dry-run, write mode và immutability.
+- Tạo `docs/ml/dataset_promotion_bridge.md` và report Phase 11.5.
+- Không promote dataset, train model hoặc thay production behavior.

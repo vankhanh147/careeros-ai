@@ -239,3 +239,13 @@ Do not add unless explicitly requested:
 - Bridge chỉ tạo QA report và phải giữ input draft bất biến.
 - No-draft mode không ghi report để tránh readiness artifact rỗng.
 - `promotion_allowed=false` và `training_allowed=false` là invariant Phase 11.4.
+
+## Phase 11.5 Dataset Promotion Planning Decisions
+
+- Planning bridge phải revalidate source draft để phát hiện stale QA report.
+- Target dataset version được suy ra tuần tự từ current manifest.
+- Promotion plan phải chặn duplicate case/export/label và invalid workflow approval.
+- `promotion_allowed=true` không đồng nghĩa promotion đã chạy.
+- Bridge phải giữ QA report, draft và manifest bất biến.
+- No-QA-report mode không ghi plan artifact.
+- `promotion_executed=false` và `training_allowed=false` là invariant.

@@ -781,3 +781,20 @@ AI data boundary:
 - `promotion_allowed=false`.
 - `training_allowed=false`.
 - Không tự động promotion hoặc training.
+
+## Phase 11.5 Dataset Promotion Planning Bridge
+
+CareerOS AI V2 hiện có promotion planning layer:
+
+- Input từ Shadow Label Review Draft QA report.
+- Follow `source_draft` để fresh validation.
+- Đối chiếu current dataset manifest.
+- Sinh target dataset version và estimated size.
+- Phân loại ready/blocked cases và blockers.
+
+AI data boundary:
+
+- `promotion_allowed` chỉ là evidence flag.
+- `promotion_executed=false`.
+- `training_allowed=false`.
+- Không tạo dataset version hoặc model artifact.

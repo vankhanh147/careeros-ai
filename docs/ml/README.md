@@ -146,3 +146,12 @@ Label Review Draft luôn bắt đầu ở `UNDER_REVIEW` và giữ `approved_for
 - `backend/tests/test_label_review_bridge.py`: readiness, safety và immutability tests.
 
 Bridge chỉ đánh giá draft. `promotion_allowed=false` và `training_allowed=false` luôn được giữ.
+
+## Tài liệu Phase 11.5
+
+- `docs/ml/dataset_promotion_bridge.md`: promotion planning và safety boundary.
+- `backend/app/ml/dataset_promotion_bridge.py`: plan builder, revalidation và blockers.
+- `backend/scripts/build_dataset_promotion_plan.py`: CLI dry-run/write mode.
+- `backend/tests/test_dataset_promotion_bridge.py`: readiness, duplicate và immutability tests.
+
+Bridge chỉ lập kế hoạch. `promotion_executed=false` và `training_allowed=false` luôn được giữ.

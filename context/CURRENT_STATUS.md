@@ -1081,3 +1081,28 @@ Ranh giới:
 
 Current: CareerOS AI V2 - Label Review QA Bridge Foundation.
 Next recommended: Phase 11.5 nên tạo Dataset Promotion Planning Bridge dry-run, không tự promote/train.
+
+## Phase 11.5 Update: Dataset Promotion Planning Bridge - Completed
+
+Date: 2026-06-29
+
+Phase 11.5 thêm bridge offline để lập Dataset Promotion plan từ Label Review QA evidence.
+
+Đã hoàn thành:
+
+- Tạo `backend/app/ml/dataset_promotion_bridge.py`.
+- Tạo `backend/scripts/build_dataset_promotion_plan.py`.
+- Tạo tests `backend/tests/test_dataset_promotion_bridge.py`.
+- Tạo tài liệu `docs/ml/dataset_promotion_bridge.md`.
+- Tạo report `context/PHASE_11_5_DATASET_PROMOTION_BRIDGE_REPORT.md`.
+
+Ranh giới:
+
+- Revalidate source draft, không chỉ tin QA report.
+- Không sửa QA report, draft hoặc manifest.
+- Không gọi Dataset Promotion workflow.
+- `promotion_allowed` chỉ là planning eligibility.
+- Không train model hoặc thay production.
+
+Current: CareerOS AI V2 - Dataset Promotion Planning Foundation.
+Next recommended: Phase 11.6 nên tạo Promotion Approval Record/Audit offline trước manual promotion.
