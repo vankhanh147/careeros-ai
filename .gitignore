@@ -42,3 +42,10 @@ coverage/
 # Local uploaded files
 backend/uploads/
 
+# ==========================
+# Internal project documents
+# ==========================
+
+context/
+AGENTS.md
+roadmap.md
