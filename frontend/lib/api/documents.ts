@@ -7,6 +7,10 @@ export type Resume = {
   file_name: string;
   storage_path: string;
   file_url: string | null;
+  storage_url?: string | null;
+  download_url?: string | null;
+  file_size?: number | null;
+  size?: number | null;
   extracted_text: string | null;
   created_at: string;
   updated_at: string;
