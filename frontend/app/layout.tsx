@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "CareerOS AI",
-  description: "AI career development platform for technology professionals"
+  description: "Nền tảng AI hỗ trợ định hướng và phát triển nghề nghiệp công nghệ"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

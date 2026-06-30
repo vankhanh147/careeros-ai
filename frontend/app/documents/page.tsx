@@ -121,9 +121,9 @@ export default function DocumentsPage() {
       setResumes((current) => [uploaded, ...current]);
       setSelectedResumeFile(null);
       setResumeFileInputKey((current) => current + 1);
-      setStatusMessage("Đã upload CV PDF.");
+      setStatusMessage("Đã tải CV PDF lên.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể upload CV.");
+      setError(err instanceof Error ? err.message : "Không thể tải CV lên.");
     } finally {
       setIsUploadingResume(false);
     }
@@ -134,7 +134,7 @@ export default function DocumentsPage() {
       router.replace("/login");
       return;
     }
-    const confirmed = window.confirm(`Xóa CV "${resume.file_name}"? File local cũng sẽ bị xóa nếu còn tồn tại.`);
+    const confirmed = window.confirm(`Xóa CV "${resume.file_name}"? Tệp lưu trữ tương ứng cũng sẽ được xóa nếu còn tồn tại.`);
     if (!confirmed) return;
 
     setError("");
@@ -163,7 +163,7 @@ export default function DocumentsPage() {
     }
     const lowerName = selectedJdFile.name.toLowerCase();
     if (!lowerName.endsWith(".pdf") && !lowerName.endsWith(".txt")) {
-      setError("JD upload hiện hỗ trợ file PDF hoặc TXT.");
+      setError("JD hiện hỗ trợ tệp PDF hoặc TXT.");
       return;
     }
     if (selectedJdFile.size > MAX_FILE_SIZE_BYTES) {
@@ -186,9 +186,9 @@ export default function DocumentsPage() {
       setJdUploadTitle("");
       setJdUploadCompany("");
       setJdFileInputKey((current) => current + 1);
-      setStatusMessage("Đã upload và đọc nội dung JD.");
+      setStatusMessage("Đã tải lên và đọc nội dung JD.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể upload JD.");
+      setError(err instanceof Error ? err.message : "Không thể tải JD lên.");
     } finally {
       setIsUploadingJd(false);
     }
@@ -310,7 +310,7 @@ export default function DocumentsPage() {
 
       <section className="mx-auto grid w-full min-w-0 max-w-6xl grid-cols-1 gap-6 px-4 py-10 sm:px-6 lg:grid-cols-2">
         <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-          <h2 className="text-xl font-semibold">Upload CV PDF</h2>
+          <h2 className="text-xl font-semibold">Tải CV PDF lên</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
             Lưu CV PDF để hệ thống trích xuất text và chạy Resume ↔ JD Matching. File tối đa 5MB.
           </p>
@@ -324,15 +324,15 @@ export default function DocumentsPage() {
             />
             <p className="text-xs leading-5 text-slate-500">Chỉ nhận PDF tối đa 5MB. File này sẽ được dùng để trích xuất text khi chạy analysis.</p>
             <button type="submit" disabled={!canUploadResume} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
-              {isUploadingResume ? "Đang upload CV..." : "Upload CV"}
+              {isUploadingResume ? "Đang tải CV lên..." : "Tải CV lên"}
             </button>
           </form>
 
           <div className="mt-8">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">CV đã upload</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">CV đã tải lên</h3>
             <div className="mt-4 space-y-3">
               {resumes.length === 0 ? (
-                <p className="text-sm leading-6 text-slate-400">Chưa có CV nào. Upload CV PDF để bắt đầu phân tích matching.</p>
+                <p className="text-sm leading-6 text-slate-400">Chưa có CV nào. Hãy tải CV PDF lên để bắt đầu phân tích.</p>
               ) : (
                 resumes.map((resume) => (
                   <div key={resume.id} className="min-w-0 overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4">
@@ -354,9 +354,9 @@ export default function DocumentsPage() {
 
         <div className="min-w-0 space-y-6">
           <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-            <h2 className="text-xl font-semibold">Upload JD</h2>
+            <h2 className="text-xl font-semibold">Tải JD lên</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Upload JD dạng PDF hoặc TXT. Backend sẽ extract text và lưu vào nội dung JD để dùng cho matching.
+              Tải JD dạng PDF hoặc TXT. Hệ thống sẽ đọc nội dung để dùng cho Resume ↔ JD Matching.
             </p>
             <form onSubmit={handleJobDescriptionUpload} className="mt-6 space-y-4">
               <TextInput label="Tiêu đề vị trí" value={jdUploadTitle} onChange={setJdUploadTitle} placeholder="Backend Intern" />
@@ -368,9 +368,9 @@ export default function DocumentsPage() {
                 onChange={(event) => setSelectedJdFile(event.target.files?.[0] ?? null)}
                 className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
               />
-              <p className="text-xs leading-5 text-slate-500">Upload JD khi bạn có file từ nhà tuyển dụng. Nếu không, paste JD ở form bên dưới.</p>
+              <p className="text-xs leading-5 text-slate-500">Tải JD lên khi bạn có tệp từ nhà tuyển dụng. Nếu không, hãy dán nội dung JD vào biểu mẫu bên dưới.</p>
               <button type="submit" disabled={!canUploadJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
-                {isUploadingJd ? "Đang đọc JD..." : "Upload JD"}
+                {isUploadingJd ? "Đang đọc JD..." : "Tải JD lên"}
               </button>
             </form>
           </div>
@@ -378,9 +378,9 @@ export default function DocumentsPage() {
           <div className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <h2 className="text-xl font-semibold">{editingJobDescriptionId ? "Sửa JD" : "Paste JD"}</h2>
+                <h2 className="text-xl font-semibold">{editingJobDescriptionId ? "Sửa JD" : "Dán nội dung JD"}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
-                  {editingJobDescriptionId ? "Cập nhật JD đã lưu. Các lần analysis mới sẽ dùng nội dung mới." : "Paste JD trực tiếp từ trang tuyển dụng nếu không có file."}
+                  {editingJobDescriptionId ? "Cập nhật JD đã lưu. Các lần analysis mới sẽ dùng nội dung mới." : "Dán JD trực tiếp từ trang tuyển dụng nếu bạn không có tệp."}
                 </p>
               </div>
               {editingJobDescriptionId ? (
@@ -395,7 +395,7 @@ export default function DocumentsPage() {
               <TextInput label="Nguồn JD" value={jdSourceUrl} onChange={setJdSourceUrl} placeholder="https://..." />
               <label className="block text-sm font-medium text-slate-200">
                 Nội dung JD
-                <textarea required rows={8} value={jdContent} onChange={(event) => setJdContent(event.target.value)} placeholder="Paste mô tả công việc, yêu cầu kỹ năng, trách nhiệm..." className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
+                <textarea required rows={8} value={jdContent} onChange={(event) => setJdContent(event.target.value)} placeholder="Dán mô tả công việc, yêu cầu kỹ năng và trách nhiệm..." className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
               </label>
               <button type="submit" disabled={!canSaveJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
                 {isSavingJd ? "Đang lưu JD..." : editingJobDescriptionId ? "Lưu cập nhật" : "Lưu JD"}
@@ -413,7 +413,7 @@ export default function DocumentsPage() {
           <h2 className="text-xl font-semibold">JD đã lưu</h2>
           <div className="mt-4 space-y-3">
             {jobDescriptions.length === 0 ? (
-              <p className="text-sm leading-6 text-slate-400">Chưa có JD nào. Paste hoặc upload JD để hệ thống có dữ liệu matching.</p>
+              <p className="text-sm leading-6 text-slate-400">Chưa có JD nào. Hãy dán hoặc tải JD lên để hệ thống có dữ liệu phân tích.</p>
             ) : (
               jobDescriptions.map((job) => (
                 <article key={job.id} className="min-w-0 overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4">

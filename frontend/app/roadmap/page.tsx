@@ -20,14 +20,14 @@ const TEXT = {
   title: "Roadmap c\u00e1 nh\u00e2n h\u00f3a",
   analysisLink: "Ph\u00e2n t\u00edch CV \u2194 JD",
   createTitle: "T\u1ea1o roadmap h\u1ecdc t\u1eadp",
-  intro: "Roadmap MVP \u0111\u01b0\u1ee3c t\u1ea1o b\u1eb1ng rule-based logic t\u1eeb career profile, analysis Resume \u2194 JD, skill gap v\u00e0 timeline. Kh\u00f4ng d\u00f9ng LLM API.",
-  recentAnalysis: "Analysis g\u1ea7n \u0111\u00e2y",
-  noAnalysisOption: "Kh\u00f4ng ch\u1ecdn analysis - d\u00f9ng career profile c\u01a1 b\u1ea3n",
+  intro: "Roadmap \u0111\u01b0\u1ee3c t\u1ea1o t\u1eeb h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p, k\u1ebft qu\u1ea3 Resume \u2194 JD Matching, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 th\u1eddi gian b\u1ea1n d\u1ef1 ki\u1ebfn.",
+  recentAnalysis: "Ph\u00e2n t\u00edch g\u1ea7n \u0111\u00e2y",
+  noAnalysisOption: "Kh\u00f4ng ch\u1ecdn ph\u00e2n t\u00edch - d\u00f9ng h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p",
   matchScore: "\u0110i\u1ec3m ph\u00f9 h\u1ee3p",
-  timelineLabel: "Timeline t\u00f9y ch\u1ecdn",
+  timelineLabel: "Th\u1eddi gian t\u00f9y ch\u1ecdn",
   timelinePlaceholder: "V\u00ed d\u1ee5: 1 tu\u1ea7n, 1 th\u00e1ng, 2 th\u00e1ng",
-  selectedAnalysis: "Analysis \u0111ang ch\u1ecdn",
-  noAnalysisHint: "N\u1ebfu kh\u00f4ng ch\u1ecdn analysis, backend s\u1ebd d\u00f9ng career profile \u0111\u1ec3 t\u1ea1o roadmap c\u01a1 b\u1ea3n. H\u00e3y c\u1eadp nh\u1eadt profile n\u1ebfu b\u1ea1n ch\u01b0a nh\u1eadp target role, k\u1ef9 n\u0103ng v\u00e0 timeline.",
+  selectedAnalysis: "Ph\u00e2n t\u00edch \u0111ang ch\u1ecdn",
+  noAnalysisHint: "N\u1ebfu kh\u00f4ng ch\u1ecdn k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch, h\u1ec7 th\u1ed1ng s\u1ebd d\u00f9ng h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p. H\u00e3y c\u1eadp nh\u1eadt vai tr\u00f2 m\u1ee5c ti\u00eau, k\u1ef9 n\u0103ng v\u00e0 th\u1eddi gian d\u1ef1 ki\u1ebfn \u0111\u1ec3 Roadmap s\u00e1t h\u01a1n.",
   generating: "\u0110ang t\u1ea1o roadmap...",
   createButton: "T\u1ea1o roadmap",
   currentRoadmap: "Roadmap hi\u1ec7n t\u1ea1i",
@@ -42,11 +42,11 @@ const TEXT = {
   skills: "K\u1ef9 n\u0103ng",
   noSkillFocus: "T\u1eadp trung v\u00e0o \u0111\u1ed9 kh\u1edbp c\u1ee7a CV v\u00e0 minh ch\u1ee9ng t\u1eeb project.",
   practiceTask: "B\u00e0i th\u1ef1c h\u00e0nh",
-  practiceFallback: "T\u1ea1o m\u1ed9t artifact nh\u1ecf ch\u1ee9ng minh tr\u1ecdng t\u00e2m c\u1ee7a tu\u1ea7n n\u00e0y.",
+  practiceFallback: "T\u1ea1o m\u1ed9t s\u1ea3n ph\u1ea9m nh\u1ecf \u0111\u1ec3 ch\u1ee9ng minh tr\u1ecdng t\u00e2m c\u1ee7a tu\u1ea7n n\u00e0y.",
   cvEvidence: "Minh ch\u1ee9ng c\u00f3 th\u1ec3 th\u00eam v\u00e0o CV",
   actions: "H\u00e0nh \u0111\u1ed9ng",
   interviewPrep: "Chu\u1ea9n b\u1ecb ph\u1ecfng v\u1ea5n",
-  interviewFallback: "B\u1ea1n \u0111\u00e3 x\u00e2y d\u1ef1ng g\u00ec v\u00e0 c\u00f3 tradeoff k\u1ef9 thu\u1eadt n\u00e0o c\u00f3 th\u1ec3 gi\u1ea3i th\u00edch?",
+  interviewFallback: "B\u1ea1n \u0111\u00e3 x\u00e2y d\u1ef1ng g\u00ec v\u00e0 c\u00f3 l\u1ef1a ch\u1ecdn k\u1ef9 thu\u1eadt n\u00e0o c\u00f3 th\u1ec3 gi\u1ea3i th\u00edch?",
   expectedOutput: "K\u1ebft qu\u1ea3 mong \u0111\u1ee3i",
   progressSummary: "\u0110\u00e3 ho\u00e0n th\u00e0nh",
   roadmapItems: "m\u1ee5c roadmap",
@@ -246,7 +246,7 @@ export default function RoadmapPage() {
               <div className="rounded-md border border-white/10 bg-slate-950/60 p-4 text-sm leading-6 text-slate-300">
                 <p className="font-medium text-slate-100">{TEXT.selectedAnalysis}</p>
                 <p className="mt-2">{TEXT.matchScore}: {selectedAnalysis.match_score}%</p>
-                <p className="mt-1 break-words">Skill gap: {selectedAnalysis.skill_gap_summary}</p>
+                <p className="mt-1 break-words">Khoảng trống kỹ năng: {selectedAnalysis.skill_gap_summary}</p>
               </div>
             ) : (
               <div className="rounded-md border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">

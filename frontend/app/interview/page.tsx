@@ -19,9 +19,9 @@ import { useAuth } from "@/lib/auth/AuthContext";
 const TEXT = {
   loadError: "Kh\u00f4ng th\u1ec3 t\u1ea3i d\u1eef li\u1ec7u Mock Interview. Vui l\u00f2ng ki\u1ec3m tra k\u1ebft n\u1ed1i backend.",
   started: "\u0110\u00e3 b\u1eaft \u0111\u1ea7u phi\u00ean Mock Interview m\u1edbi.",
-  startError: "Kh\u00f4ng th\u1ec3 b\u1eaft \u0111\u1ea7u Mock Interview. H\u00e3y ki\u1ec3m tra target role ho\u1eb7c profile.",
+  startError: "Kh\u00f4ng th\u1ec3 b\u1eaft \u0111\u1ea7u Mock Interview. H\u00e3y ki\u1ec3m tra vai tr\u00f2 m\u1ee5c ti\u00eau ho\u1eb7c h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p.",
   answerRequired: "Vui l\u00f2ng nh\u1eadp c\u00e2u tr\u1ea3 l\u1eddi tr\u01b0\u1edbc khi g\u1eedi.",
-  answerSaved: "\u0110\u00e3 ch\u1ea5m c\u00e2u tr\u1ea3 l\u1eddi v\u00e0 l\u01b0u feedback.",
+  answerSaved: "\u0110\u00e3 ch\u1ea5m c\u00e2u tr\u1ea3 l\u1eddi v\u00e0 l\u01b0u nh\u1eadn x\u00e9t.",
   answerError: "Kh\u00f4ng th\u1ec3 g\u1eedi c\u00e2u tr\u1ea3 l\u1eddi. Vui l\u00f2ng th\u1eed l\u1ea1i.",
   finished: "\u0110\u00e3 ho\u00e0n t\u1ea5t phi\u00ean Mock Interview.",
   finishError: "Kh\u00f4ng th\u1ec3 t\u1ed5ng k\u1ebft phi\u00ean ph\u1ecfng v\u1ea5n. Vui l\u00f2ng th\u1eed l\u1ea1i.",
@@ -29,19 +29,19 @@ const TEXT = {
   title: "Mock Interview AI",
   matching: "Ph\u00e2n t\u00edch CV \u2194 JD",
   startTitle: "B\u1eaft \u0111\u1ea7u ph\u1ecfng v\u1ea5n k\u1ef9 thu\u1eadt",
-  intro: "Question Bank V2 d\u00f9ng rule-based logic, \u01b0u ti\u00ean target role, JD, CV, skill gap, roadmap v\u00e0 analysis n\u1ebfu c\u00f3. Kh\u00f4ng d\u00f9ng LLM API, kh\u00f4ng voice/video.",
-  recentAnalysis: "Analysis g\u1ea7n \u0111\u00e2y",
-  noAnalysis: "Kh\u00f4ng ch\u1ecdn analysis",
+  intro: "B\u1ed9 c\u00e2u h\u1ecfi V2 \u01b0u ti\u00ean vai tr\u00f2 m\u1ee5c ti\u00eau, JD, CV, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 Roadmap hi\u1ec7n c\u00f3.",
+  recentAnalysis: "Ph\u00e2n t\u00edch g\u1ea7n \u0111\u00e2y",
+  noAnalysis: "Kh\u00f4ng ch\u1ecdn ph\u00e2n t\u00edch",
   matchScore: "\u0110i\u1ec3m ph\u00f9 h\u1ee3p",
-  targetRole: "Target role t\u00f9y ch\u1ecdn",
+  targetRole: "Vai tr\u00f2 m\u1ee5c ti\u00eau t\u00f9y ch\u1ecdn",
   targetPlaceholder: "V\u00ed d\u1ee5: Backend .NET Intern, Frontend React Developer, AI/Data Intern",
-  selectedAnalysis: "Analysis \u0111ang ch\u1ecdn",
+  selectedAnalysis: "Ph\u00e2n t\u00edch \u0111ang ch\u1ecdn",
   creating: "\u0110ang t\u1ea1o phi\u00ean ph\u1ecfng v\u1ea5n...",
   startButton: "B\u1eaft \u0111\u1ea7u ph\u1ecfng v\u1ea5n",
   history: "L\u1ecbch s\u1eed ph\u1ecfng v\u1ea5n",
   emptyHistory: "Ch\u01b0a c\u00f3 phi\u00ean ph\u1ecfng v\u1ea5n n\u00e0o. B\u1eaft \u0111\u1ea7u phi\u00ean \u0111\u1ea7u ti\u00ean b\u1eb1ng form b\u00ean tr\u00ean.",
   emptyTitle: "Phi\u00ean ph\u1ecfng v\u1ea5n s\u1ebd hi\u1ec3n th\u1ecb \u1edf \u0111\u00e2y",
-  emptyBody: "B\u1eaft \u0111\u1ea7u m\u1ed9t phi\u00ean \u0111\u1ec3 nh\u1eadn 5 c\u00e2u h\u1ecfi theo target role, skill gap v\u00e0 roadmap hi\u1ec7n c\u00f3.",
+  emptyBody: "B\u1eaft \u0111\u1ea7u m\u1ed9t phi\u00ean \u0111\u1ec3 nh\u1eadn 5 c\u00e2u h\u1ecfi theo vai tr\u00f2 m\u1ee5c ti\u00eau, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 Roadmap hi\u1ec7n c\u00f3.",
   rolePracticing: "Vai tr\u00f2 \u0111ang luy\u1ec7n",
   answered: "c\u00e2u \u0111\u00e3 tr\u1ea3 l\u1eddi",
   status: "Tr\u1ea1ng th\u00e1i",
@@ -49,14 +49,14 @@ const TEXT = {
   nextQuestion: "C\u00e2u h\u1ecfi ti\u1ebfp theo",
   whyAsked: "V\u00ec sao c\u00e2u n\u00e0y \u0111\u01b0\u1ee3c h\u1ecfi",
   relatedSkills: "K\u1ef9 n\u0103ng li\u00ean quan",
-  expectedKeywords: "Keyword n\u00ean c\u00f3",
+  expectedKeywords: "T\u1eeb kh\u00f3a n\u00ean c\u00f3",
   answerLabel: "C\u00e2u tr\u1ea3 l\u1eddi c\u1ee7a b\u1ea1n",
-  answerPlaceholder: "Tr\u1ea3 l\u1eddi theo c\u1ea5u tr\u00fac: concept, c\u00e1ch l\u00e0m, v\u00ed d\u1ee5 project, tradeoff n\u1ebfu c\u00f3...",
+  answerPlaceholder: "Tr\u1ea3 l\u1eddi theo c\u1ea5u tr\u00fac: kh\u00e1i ni\u1ec7m, c\u00e1ch l\u00e0m, v\u00ed d\u1ee5 t\u1eeb d\u1ef1 \u00e1n v\u00e0 l\u1ef1a ch\u1ecdn k\u1ef9 thu\u1eadt n\u1ebfu c\u00f3...",
   grading: "\u0110ang ch\u1ea5m c\u00e2u tr\u1ea3 l\u1eddi...",
   sendAnswer: "G\u1eedi c\u00e2u tr\u1ea3 l\u1eddi",
   finishing: "\u0110ang t\u1ed5ng k\u1ebft phi\u00ean ph\u1ecfng v\u1ea5n...",
   finishButton: "Ho\u00e0n t\u1ea5t phi\u00ean ph\u1ecfng v\u1ea5n",
-  feedbackCategory: "Ph\u00e2n lo\u1ea1i feedback",
+  feedbackCategory: "Ph\u00e2n lo\u1ea1i nh\u1eadn x\u00e9t",
   betterHint: "G\u1ee3i \u00fd tr\u1ea3 l\u1eddi t\u1ed1t h\u01a1n",
   notGraded: "Ch\u01b0a ch\u1ea5m",
   viewSession: "Xem phi\u00ean",
@@ -286,7 +286,7 @@ export default function InterviewPage() {
             {selectedAnalysis ? (
               <div className="rounded-md border border-white/10 bg-slate-950/60 p-4 text-sm leading-6 text-slate-300">
                 <p className="font-medium text-slate-100">{TEXT.selectedAnalysis}</p>
-                <p className="mt-2 break-words">Skill gap: {selectedAnalysis.skill_gap_summary}</p>
+                <p className="mt-2 break-words">Khoảng trống kỹ năng: {selectedAnalysis.skill_gap_summary}</p>
               </div>
             ) : null}
 

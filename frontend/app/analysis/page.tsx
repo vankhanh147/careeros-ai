@@ -143,7 +143,7 @@ export default function AnalysisPage() {
         <div className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
           <h2 className="text-xl font-semibold">Chọn dữ liệu phân tích</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            MVP này dùng skill matching rule-based, keyword overlap và semantic score để đánh giá mức độ phù hợp giữa CV và JD.
+            Hệ thống kết hợp kỹ năng, từ khóa, vai trò và bằng chứng trong CV để đánh giá mức độ phù hợp với JD.
           </p>
 
           {resumes.length === 0 || jobDescriptions.length === 0 ? (
@@ -151,7 +151,7 @@ export default function AnalysisPage() {
               Bạn cần có ít nhất một CV PDF và một JD trước khi chạy phân tích.
               <div className="mt-4">
                 <Link href="/documents" className="font-semibold text-amber-50 underline underline-offset-4">
-                  Upload CV hoặc thêm JD
+                  Tải CV lên hoặc thêm JD
                 </Link>
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function AnalysisPage() {
           <h2 className="text-xl font-semibold">Lịch sử phân tích gần đây</h2>
           <div className="mt-4 space-y-4">
             {history.length === 0 ? (
-              <p className="text-sm leading-6 text-slate-400">Chưa có analysis nào. Chạy matching đầu tiên để xem điểm phù hợp, skill gap và gợi ý cải thiện.</p>
+              <p className="text-sm leading-6 text-slate-400">Chưa có kết quả phân tích. Hãy chạy Resume ↔ JD Matching để xem điểm phù hợp, khoảng trống kỹ năng và gợi ý cải thiện.</p>
             ) : (
               history.map((analysis) => <AnalysisResultCard key={analysis.id} analysis={analysis} compact />)
             )}
@@ -231,9 +231,9 @@ export default function AnalysisPage() {
 function EmptyResult() {
   return (
     <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-      <h2 className="text-xl font-semibold">Kết quả matching</h2>
+      <h2 className="text-xl font-semibold">Kết quả phân tích</h2>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        Chọn một CV và một JD, sau đó chạy phân tích để xem điểm phù hợp, kỹ năng khớp, skill gap, preview dữ liệu đã đọc và breakdown điểm.
+        Chọn một CV và một JD để xem điểm phù hợp, kỹ năng đã khớp, khoảng trống kỹ năng và dữ liệu hệ thống đã đọc.
       </p>
     </div>
   );
@@ -259,14 +259,14 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <SkillList title="Kỹ năng đã khớp" items={analysis.matched_skills} emptyText="Chưa phát hiện kỹ năng khớp rõ ràng." tone="positive" />
-        <SkillList title="Kỹ năng còn thiếu" items={analysis.missing_skills} emptyText="Chưa phát hiện skill gap lớn." tone="warning" />
+        <SkillList title="Kỹ năng còn thiếu" items={analysis.missing_skills} emptyText="Chưa phát hiện khoảng trống kỹ năng lớn." tone="warning" />
       </div>
 
       {!compact ? (
         <>
           <div className="mt-5">
-            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Keyword trùng khớp</h4>
-            <TagList items={analysis.keyword_overlap} emptyText="Chưa có keyword overlap đáng kể." />
+            <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Từ khóa trùng khớp</h4>
+            <TagList items={analysis.keyword_overlap} emptyText="Chưa có từ khóa trùng khớp đáng kể." />
           </div>
           <ResumeFeedbackSection feedback={analysis.resume_feedback} />
           <div className="mt-5">
@@ -289,18 +289,18 @@ function ResumeFeedbackSection({ feedback }: { feedback?: MatchAnalysis["resume_
   if (!feedback) return null;
 
   const groups = [
-    { title: "Critical gaps", items: feedback.critical_gaps },
-    { title: "CV wording improvements", items: feedback.cv_wording_improvements },
-    { title: "Suggested bullet rewrites", items: feedback.suggested_bullet_rewrites },
-    { title: "Missing evidence areas", items: feedback.missing_evidence_areas },
-    { title: "Recommended next edits", items: feedback.recommended_next_edits }
+    { title: "Khoảng trống quan trọng", items: feedback.critical_gaps },
+    { title: "Cải thiện cách diễn đạt", items: feedback.cv_wording_improvements },
+    { title: "Gợi ý viết lại nội dung", items: feedback.suggested_bullet_rewrites },
+    { title: "Minh chứng còn thiếu", items: feedback.missing_evidence_areas },
+    { title: "Chỉnh sửa nên làm tiếp theo", items: feedback.recommended_next_edits }
   ].filter((group) => group.items.length > 0);
 
   if (groups.length === 0) return null;
 
   return (
     <section className="mt-5 rounded-lg border border-emerald-300/20 bg-emerald-300/5 p-5">
-      <h4 className="text-base font-semibold text-emerald-100">Resume Improvement Suggestions</h4>
+      <h4 className="text-base font-semibold text-emerald-100">Gợi ý cải thiện CV</h4>
       <p className="mt-2 text-sm leading-6 text-slate-300">
         {"G\u1ee3i \u00fd n\u00e0y d\u1ef1a tr\u00ean CV/JD \u0111\u00e3 \u0111\u1ecdc \u0111\u01b0\u1ee3c v\u00e0 ch\u1ec9 d\u00f9ng template rule-based. H\u00e3y ch\u1ec9 th\u00eam n\u1ed9i dung n\u1ebfu ph\u1ea3n \u00e1nh \u0111\u00fang kinh nghi\u1ec7m th\u1eadt c\u1ee7a b\u1ea1n."}
       </p>
@@ -314,10 +314,10 @@ function ResumeFeedbackSection({ feedback }: { feedback?: MatchAnalysis["resume_
                 <div key={`${group.title}-${itemIndex}-${item.title}`} className="rounded-md border border-white/10 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
                   <p className="font-semibold text-slate-100">{item.title}</p>
                   <p className="mt-2 break-words">{item.message}</p>
-                  <p className="mt-2 break-words text-slate-400"><span className="font-medium text-slate-300">Why this matters:</span> {item.why_this_matters}</p>
+                  <p className="mt-2 break-words text-slate-400"><span className="font-medium text-slate-300">Vì sao điều này quan trọng:</span> {item.why_this_matters}</p>
                   {item.suggested_edit ? (
                     <p className="mt-2 break-words rounded-md border border-emerald-300/15 bg-emerald-300/5 p-3 text-emerald-100">
-                      <span className="font-medium">Suggested improvement:</span> {item.suggested_edit}
+                      <span className="font-medium">Gợi ý chỉnh sửa:</span> {item.suggested_edit}
                     </p>
                   ) : null}
                 </div>
@@ -334,7 +334,7 @@ function SkillGapSection({ analysis, compact }: { analysis: MatchAnalysis; compa
   const prioritized = analysis.prioritized_missing_skills;
   return (
     <section className="mt-5 rounded-lg border border-white/10 bg-white/5 p-5">
-      <h4 className="text-base font-semibold text-slate-100">Tóm tắt skill gap</h4>
+      <h4 className="text-base font-semibold text-slate-100">Tóm tắt khoảng trống kỹ năng</h4>
       <p className="mt-2 break-words text-sm leading-6 text-slate-300">{analysis.skill_gap_summary}</p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
@@ -378,12 +378,12 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
     <div className="mt-6 rounded-lg border border-cyan-300/20 bg-cyan-300/5 p-5">
       <h4 className="text-base font-semibold text-cyan-100">Dữ liệu hệ thống đã đọc được</h4>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        Block này giúp kiểm chứng matcher đã đọc đúng CV và JD trước khi tin vào điểm số.
+        Phần này giúp bạn kiểm tra hệ thống đã đọc đúng CV và JD trước khi sử dụng kết quả.
       </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <PreviewBox title="Preview nội dung CV" text={analysis.resume_text_preview} />
-        <PreviewBox title="Preview nội dung JD" text={analysis.jd_text_preview} />
+        <PreviewBox title="Nội dung CV đã đọc" text={analysis.resume_text_preview} />
+        <PreviewBox title="Nội dung JD đã đọc" text={analysis.jd_text_preview} />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -392,28 +392,28 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
       </div>
 
       <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <ScoreItem label="Skill score" value={analysis.scoring_breakdown.skill_score} />
-        <ScoreItem label="Keyword score" value={analysis.scoring_breakdown.keyword_score} />
-        <ScoreItem label="Semantic score" value={analysis.scoring_breakdown.semantic_score} />
-        <ScoreItem label="Role alignment" value={analysis.scoring_breakdown.role_alignment_score} />
-        <ScoreItem label="Evidence score" value={analysis.scoring_breakdown.evidence_score} />
-        <ScoreItem label="Data completeness" value={analysis.scoring_breakdown.length_sanity} />
+        <ScoreItem label="Điểm kỹ năng" value={analysis.scoring_breakdown.skill_score} />
+        <ScoreItem label="Điểm từ khóa" value={analysis.scoring_breakdown.keyword_score} />
+        <ScoreItem label="Điểm ngữ nghĩa" value={analysis.scoring_breakdown.semantic_score} />
+        <ScoreItem label="Độ khớp vai trò" value={analysis.scoring_breakdown.role_alignment_score} />
+        <ScoreItem label="Điểm minh chứng" value={analysis.scoring_breakdown.evidence_score} />
+        <ScoreItem label="Độ đầy đủ dữ liệu" value={analysis.scoring_breakdown.length_sanity} />
         <TextItem label="Độ tin cậy" value={formatConfidence(analysis.scoring_breakdown.confidence)} />
-        <ScoreItem label="Final score" value={analysis.scoring_breakdown.final_score} />
+        <ScoreItem label="Điểm cuối cùng" value={analysis.scoring_breakdown.final_score} />
       </dl>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
         <InfoBlock
-          title="Role & stack detected"
+          title="Vai trò và stack đã phát hiện"
           lines={[
             `CV: ${analysis.scoring_breakdown.resume_role_family ?? "general software"}`,
             `JD: ${analysis.scoring_breakdown.jd_role_family ?? "general software"}`,
-            `CV stack: ${(analysis.scoring_breakdown.resume_stack_groups ?? []).join(", ") || "Not clear"}`,
-            `JD stack: ${(analysis.scoring_breakdown.jd_stack_groups ?? []).join(", ") || "Not clear"}`
+            `CV stack: ${(analysis.scoring_breakdown.resume_stack_groups ?? []).join(", ") || "Chưa rõ"}`,
+            `JD stack: ${(analysis.scoring_breakdown.jd_stack_groups ?? []).join(", ") || "Chưa rõ"}`
           ]}
         />
         <InfoBlock
-          title="Scoring V2 explanation"
+          title="Giải thích cách chấm điểm V2"
           lines={[
             ...((analysis.scoring_breakdown.role_alignment_notes ?? []).slice(0, 4)),
             ...((analysis.scoring_breakdown.evidence_notes ?? []).slice(0, 4))
@@ -422,8 +422,8 @@ function DebugPreview({ analysis }: { analysis: MatchAnalysis }) {
       </div>
 
       <div className="mt-5">
-        <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Critical skills trong JD</h5>
-        <TagList items={analysis.scoring_breakdown.critical_skills ?? []} emptyText="No clear critical skill detected." />
+        <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Kỹ năng quan trọng trong JD</h5>
+        <TagList items={analysis.scoring_breakdown.critical_skills ?? []} emptyText="Chưa phát hiện kỹ năng quan trọng rõ ràng." />
       </div>
 
       <SemanticInsightBlock insight={analysis.semantic_insights} />
@@ -484,21 +484,21 @@ function HybridEvaluationBlock({ evaluation, semanticEnabled }: { evaluation?: M
     <section className="mt-5 rounded-md border border-fuchsia-300/20 bg-fuchsia-300/5 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Hybrid evaluation (thử nghiệm)</h5>
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Đánh giá hybrid (thử nghiệm)</h5>
           <p className="mt-2 text-sm leading-6 text-slate-300">
             Điểm này chỉ dùng để đánh giá nội bộ, chưa thay thế điểm phù hợp chính đang hiển thị.
           </p>
         </div>
         <div className="shrink-0 rounded-md border border-white/10 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
-          Semantic: {semanticStatus}
+          Ngữ nghĩa: {semanticStatus}
         </div>
       </div>
 
       <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <TextItem label="Điểm production" value={`${evaluation.rule_based_score}%`} />
+        <TextItem label="Điểm hiện tại" value={`${evaluation.rule_based_score}%`} />
         <TextItem label="Điểm hybrid thử nghiệm" value={hybridScore} />
-        <TextItem label="Semantic component" value={semanticValue} />
-        <TextItem label="Taxonomy component" value={`${evaluation.taxonomy_component}%`} />
+        <TextItem label="Thành phần ngữ nghĩa" value={semanticValue} />
+        <TextItem label="Thành phần taxonomy" value={`${evaluation.taxonomy_component}%`} />
       </dl>
 
       {evaluation.explanation_notes.length > 0 ? (
@@ -517,13 +517,13 @@ function MLEvaluationBlock({ evaluation }: { evaluation?: MatchAnalysis["ml_eval
 
   const confidence = typeof evaluation.confidence === "number" ? `${Math.round(evaluation.confidence * 100)}%` : "Chưa có";
   const predictedLabel = evaluation.predicted_label ?? "Chưa có";
-  const status = evaluation.enabled ? "Đang bật" : "Chưa có artifact";
+  const status = evaluation.enabled ? "Đang bật" : "Chưa có mô hình";
 
   return (
     <section className="mt-5 rounded-md border border-sky-300/20 bg-sky-300/5 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">ML evaluation (thử nghiệm)</h5>
+          <h5 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">Đánh giá ML (thử nghiệm)</h5>
           <p className="mt-2 text-sm leading-6 text-slate-300">
             Dự đoán này chỉ dùng để đánh giá nội bộ cho mô hình TF-IDF + Logistic Regression, chưa thay thế điểm phù hợp chính.
           </p>
@@ -536,7 +536,7 @@ function MLEvaluationBlock({ evaluation }: { evaluation?: MatchAnalysis["ml_eval
       <dl className="mt-4 grid gap-3 sm:grid-cols-3">
         <TextItem label="Nhãn dự đoán" value={predictedLabel} />
         <TextItem label="Độ tự tin" value={confidence} />
-        <TextItem label="Phiên bản model" value={evaluation.model_version ?? "Chưa có"} />
+        <TextItem label="Phiên bản mô hình" value={evaluation.model_version ?? "Chưa có"} />
       </dl>
 
       <p className="mt-3 break-words text-sm text-slate-400">{evaluation.note}</p>

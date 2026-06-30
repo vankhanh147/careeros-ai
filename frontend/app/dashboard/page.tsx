@@ -30,9 +30,9 @@ const TEXT = {
   logout: "\u0110\u0103ng xu\u1ea5t",
   careerWorkspace: "Kh\u00f4ng gian ngh\u1ec1 nghi\u1ec7p",
   hello: "Xin ch\u00e0o",
-  heroDescription: "\u0110\u00e2y l\u00e0 trung t\u00e2m \u0111i\u1ec1u ph\u1ed1i CareerOS AI: h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p, CV/JD, Resume \u2194 JD Matching, Roadmap v\u00e0 Mock Interview trong c\u00f9ng m\u1ed9t workflow beta.",
-  progressLabel: "M\u1ee9c ho\u00e0n thi\u1ec7n MVP flow",
-  uploadedCv: "CV \u0111\u00e3 upload",
+  heroDescription: "Theo d\u00f5i h\u1ed3 s\u01a1, CV/JD, Resume \u2194 JD Matching, Roadmap v\u00e0 Mock Interview trong m\u1ed9t lu\u1ed3ng ph\u00e1t tri\u1ec3n th\u1ed1ng nh\u1ea5t.",
+  progressLabel: "Ti\u1ebfn \u0111\u1ed9 h\u00e0nh tr\u00ecnh",
+  uploadedCv: "CV \u0111\u00e3 t\u1ea3i l\u00ean",
   savedJd: "Job Description \u0111\u00e3 l\u01b0u",
   profileLabel: "H\u1ed3 s\u01a1",
   profileAvailable: "\u0110\u00e3 c\u00f3",
@@ -43,28 +43,28 @@ const TEXT = {
   profileReady: "\u0110\u00e3 c\u00f3 d\u1eef li\u1ec7u",
   profileIncomplete: "Ch\u01b0a ho\u00e0n thi\u1ec7n",
   updateProfile: "C\u1eadp nh\u1eadt h\u1ed3 s\u01a1",
-  profileCardDescription: "Target role, current level, k\u1ef9 n\u0103ng, kinh nghi\u1ec7m v\u00e0 timeline l\u00e0 n\u1ec1n d\u1eef li\u1ec7u cho roadmap/interview.",
+  profileCardDescription: "Vai tr\u00f2 m\u1ee5c ti\u00eau, tr\u00ecnh \u0111\u1ed9, k\u1ef9 n\u0103ng v\u00e0 kinh nghi\u1ec7m l\u00e0 n\u1ec1n t\u1ea3ng cho c\u00e1c g\u1ee3i \u00fd c\u00e1 nh\u00e2n h\u00f3a.",
   manageCvJd: "Qu\u1ea3n l\u00fd CV/JD",
-  cvJdCardDescription: "Qu\u1ea3n l\u00fd CV PDF v\u00e0 Job Description m\u1ee5c ti\u00eau \u0111\u1ec3 chu\u1ea9n b\u1ecb cho matching.",
+  cvJdCardDescription: "Qu\u1ea3n l\u00fd CV PDF v\u00e0 JD m\u1ee5c ti\u00eau tr\u01b0\u1edbc khi ph\u00e2n t\u00edch m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p.",
   matchScore: "\u0110i\u1ec3m ph\u00f9 h\u1ee3p",
   noAnalysis: "Ch\u01b0a c\u00f3 ph\u00e2n t\u00edch",
-  analysisCardDescription: "Ch\u1ea1y matching \u0111\u1ec3 nh\u1eadn skill gap v\u00e0 improvement plan.",
+  analysisCardDescription: "Ph\u00e2n t\u00edch \u0111i\u1ec3m ph\u00f9 h\u1ee3p, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 c\u00e1ch c\u1ea3i thi\u1ec7n CV.",
   analyzeCvJd: "Ph\u00e2n t\u00edch CV \u2194 JD",
   noRoadmap: "Ch\u01b0a c\u00f3 roadmap",
-  roadmapCardDescription: "T\u1ea1o roadmap h\u1ecdc t\u1eadp ng\u1eafn h\u1ea1n d\u1ef1a tr\u00ean skill gap v\u00e0 profile.",
+  roadmapCardDescription: "T\u1ea1o k\u1ebf ho\u1ea1ch h\u1ecdc t\u1eadp ng\u1eafn h\u1ea1n t\u1eeb h\u1ed3 s\u01a1 v\u00e0 kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng.",
   createRoadmap: "T\u1ea1o roadmap",
   noInterview: "Ch\u01b0a luy\u1ec7n ph\u1ecfng v\u1ea5n",
-  interviewCardDescription: "Luy\u1ec7n ph\u1ecfng v\u1ea5n k\u1ef9 thu\u1eadt b\u1eb1ng question bank rule-based.",
+  interviewCardDescription: "Luy\u1ec7n c\u00e2u h\u1ecfi k\u1ef9 thu\u1eadt theo vai tr\u00f2, stack v\u00e0 \u0111i\u1ec3m y\u1ebfu \u0111\u00e3 ph\u00e1t hi\u1ec7n.",
   latest: "G\u1ea7n nh\u1ea5t",
   practiceInterview: "Luy\u1ec7n ph\u1ecfng v\u1ea5n",
   latestAnalysis: "Ph\u00e2n t\u00edch g\u1ea7n nh\u1ea5t",
-  latestAnalysisEmpty: "Ch\u01b0a c\u00f3 k\u1ebft qu\u1ea3 matching. H\u00e3y ch\u1ecdn CV v\u00e0 JD \u0111\u1ec3 ch\u1ea1y ph\u00e2n t\u00edch \u0111\u1ea7u ti\u00ean.",
-  runMatching: "Ch\u1ea1y matching",
+  latestAnalysisEmpty: "Ch\u01b0a c\u00f3 k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch. H\u00e3y ch\u1ecdn CV v\u00e0 JD \u0111\u1ec3 b\u1eaft \u0111\u1ea7u.",
+  runMatching: "Ch\u1ea1y ph\u00e2n t\u00edch",
   latestRoadmap: "Roadmap g\u1ea7n nh\u1ea5t",
-  latestRoadmapEmpty: "Ch\u01b0a c\u00f3 roadmap h\u1ecdc t\u1eadp. T\u1ea1o roadmap sau khi c\u00f3 profile ho\u1eb7c analysis.",
-  timeline: "Timeline",
+  latestRoadmapEmpty: "Ch\u01b0a c\u00f3 Roadmap h\u1ecdc t\u1eadp. B\u1ea1n c\u00f3 th\u1ec3 t\u1ea1o t\u1eeb h\u1ed3 s\u01a1 ho\u1eb7c k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch.",
+  timeline: "Th\u1eddi gian",
   latestInterview: "Phi\u00ean ph\u1ecfng v\u1ea5n g\u1ea7n nh\u1ea5t",
-  latestInterviewEmpty: "Ch\u01b0a c\u00f3 Mock Interview. B\u1eaft \u0111\u1ea7u m\u1ed9t phi\u00ean luy\u1ec7n t\u1eadp khi b\u1ea1n \u0111\u00e3 c\u00f3 target role.",
+  latestInterviewEmpty: "Ch\u01b0a c\u00f3 Mock Interview. H\u00e3y b\u1eaft \u0111\u1ea7u khi b\u1ea1n \u0111\u00e3 x\u00e1c \u0111\u1ecbnh vai tr\u00f2 m\u1ee5c ti\u00eau.",
   status: "Tr\u1ea1ng th\u00e1i",
   score: "\u0110i\u1ec3m",
   inProgress: "\u0110ang luy\u1ec7n",
@@ -78,7 +78,7 @@ const TEXT = {
   roadmapCompletedTitle: "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh m\u1ed9t ph\u1ea7n roadmap",
   roadmapCompletedDescription: "H\u00e3y c\u1eadp nh\u1eadt CV v\u00e0 ch\u1ea1y l\u1ea1i matching \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9.",
   interviewAfterRoadmapTitle: "Luy\u1ec7n Mock Interview \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9",
-  interviewAfterRoadmapDescription: "B\u1ea1n \u0111\u00e3 c\u00f3 analysis v\u00e0 roadmap. H\u00e3y luy\u1ec7n ph\u1ecfng v\u1ea5n \u0111\u1ec3 test c\u00e1c skill \u0111ang c\u1ea3i thi\u1ec7n."
+  interviewAfterRoadmapDescription: "B\u1ea1n \u0111\u00e3 c\u00f3 k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch v\u00e0 Roadmap. H\u00e3y luy\u1ec7n ph\u1ecfng v\u1ea5n \u0111\u1ec3 ki\u1ec3m tra c\u00e1c k\u1ef9 n\u0103ng \u0111ang c\u1ea3i thi\u1ec7n."
 };
 
 export default function DashboardPage() {
@@ -229,7 +229,7 @@ export default function DashboardPage() {
 
         {error ? <p className="mt-6 rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <DashboardFeatureCard title={TEXT.careerProfile} status={summary.has_career_profile ? TEXT.profileReady : TEXT.profileIncomplete} description={TEXT.profileCardDescription} href="/profile" cta={TEXT.updateProfile} />
           <DashboardFeatureCard title="CV & JD" status={`${summary.resume_count} CV \u00b7 ${summary.job_description_count} JD`} description={TEXT.cvJdCardDescription} href="/documents" cta={TEXT.manageCvJd} />
           <DashboardFeatureCard title="Resume ↔ JD Matching" status={summary.latest_analysis ? `${TEXT.matchScore} ${summary.latest_analysis.match_score}%` : TEXT.noAnalysis} description={summary.latest_analysis?.skill_gap_summary ?? TEXT.analysisCardDescription} href="/analysis" cta={TEXT.analyzeCvJd} />
@@ -243,12 +243,12 @@ export default function DashboardPage() {
           <DashboardFeatureCard title="Mock Interview" status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} \u00b7 ${formatInterviewScore(summary.latest_interview.score)}` : TEXT.noInterview} description={summary.latest_interview ? `${TEXT.latest}: ${summary.latest_interview.target_role}` : TEXT.interviewCardDescription} href="/interview" cta={TEXT.practiceInterview} />
         </div>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-3">
+        <section className="mt-8 grid gap-5 lg:grid-cols-3">
           <LatestInsightCard title={TEXT.latestAnalysis} empty={TEXT.latestAnalysisEmpty} href="/analysis" cta={TEXT.runMatching}>
             {summary.latest_analysis ? (
               <>
                 <p className="text-3xl font-bold text-cyan-200">{summary.latest_analysis.match_score}%</p>
-                <p className="mt-3 break-words text-sm leading-6 text-slate-300">{summary.latest_analysis.skill_gap_summary}</p>
+                <p className="mt-3 line-clamp-4 break-words text-sm leading-6 text-slate-300">{summary.latest_analysis.skill_gap_summary}</p>
                 <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_analysis.created_at)}</p>
               </>
             ) : null}
@@ -300,7 +300,7 @@ function DashboardFeatureCard({ title, status, description, href, cta }: { title
     <article className="flex min-w-0 flex-col rounded-lg border border-white/10 bg-white/5 p-5">
       <p className="break-words text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">{status}</p>
       <h2 className="mt-3 text-lg font-semibold text-slate-100">{title}</h2>
-      <p className="mt-2 flex-1 break-words text-sm leading-6 text-slate-300">{description}</p>
+      <p className="mt-2 line-clamp-4 min-h-24 break-words text-sm leading-6 text-slate-300">{description}</p>
       <Link href={href} className="mt-5 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
         {cta}
       </Link>
@@ -324,25 +324,25 @@ function LatestInsightCard({ title, empty, href, cta, children }: { title: strin
 function buildNextActions(summary: DashboardSummary): NextAction[] {
   if (!summary.has_career_profile) {
     return [
-      { title: "Ho\u00e0n thi\u1ec7n h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p", description: "Nh\u1eadp target role, k\u1ef9 n\u0103ng v\u00e0 timeline \u0111\u1ec3 c\u00e1c module AI c\u00f3 ng\u1eef c\u1ea3nh t\u1ed1t h\u01a1n.", href: "/profile", cta: TEXT.updateProfile, tone: "primary" },
+      { title: "Ho\u00e0n thi\u1ec7n h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p", description: "Nh\u1eadp vai tr\u00f2 m\u1ee5c ti\u00eau, k\u1ef9 n\u0103ng v\u00e0 th\u1eddi gian d\u1ef1 ki\u1ebfn \u0111\u1ec3 AI c\u00f3 ng\u1eef c\u1ea3nh t\u1ed1t h\u01a1n.", href: "/profile", cta: TEXT.updateProfile, tone: "primary" },
       { title: "Chu\u1ea9n b\u1ecb CV v\u00e0 JD", description: "B\u1ea1n v\u1eabn c\u00f3 th\u1ec3 upload CV/JD tr\u01b0\u1edbc khi profile ho\u00e0n ch\u1ec9nh.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
     ];
   }
   if (summary.resume_count === 0 || summary.job_description_count === 0) {
     return [
-      { title: "Upload CV v\u00e0 th\u00eam JD m\u1ee5c ti\u00eau", description: "C\u1ea7n \u00edt nh\u1ea5t m\u1ed9t CV v\u00e0 m\u1ed9t JD \u0111\u1ec3 ch\u1ea1y Resume \u2194 JD Matching.", href: "/documents", cta: "Th\u00eam CV/JD", tone: "primary" },
+      { title: "T\u1ea3i CV l\u00ean v\u00e0 th\u00eam JD m\u1ee5c ti\u00eau", description: "C\u1ea7n \u00edt nh\u1ea5t m\u1ed9t CV v\u00e0 m\u1ed9t JD \u0111\u1ec3 ch\u1ea1y Resume \u2194 JD Matching.", href: "/documents", cta: "Th\u00eam CV/JD", tone: "primary" },
       { title: "Ki\u1ec3m tra l\u1ea1i profile", description: "Profile t\u1ed1t gi\u00fap roadmap v\u00e0 ph\u1ecfng v\u1ea5n s\u00e1t m\u1ee5c ti\u00eau h\u01a1n.", href: "/profile", cta: "Xem profile", tone: "secondary" }
     ];
   }
   if (!summary.latest_analysis) {
     return [
-      { title: "Ch\u1ea1y Resume \u2194 JD Matching", description: "Ph\u00e2n t\u00edch m\u1ee9c ph\u00f9 h\u1ee3p, skill gap v\u00e0 c\u00e1c g\u1ee3i \u00fd c\u1ea3i thi\u1ec7n CV.", href: "/analysis", cta: TEXT.runMatching, tone: "primary" },
+      { title: "Ch\u1ea1y Resume \u2194 JD Matching", description: "Ph\u00e2n t\u00edch m\u1ee9c ph\u00f9 h\u1ee3p, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 c\u00e1c g\u1ee3i \u00fd c\u1ea3i thi\u1ec7n CV.", href: "/analysis", cta: TEXT.runMatching, tone: "primary" },
       { title: "Qu\u1ea3n l\u00fd th\u00eam JD kh\u00e1c", description: "Th\u1eed nhi\u1ec1u JD gi\u00fap b\u1ea1n hi\u1ec3u th\u1ecb tr\u01b0\u1eddng v\u00e0 ch\u1ecdn m\u1ee5c ti\u00eau ph\u00f9 h\u1ee3p h\u01a1n.", href: "/documents", cta: "Th\u00eam JD", tone: "secondary" }
     ];
   }
   if (!summary.latest_roadmap) {
     return [
-      { title: "T\u1ea1o roadmap h\u1ecdc t\u1eadp", description: "Bi\u1ebfn skill gap th\u00e0nh k\u1ebf ho\u1ea1ch h\u00e0nh \u0111\u1ed9ng ng\u1eafn h\u1ea1n, d\u1ec5 b\u1eaft \u0111\u1ea7u.", href: "/roadmap", cta: TEXT.createRoadmap, tone: "primary" },
+      { title: "T\u1ea1o Roadmap h\u1ecdc t\u1eadp", description: "Bi\u1ebfn kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng th\u00e0nh k\u1ebf ho\u1ea1ch h\u00e0nh \u0111\u1ed9ng ng\u1eafn h\u1ea1n, d\u1ec5 b\u1eaft \u0111\u1ea7u.", href: "/roadmap", cta: TEXT.createRoadmap, tone: "primary" },
       { title: "Xem l\u1ea1i ph\u00e2n t\u00edch g\u1ea7n nh\u1ea5t", description: "Ki\u1ec3m tra preview CV/JD v\u00e0 breakdown \u0111\u1ec3 ch\u1eafc h\u1ec7 th\u1ed1ng \u0111\u1ecdc \u0111\u00fang d\u1eef li\u1ec7u.", href: "/analysis", cta: "Xem analysis", tone: "secondary" }
     ];
   }
@@ -366,7 +366,7 @@ function buildNextActions(summary: DashboardSummary): NextAction[] {
   }
   return [
     { title: "Th\u1eed JD m\u1edbi ho\u1eb7c c\u1ea3i thi\u1ec7n CV", description: "B\u1ea1n \u0111\u00e3 \u0111i h\u1ebft MVP flow. H\u00e3y d\u00f9ng feedback \u0111\u1ec3 t\u1ed1i \u01b0u CV ho\u1eb7c th\u1eed m\u1ed9t JD kh\u00f3 h\u01a1n.", href: "/documents", cta: "Th\u00eam JD m\u1edbi", tone: "primary" },
-    { title: "Ch\u1ea1y l\u1ea1i matching", description: "Sau khi s\u1eeda CV, ch\u1ea1y l\u1ea1i analysis \u0111\u1ec3 xem score v\u00e0 skill gap thay \u0111\u1ed5i th\u1ebf n\u00e0o.", href: "/analysis", cta: "Ph\u00e2n t\u00edch l\u1ea1i", tone: "secondary" }
+    { title: "Ch\u1ea1y l\u1ea1i ph\u00e2n t\u00edch", description: "Sau khi s\u1eeda CV, h\u00e3y ph\u00e2n t\u00edch l\u1ea1i \u0111\u1ec3 xem \u0111i\u1ec3m ph\u00f9 h\u1ee3p v\u00e0 kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng thay \u0111\u1ed5i th\u1ebf n\u00e0o.", href: "/analysis", cta: "Ph\u00e2n t\u00edch l\u1ea1i", tone: "secondary" }
   ];
 }
 

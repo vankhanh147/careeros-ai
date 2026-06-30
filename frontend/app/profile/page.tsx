@@ -127,7 +127,7 @@ export default function ProfilePage() {
         <div className="mb-8 max-w-3xl">
           <h2 className="text-3xl font-semibold tracking-tight">Thông tin định hướng hiện tại</h2>
           <p className="mt-3 text-sm leading-6 text-slate-300">
-            Đây là nền dữ liệu để CareerOS AI hiểu mục tiêu, kỹ năng, kinh nghiệm, project và timeline của bạn trước khi tạo roadmap hoặc mô phỏng phỏng vấn.
+            Đây là nền dữ liệu để CareerOS AI hiểu mục tiêu, kỹ năng, kinh nghiệm, dự án và thời gian dự kiến của bạn trước khi tạo roadmap hoặc mô phỏng phỏng vấn.
           </p>
         </div>
 
@@ -140,14 +140,14 @@ export default function ProfilePage() {
 
           <div className="grid gap-5 md:grid-cols-2">
             <TextInput label="Vai trò mục tiêu" value={form.target_role} onChange={(value) => updateField("target_role", value)} placeholder="Backend Intern, Frontend Developer, AI Engineer..." hint="Ví dụ: Backend Intern trong 3 tháng tới." />
-            <TextInput label="Trình độ hiện tại" value={form.current_level} onChange={(value) => updateField("current_level", value)} placeholder="Sinh viên, Fresher, Junior, Career Switcher..." hint="Giúp hệ thống điều chỉnh độ khó roadmap/interview." />
+            <TextInput label="Trình độ hiện tại" value={form.current_level} onChange={(value) => updateField("current_level", value)} placeholder="Sinh viên, Fresher, Junior, Career Switcher..." hint="Giúp hệ thống điều chỉnh độ khó của Roadmap và Mock Interview." />
           </div>
 
           <TextArea label="Kỹ năng hiện có" value={form.skills} onChange={(value) => updateField("skills", value)} placeholder="Ví dụ: Python, FastAPI, PostgreSQL, React, TypeScript..." hint="Liệt kê bằng dấu phẩy để matcher đọc dễ hơn." />
           <TextArea label="Tóm tắt kinh nghiệm" value={form.experience_summary} onChange={(value) => updateField("experience_summary", value)} placeholder="Bạn đã học/làm gì, mức độ kinh nghiệm, môi trường làm việc hoặc học tập." />
-          <TextArea label="Tóm tắt project" value={form.projects_summary} onChange={(value) => updateField("projects_summary", value)} placeholder="Các project nổi bật, tech stack, vai trò của bạn, kết quả đạt được." />
-          <TextArea label="Mục tiêu nghề nghiệp" value={form.career_goal} onChange={(value) => updateField("career_goal", value)} placeholder="Bạn muốn đạt internship/job/role nào và vì sao?" />
-          <TextInput label="Timeline" value={form.timeline} onChange={(value) => updateField("timeline", value)} placeholder="Ví dụ: 3 tháng để sẵn sàng Backend Intern" />
+          <TextArea label="Tóm tắt dự án" value={form.projects_summary} onChange={(value) => updateField("projects_summary", value)} placeholder="Các dự án nổi bật, công nghệ sử dụng, vai trò của bạn và kết quả đạt được." />
+          <TextArea label="Mục tiêu nghề nghiệp" value={form.career_goal} onChange={(value) => updateField("career_goal", value)} placeholder="Bạn muốn đạt vị trí hoặc vai trò nào và vì sao?" />
+          <TextInput label="Thời gian dự kiến" value={form.timeline} onChange={(value) => updateField("timeline", value)} placeholder="Ví dụ: 3 tháng để sẵn sàng Backend Intern" />
 
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
           {statusMessage ? <p className="rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
