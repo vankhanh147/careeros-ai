@@ -48,3 +48,8 @@
 ## Năng lực chưa được tuyên bố
 
 CareerOS AI chưa có production ML inference, outcome prediction, OCR cho scanned CV, conversational interview, recruiter workflow hoặc multilingual UI. Những mục này không nên được mô tả như năng lực hiện hữu.
+
+
+## Secure Resume Access
+
+CV trong private Supabase Storage có thể được xem hoặc tải xuống qua signed URL ngắn hạn. Backend kiểm tra JWT và ownership trước khi tạo URL; service role key và raw storage path không được đưa ra frontend.

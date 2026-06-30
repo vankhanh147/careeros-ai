@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   createJobDescription,
@@ -10,12 +10,14 @@ import {
   deleteResume,
   getMyJobDescriptions,
   getMyResumes,
+  getResumeAccessUrl,
   updateJobDescription,
   uploadJobDescription,
   uploadResume,
   type JobDescription,
   type Resume
 } from "@/lib/api/documents";
+import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
@@ -25,6 +27,7 @@ export default function DocumentsPage() {
   const { token, isAuthenticated, isLoading } = useAuth();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [jobDescriptions, setJobDescriptions] = useState<JobDescription[]>([]);
+  const [analyses, setAnalyses] = useState<MatchAnalysis[]>([]);
   const [selectedResumeFile, setSelectedResumeFile] = useState<File | null>(null);
   const [resumeFileInputKey, setResumeFileInputKey] = useState(0);
   const [selectedJdFile, setSelectedJdFile] = useState<File | null>(null);
@@ -43,12 +46,22 @@ export default function DocumentsPage() {
   const [isUploadingJd, setIsUploadingJd] = useState(false);
   const [isSavingJd, setIsSavingJd] = useState(false);
   const [deletingResumeId, setDeletingResumeId] = useState<number | null>(null);
+  const [resumeAccessAction, setResumeAccessAction] = useState<{ resumeId: number; action: "view" | "download" } | null>(null);
   const [deletingJobDescriptionId, setDeletingJobDescriptionId] = useState<number | null>(null);
   const [viewingJobDescription, setViewingJobDescription] = useState<JobDescription | null>(null);
   const modalCloseButtonRef = useRef<HTMLButtonElement>(null);
   const canUploadResume = Boolean(selectedResumeFile) && !isUploadingResume;
   const canUploadJd = Boolean(selectedJdFile) && !isUploadingJd;
   const canSaveJd = jdTitle.trim().length > 0 && jdContent.trim().length > 0 && !isSavingJd;
+  const latestAnalysisByResume = useMemo(() => {
+    const byResume = new Map<number, MatchAnalysis>();
+    for (const analysis of analyses) {
+      if (!byResume.has(analysis.resume_id)) {
+        byResume.set(analysis.resume_id, analysis);
+      }
+    }
+    return byResume;
+  }, [analyses]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -69,13 +82,15 @@ export default function DocumentsPage() {
 
       try {
         setIsFetching(true);
-        const [resumeList, jdList] = await Promise.all([
+        const [resumeList, jdList, analysisHistory] = await Promise.all([
           getMyResumes(token),
-          getMyJobDescriptions(token)
+          getMyJobDescriptions(token),
+          getAnalysisHistory(token).catch(() => [])
         ]);
         if (isMounted) {
           setResumes(resumeList);
           setJobDescriptions(jdList);
+          setAnalyses(analysisHistory);
         }
       } catch (err) {
         if (isMounted) {
@@ -151,6 +166,30 @@ export default function DocumentsPage() {
       setError(err instanceof Error ? err.message : "Không thể tải CV lên.");
     } finally {
       setIsUploadingResume(false);
+    }
+  }
+
+  async function handleResumeAccess(resume: Resume, action: "view" | "download") {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setResumeAccessAction({ resumeId: resume.id, action });
+    try {
+      const access = await getResumeAccessUrl(token, resume.id);
+      const openedWindow = window.open(access.access_url, "_blank");
+      if (openedWindow) {
+        openedWindow.opener = null;
+      } else {
+        setError("Trình duyệt đã chặn cửa sổ mới. Vui lòng cho phép mở tab và thử lại.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể tạo liên kết xem CV. Vui lòng thử lại.");
+    } finally {
+      setResumeAccessAction(null);
     }
   }
 
@@ -371,10 +410,14 @@ export default function DocumentsPage() {
                 />
               ) : (
                 resumes.map((resume) => {
-                  const fileUrl = getResumeFileUrl(resume);
                   const uploadedAt = formatDocumentDate(resume.created_at);
                   const fileSize = formatFileSize(getResumeFileSize(resume));
-                  const extractionStatus = resume.extracted_text?.trim() ? "Đã trích xuất" : "Đã tải lên";
+                  const latestAnalysis = latestAnalysisByResume.get(resume.id);
+                  const extractionStatus = latestAnalysis
+                    ? "Đã phân tích"
+                    : resume.extracted_text?.trim()
+                      ? "Đã trích xuất"
+                      : "Đang chờ";
 
                   return (
                     <article key={resume.id} className="min-w-0 overflow-hidden rounded-md border border-white/10 bg-slate-950/60 p-4 transition hover:border-white/20">
@@ -382,7 +425,7 @@ export default function DocumentsPage() {
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2.5 py-1 text-xs font-semibold text-cyan-200">PDF</span>
-                            <span className={`rounded-full border px-2.5 py-1 text-xs font-medium ${resume.extracted_text?.trim() ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : "border-white/10 bg-white/5 text-slate-300"}`}>
+                            <span className={`rounded-full border px-2.5 py-1 text-xs font-medium ${latestAnalysis ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : resume.extracted_text?.trim() ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-200" : "border-white/10 bg-white/5 text-slate-300"}`}>
                               {extractionStatus}
                             </span>
                           </div>
@@ -393,31 +436,29 @@ export default function DocumentsPage() {
                           </div>
                         </div>
 
+                        <ResumeIntelligenceCard resume={resume} analysis={latestAnalysis} />
+
                         <div className="flex w-full flex-wrap gap-2">
-                          {fileUrl ? (
-                            <>
-                              <a href={fileUrl} target="_blank" rel="noreferrer" className="flex-1 rounded-md border border-cyan-300/30 px-3 py-2 text-center text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 sm:flex-none">
-                                Xem
-                              </a>
-                              <a href={fileUrl} download={resume.file_name} target="_blank" rel="noreferrer" className="flex-1 rounded-md border border-white/15 px-3 py-2 text-center text-sm font-semibold text-slate-200 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 sm:flex-none">
-                                Tải xuống
-                              </a>
-                            </>
-                          ) : (
-                            <>
-                              <button type="button" disabled title="Chưa có liên kết xem file" className="flex-1 cursor-not-allowed rounded-md border border-white/10 px-3 py-2 text-sm font-semibold text-slate-500 opacity-70 sm:flex-none">
-                                Xem
-                              </button>
-                              <button type="button" disabled title="Chưa có liên kết tải file" className="flex-1 cursor-not-allowed rounded-md border border-white/10 px-3 py-2 text-sm font-semibold text-slate-500 opacity-70 sm:flex-none">
-                                Tải xuống
-                              </button>
-                            </>
-                          )}
-                          <button type="button" onClick={() => void handleDeleteResume(resume)} disabled={deletingResumeId === resume.id} className="flex-1 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none">
+                          <button
+                            type="button"
+                            onClick={() => void handleResumeAccess(resume, "view")}
+                            disabled={resumeAccessAction?.resumeId === resume.id}
+                            className="flex-1 rounded-md border border-cyan-300/30 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 disabled:cursor-wait disabled:opacity-60 sm:flex-none"
+                          >
+                            {resumeAccessAction?.resumeId === resume.id && resumeAccessAction.action === "view" ? "Đang mở..." : "Xem"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleResumeAccess(resume, "download")}
+                            disabled={resumeAccessAction?.resumeId === resume.id}
+                            className="flex-1 rounded-md border border-white/15 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 disabled:cursor-wait disabled:opacity-60 sm:flex-none"
+                          >
+                            {resumeAccessAction?.resumeId === resume.id && resumeAccessAction.action === "download" ? "Đang chuẩn bị..." : "Tải xuống"}
+                          </button>
+                          <button type="button" onClick={() => void handleDeleteResume(resume)} disabled={deletingResumeId === resume.id || resumeAccessAction?.resumeId === resume.id} className="flex-1 rounded-md border border-red-300/30 px-3 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none">
                             {deletingResumeId === resume.id ? "Đang xóa..." : "Xóa"}
                           </button>
                         </div>
-                        {!fileUrl ? <p className="text-xs text-slate-500">Chưa có liên kết xem file.</p> : null}
                       </div>
                     </article>
                   );
@@ -508,6 +549,7 @@ export default function DocumentsPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2.5 py-1 text-xs font-semibold text-cyan-200">JD</span>
+                          <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-xs font-medium text-emerald-200">Nội dung đã sẵn sàng</span>
                           <span className="break-words text-xs text-slate-400">{job.company?.trim() || "Chưa có công ty"}</span>
                         </div>
                         <h3 className="mt-3 min-w-0 break-words font-semibold leading-6 text-slate-100">{job.title}</h3>
@@ -594,6 +636,137 @@ export default function DocumentsPage() {
   );
 }
 
+function ResumeIntelligenceCard({ resume, analysis }: { resume: Resume; analysis?: MatchAnalysis }) {
+  const detectedSkills = Array.from(new Set((analysis?.resume_detected_skills ?? []).filter((skill) => skill.trim())));
+  const visibleSkills = detectedSkills.slice(0, 8);
+  const remainingSkillCount = Math.max(0, detectedSkills.length - visibleSkills.length);
+  const roleFamily = analysis?.scoring_breakdown.resume_role_family?.trim();
+  const stackGroups = (analysis?.scoring_breakdown.resume_stack_groups ?? []).filter((stack) => stack.trim());
+  const extractedPreview = analysis?.resume_text_preview?.trim() || resume.extracted_text?.trim() || "";
+  const hasAnalysis = Boolean(analysis);
+  const hasSnapshot = Boolean(roleFamily || stackGroups.length);
+
+  return (
+    <section className="rounded-md border border-cyan-300/15 bg-cyan-300/5 p-4" aria-label={`Tóm tắt AI cho ${resume.file_name}`}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Tóm tắt tài liệu bằng AI</p>
+          <h5 className="mt-2 text-sm font-semibold text-slate-100">AI đã đọc gì từ CV?</h5>
+        </div>
+        <span className={`w-fit shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${hasAnalysis ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : extractedPreview ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-200" : "border-white/10 bg-white/5 text-slate-400"}`}>
+          {hasAnalysis ? "Đã phân tích" : extractedPreview ? "Đã trích xuất" : "Đang chờ phân tích"}
+        </span>
+      </div>
+
+      {hasAnalysis ? (
+        <>
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <h6 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Kỹ năng phát hiện</h6>
+              <span className="text-xs text-slate-500">{detectedSkills.length} kỹ năng</span>
+            </div>
+            {visibleSkills.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {visibleSkills.map((skill) => (
+                  <span key={skill} className="max-w-full break-words rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 text-xs text-slate-200">
+                    {skill}
+                  </span>
+                ))}
+                {remainingSkillCount > 0 ? (
+                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-200">
+                    +{remainingSkillCount} kỹ năng khác
+                  </span>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-slate-400">Chưa phát hiện kỹ năng rõ ràng trong lần phân tích gần nhất.</p>
+            )}
+          </div>
+
+          {hasSnapshot ? (
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <h6 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Tóm tắt nghề nghiệp</h6>
+              <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                {roleFamily ? (
+                  <div className="min-w-0 rounded-md bg-slate-950/50 p-3">
+                    <dt className="text-xs text-slate-500">Nhóm vai trò phát hiện</dt>
+                    <dd className="mt-1 break-words text-sm font-medium text-slate-200">{formatRoleFamily(roleFamily)}</dd>
+                  </div>
+                ) : null}
+                {stackGroups.length > 0 ? (
+                  <div className="min-w-0 rounded-md bg-slate-950/50 p-3">
+                    <dt className="text-xs text-slate-500">Stack phát hiện</dt>
+                    <dd className="mt-1 break-words text-sm font-medium text-slate-200">{stackGroups.join(", ")}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          ) : null}
+
+          {extractedPreview ? (
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <h6 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Nội dung AI đã đọc</h6>
+              <p className="mt-2 line-clamp-3 whitespace-pre-line break-words text-sm leading-6 text-slate-400">{extractedPreview}</p>
+            </div>
+          ) : null}
+
+          <ReadyFeatures />
+        </>
+      ) : (
+        <div className="mt-4 border-t border-white/10 pt-4">
+          {extractedPreview ? (
+            <>
+              <p className="text-sm leading-6 text-slate-300">Nội dung CV đã được trích xuất. Kỹ năng và tóm tắt nghề nghiệp sẽ xuất hiện sau lần matching đầu tiên.</p>
+              <p className="mt-3 line-clamp-3 whitespace-pre-line break-words text-sm leading-6 text-slate-500">{extractedPreview}</p>
+            </>
+          ) : (
+            <p className="text-sm leading-6 text-slate-400">AI sẽ hiển thị tóm tắt sau khi tài liệu được phân tích cùng một JD.</p>
+          )}
+          <div className="mt-4 rounded-md border border-white/10 bg-slate-950/50 p-3">
+            <p className="text-sm font-medium text-slate-200">Bước tiếp theo</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">Chọn CV này và một JD để chạy Resume ↔ JD Matching.</p>
+            <Link href="/analysis" className="mt-3 inline-flex rounded-md border border-cyan-300/30 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:bg-cyan-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60">
+              Đi tới phân tích
+            </Link>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ReadyFeatures() {
+  const features = ["Resume Matching", "Skill Gap", "Roadmap", "Mock Interview"];
+  return (
+    <div className="mt-4 border-t border-white/10 pt-4">
+      <h6 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">AI đã sẵn sàng cho</h6>
+      <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        {features.map((feature) => (
+          <li key={feature} className="flex items-center gap-2 text-sm text-slate-300">
+            <span aria-hidden="true" className="text-emerald-300">✓</span>
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function formatRoleFamily(value: string): string {
+  const labels: Record<string, string> = {
+    backend: "Backend Developer",
+    frontend: "Frontend Developer",
+    fullstack: "Fullstack Developer",
+    "ai/data": "AI / Data",
+    mobile: "Mobile Developer",
+    devops: "DevOps",
+    cybersecurity: "Cybersecurity",
+    "qa/testing": "QA / Testing",
+    "general software": "Phát triển phần mềm"
+  };
+  return labels[value.toLowerCase()] ?? value;
+}
+
 function DocumentEmptyState({ title, description, href, cta }: { title: string; description: string; href: string; cta: string }) {
   return (
     <div className="rounded-md border border-dashed border-white/15 bg-slate-950/40 p-5">
@@ -604,18 +777,6 @@ function DocumentEmptyState({ title, description, href, cta }: { title: string; 
       </a>
     </div>
   );
-}
-
-function getResumeFileUrl(resume: Resume): string | null {
-  const candidate = resume.download_url ?? resume.storage_url ?? resume.file_url;
-  if (!candidate) return null;
-
-  try {
-    const parsed = new URL(candidate);
-    return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.toString() : null;
-  } catch {
-    return null;
-  }
 }
 
 function getResumeFileSize(resume: Resume): number | null {

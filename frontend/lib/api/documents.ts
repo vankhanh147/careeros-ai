@@ -16,6 +16,15 @@ export type Resume = {
   updated_at: string;
 };
 
+export type ResumeAccessUrlResponse = {
+  resume_id: number;
+  access_url: string;
+  expires_in_seconds: number;
+  expires_at: string;
+  storage_provider: "supabase" | string;
+  download_filename: string;
+};
+
 export type JobDescription = {
   id: number;
   user_id: number;
@@ -78,6 +87,10 @@ export async function uploadResume(token: string, file: File): Promise<Resume> {
   }, "Kh\u00f4ng th\u1ec3 upload CV. Vui l\u00f2ng ki\u1ec3m tra file PDF v\u00e0 th\u1eed l\u1ea1i.");
 
   return response.json() as Promise<Resume>;
+}
+
+export function getResumeAccessUrl(token: string, resumeId: number): Promise<ResumeAccessUrlResponse> {
+  return jsonRequest<ResumeAccessUrlResponse>(`/api/resumes/${resumeId}/access-url`, token);
 }
 
 export function deleteResume(token: string, resumeId: number): Promise<void> {

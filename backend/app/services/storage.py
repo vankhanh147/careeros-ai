@@ -51,6 +51,33 @@ class SupabaseStorageClient:
         request = Request(self._object_url(storage_path), method="GET", headers=self._auth_headers())
         return self._send(request, expected_statuses={200})
 
+    def create_signed_url(self, storage_path: str, expires_in_seconds: int) -> str:
+        if not self.settings:
+            raise RuntimeError("Supabase Storage is not configured")
+        if expires_in_seconds <= 0:
+            raise ValueError("Signed URL expiration must be positive")
+
+        body = json.dumps({"expiresIn": expires_in_seconds}).encode("utf-8")
+        request = Request(
+            self._sign_url(storage_path),
+            data=body,
+            method="POST",
+            headers={
+                **self._auth_headers(),
+                "Content-Type": "application/json",
+            },
+        )
+        response_body = self._send(request, expected_statuses={200})
+        try:
+            payload = json.loads(response_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError("Supabase Storage returned an invalid signed URL response") from exc
+
+        signed_path = payload.get("signedURL") or payload.get("signedUrl")
+        if not isinstance(signed_path, str) or not signed_path.strip():
+            raise RuntimeError("Supabase Storage did not return a signed URL")
+        return self._absolute_signed_url(signed_path)
+
     def delete_object(self, storage_path: str) -> bool:
         if not self.settings:
             return False
@@ -77,6 +104,24 @@ class SupabaseStorageClient:
         clean_base = self.settings.url.rstrip("/")
         encoded_path = quote(storage_path.strip("/"), safe="/")
         return f"{clean_base}/storage/v1/object/{self.settings.bucket}/{encoded_path}"
+
+    def _sign_url(self, storage_path: str) -> str:
+        assert self.settings is not None
+        clean_base = self.settings.url.rstrip("/")
+        encoded_path = quote(storage_path.strip("/"), safe="/")
+        return f"{clean_base}/storage/v1/object/sign/{self.settings.bucket}/{encoded_path}"
+
+    def _absolute_signed_url(self, signed_path: str) -> str:
+        assert self.settings is not None
+        clean_base = self.settings.url.rstrip("/")
+        clean_path = signed_path.strip()
+        if clean_path.startswith(("https://", "http://")):
+            return clean_path
+        if clean_path.startswith("/storage/v1/"):
+            return f"{clean_base}{clean_path}"
+        if clean_path.startswith("/object/"):
+            return f"{clean_base}/storage/v1{clean_path}"
+        return f"{clean_base}/{clean_path.lstrip('/')}"
 
     def _bucket_url(self) -> str:
         assert self.settings is not None

@@ -74,3 +74,24 @@ def test_job_description_upload_and_delete_use_supabase_storage(client, monkeypa
     delete_response = client.delete(f"/api/job-descriptions/{jd['id']}", headers=headers)
     assert delete_response.status_code == 204
     assert jd["storage_path"] in fake_storage.deleted
+
+
+def test_supabase_storage_client_builds_absolute_signed_url(monkeypatch):
+    from app.services.storage import SupabaseStorageClient, SupabaseStorageSettings
+
+    storage = SupabaseStorageClient(
+        SupabaseStorageSettings(
+            url="https://project.supabase.co",
+            service_role_key="test-service-key",
+            bucket="career-documents",
+        )
+    )
+    monkeypatch.setattr(
+        storage,
+        "_send",
+        lambda request, expected_statuses: b'{"signedURL":"/object/sign/career-documents/users/1/resumes/cv.pdf?token=abc"}',
+    )
+
+    access_url = storage.create_signed_url("users/1/resumes/cv.pdf", 300)
+
+    assert access_url == "https://project.supabase.co/storage/v1/object/sign/career-documents/users/1/resumes/cv.pdf?token=abc"

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -9,7 +10,7 @@ from app.core.errors import raise_app_error
 from app.database import get_db
 from app.models.resume import Resume
 from app.models.user import User
-from app.schemas.resume import ResumeResponse
+from app.schemas.resume import ResumeAccessUrlResponse, ResumeResponse
 from app.services.security import get_current_user
 from app.services.storage import build_resume_storage_path, get_storage_service
 from app.services.usage_tracking import EVENT_RESUME_UPLOADED, track_usage_event
@@ -19,6 +20,7 @@ logger = logging.getLogger("careeros_api.resumes")
 
 MAX_RESUME_SIZE_BYTES = 5 * 1024 * 1024
 UPLOAD_ROOT = Path("uploads/resumes")
+RESUME_ACCESS_URL_EXPIRES_IN_SECONDS = 300
 
 
 def _safe_file_name(file_name: str) -> str:
@@ -79,6 +81,59 @@ async def upload_resume(
 @router.get("/me", response_model=list[ResumeResponse])
 def get_my_resumes(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> list[Resume]:
     return db.query(Resume).filter(Resume.user_id == current_user.id).order_by(Resume.created_at.desc()).all()
+
+
+@router.get("/{resume_id}/access-url", response_model=ResumeAccessUrlResponse)
+def get_resume_access_url(
+    resume_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ResumeAccessUrlResponse:
+    resume = _get_user_resume(resume_id, current_user.id, db)
+    if not resume.storage_path.strip():
+        raise_app_error(
+            status.HTTP_409_CONFLICT,
+            "CV chưa có đường dẫn lưu trữ hợp lệ.",
+            "RESUME_STORAGE_PATH_MISSING",
+        )
+
+    storage = get_storage_service()
+    if not storage.enabled:
+        raise_app_error(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Chưa thể tạo liên kết xem CV trong môi trường lưu trữ hiện tại.",
+            "RESUME_ACCESS_UNAVAILABLE",
+        )
+
+    try:
+        access_url = storage.create_signed_url(
+            resume.storage_path,
+            RESUME_ACCESS_URL_EXPIRES_IN_SECONDS,
+        )
+    except (RuntimeError, ValueError):
+        logger.exception(
+            "Could not create resume signed URL",
+            extra={"user_id": current_user.id, "resume_id": resume.id},
+        )
+        raise_app_error(
+            status.HTTP_502_BAD_GATEWAY,
+            "Không thể tạo liên kết xem CV. Vui lòng thử lại.",
+            "RESUME_ACCESS_URL_FAILED",
+        )
+
+    expires_at = datetime.now(timezone.utc) + timedelta(seconds=RESUME_ACCESS_URL_EXPIRES_IN_SECONDS)
+    logger.info(
+        "Resume access URL created",
+        extra={"user_id": current_user.id, "resume_id": resume.id},
+    )
+    return ResumeAccessUrlResponse(
+        resume_id=resume.id,
+        access_url=access_url,
+        expires_in_seconds=RESUME_ACCESS_URL_EXPIRES_IN_SECONDS,
+        expires_at=expires_at,
+        storage_provider="supabase",
+        download_filename=resume.file_name,
+    )
 
 
 @router.delete("/{resume_id}", status_code=status.HTTP_204_NO_CONTENT)
