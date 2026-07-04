@@ -230,12 +230,34 @@ def _actions_for_week(skills: list[str], improvement_plan: list[str], target_rol
         matching_action = next((action for action in improvement_plan if skill.lower() in action.lower()), None)
         selected_actions.append(matching_action or _generic_skill_action(skill))
 
-    selected_actions.append(
-        f"T\u1ea1o m\u1ed9t artifact nh\u1ecf ch\u1ee9ng minh k\u1ef9 n\u0103ng n\u00e0y cho {target_role}: commit, README, API route, m\u00e0n h\u00ecnh UI, notebook ho\u1eb7c test case."
-    )
+    selected_actions.append(_artifact_action_for_role(target_role))
     if current_level.lower() in {"fresher", "junior", "beginner", "entry level", "intern"}:
-        selected_actions.append("Vi\u1ebft README ng\u1eafn: b\u00e0i to\u00e1n, c\u00e1ch ti\u1ebfp c\u1eadn, l\u1ed7i \u0111\u00e3 x\u1eed l\u00fd v\u00e0 ph\u1ea7n b\u1ea1n c\u00f3 th\u1ec3 gi\u1ea3i th\u00edch khi ph\u1ecfng v\u1ea5n.")
+        selected_actions.append(
+            "Viết README ngắn: bài toán, cách tiếp cận, lỗi đã xử lý và phần bạn có thể giải thích khi phỏng vấn."
+        )
     return _dedupe(selected_actions)[:4]
+
+
+def _artifact_action_for_role(target_role: str) -> str:
+    role_context = _detect_role_context(target_role)
+    if "backend" in role_context and "frontend" not in role_context:
+        return (
+            "Tạo một artifact Backend nhỏ để chứng minh kỹ năng: commit, README, API route, "
+            "database migration hoặc test case phù hợp."
+        )
+    if "frontend" in role_context and "backend" not in role_context:
+        return (
+            "Tạo một artifact Frontend nhỏ để chứng minh kỹ năng: commit, README, component, "
+            "luồng giao diện hoặc test UI phù hợp."
+        )
+    if "ai" in role_context:
+        return (
+            "Tạo một artifact AI/Data nhỏ để chứng minh kỹ năng: notebook, script, README, "
+            "metric đánh giá hoặc ghi chú thí nghiệm."
+        )
+    return (
+        f"Tạo một artifact nhỏ phù hợp với {target_role}: commit, README, demo hoặc test case có thể kiểm chứng."
+    )
 
 
 def _practice_task_for_skills(skills: list[str], target_role: str) -> str:
@@ -244,7 +266,7 @@ def _practice_task_for_skills(skills: list[str], target_role: str) -> str:
         return "X\u00e2y d\u1ef1ng login/register, m\u1ed9t protected endpoint v\u00e0 m\u1ed9t ki\u1ec3m tra ph\u00e2n quy\u1ec1n theo role."
     if {"api", "rest api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}.intersection(skill_set):
         return "X\u00e2y d\u1ef1ng m\u1ed9t CRUD API nh\u1ecf c\u00f3 validation, error response v\u00e0 README ng\u1eafn cho endpoint."
-    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
+    if {"database", "sql", "orm", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
         return "Thi\u1ebft k\u1ebf schema nh\u1ecf, seed d\u1eef li\u1ec7u m\u1eabu v\u00e0 vi\u1ebft 3-5 query ph\u1ee5c v\u1ee5 m\u1ed9t t\u00ednh n\u0103ng th\u1ef1c t\u1ebf."
     if {"react", "next.js", "typescript", "javascript", "tailwind", "html", "css"}.intersection(skill_set):
         return "X\u00e2y d\u1ef1ng m\u1ed9t lu\u1ed3ng giao di\u1ec7n responsive c\u00f3 form state, t\u00edch h\u1ee3p API, loading state v\u00e0 error state."
@@ -263,7 +285,7 @@ def _cv_evidence_for_skills(skills: list[str], target_role: str) -> str:
         return "N\u1ebfu ho\u00e0n th\u00e0nh task n\u00e0y, b\u1ea1n c\u00f3 th\u1ec3 th\u00eam bullet: \'Implemented authentication/JWT flow for protected API endpoints.\'"
     if {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 vi\u1ec7c x\u00e2y d\u1ef1ng API endpoints c\u00f3 validation, error handling v\u00e0 t\u00edch h\u1ee3p d\u1eef li\u1ec7u."
-    if {"database", "sql", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
+    if {"database", "sql", "orm", "postgresql", "mysql", "mongodb"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 schema/query v\u00e0 c\u00e1ch database h\u1ed7 tr\u1ee3 m\u1ed9t t\u00ednh n\u0103ng c\u1ee5 th\u1ec3."
     if {"react", "next.js", "typescript", "tailwind"}.intersection(skill_set):
         return "N\u1ebfu \u0111\u00fang v\u1edbi ph\u1ea7n b\u1ea1n \u0111\u00e3 l\u00e0m, h\u00e3y th\u00eam bullet v\u1ec1 vi\u1ec7c x\u00e2y d\u1ef1ng UI responsive v\u00e0 t\u00edch h\u1ee3p v\u1edbi REST APIs."
@@ -278,7 +300,7 @@ def _interview_questions_for_skills(skills: list[str], target_role: str) -> list
             questions.extend(["JWT authentication ho\u1ea1t \u0111\u1ed9ng nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n s\u1ebd b\u1ea3o v\u1ec7 endpoint theo role nh\u01b0 th\u1ebf n\u00e0o?"])
         elif normalized_skill in {"api", "rest api", "fastapi", "asp.net core", "node.js", "express"}:
             questions.extend(["B\u1ea1n thi\u1ebft k\u1ebf m\u1ed9t API endpoint r\u00f5 r\u00e0ng nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n x\u1eed l\u00fd validation v\u00e0 l\u1ed7i nh\u01b0 th\u1ebf n\u00e0o?"])
-        elif normalized_skill in {"database", "sql", "postgresql", "mysql", "mongodb"}:
+        elif normalized_skill in {"database", "sql", "orm", "postgresql", "mysql", "mongodb"}:
             questions.extend(["B\u1ea1n s\u1ebd thi\u1ebft k\u1ebf schema cho t\u00ednh n\u0103ng n\u00e0y nh\u01b0 th\u1ebf n\u00e0o?", "B\u1ea1n tr\u00e1nh query k\u00e9m hi\u1ec7u qu\u1ea3 nh\u01b0 th\u1ebf n\u00e0o?"])
         elif normalized_skill in {"react", "next.js", "typescript", "javascript"}:
             questions.extend(["B\u1ea1n qu\u1ea3n l\u00fd loading state v\u00e0 error state trong UI nh\u01b0 th\u1ebf n\u00e0o?", "Component g\u1ecdi backend API an to\u00e0n nh\u01b0 th\u1ebf n\u00e0o?"])
@@ -317,8 +339,19 @@ def _fallback_actions(week_number: int, target_role: str) -> list[str]:
 
 def _fallback_practice_task(week_number: int, target_role: str) -> str:
     if week_number == 1:
-        return f"T\u1ea1o checklist m\u1ed9t trang g\u1ed3m 5 y\u00eau c\u1ea7u quan tr\u1ecdng nh\u1ea5t c\u1ee7a {target_role} v\u00e0 map t\u1eebng y\u00eau c\u1ea7u v\u1edbi evidence hi\u1ec7n c\u00f3 trong CV."
-    return "C\u1ea3i thi\u1ec7n m\u1ed9t artifact s\u1eb5n c\u00f3 c\u1ee7a project: README, demo flow, test case, API endpoint, UI state ho\u1eb7c ph\u1ea7n gi\u1ea3i th\u00edch notebook."
+        return (
+            f"Tạo checklist một trang gồm 5 yêu cầu quan trọng nhất của {target_role} "
+            "và đối chiếu từng yêu cầu với minh chứng hiện có trong CV."
+        )
+
+    role_context = _detect_role_context(target_role)
+    if "backend" in role_context and "frontend" not in role_context:
+        return "Cải thiện một artifact Backend sẵn có: README, API endpoint, database query, validation hoặc test case."
+    if "frontend" in role_context and "backend" not in role_context:
+        return "Cải thiện một artifact Frontend sẵn có: README, component, luồng giao diện, API state hoặc test UI."
+    if "ai" in role_context:
+        return "Cải thiện một artifact AI/Data sẵn có: README, notebook, pipeline dữ liệu, metric hoặc phần giải thích kết quả."
+    return "Cải thiện một artifact dự án sẵn có bằng README, demo, test case hoặc phần giải thích kỹ thuật rõ ràng hơn."
 
 
 def _fallback_cv_evidence(week_number: int, target_role: str) -> str:
@@ -372,7 +405,7 @@ def _generic_skill_action(skill: str) -> str:
         return f"\u00c1p d\u1ee5ng {skill} theo c\u00e1ch th\u1ef1c t\u1ebf: setup, l\u1ec7nh ch\u1ea1y local, l\u1ed7i th\u01b0\u1eddng g\u1eb7p v\u00e0 ghi ch\u00fa README."
     if normalized_skill in {"rest api", "api", "fastapi", "django", "flask", "node.js", "express", "asp.net core"}:
         return f"X\u00e2y d\u1ef1ng m\u1ed9t flow {skill} nh\u1ecf: CRUD, validation, error handling v\u00e0 t\u00e0i li\u1ec7u endpoint."
-    if normalized_skill in {"postgresql", "mysql", "mongodb", "sql", "database"}:
+    if normalized_skill in {"postgresql", "mysql", "mongodb", "sql", "orm", "database"}:
         return f"T\u1ea1o v\u00ed d\u1ee5 database cho {skill}: schema, query ch\u00ednh v\u00e0 t\u00edch h\u1ee3p v\u00e0o t\u00ednh n\u0103ng."
     if normalized_skill in {"authentication", "jwt", "oauth"}:
         return f"Tri\u1ec3n khai auth flow nh\u1ecf v\u1edbi {skill}: login, protected route v\u00e0 l\u1ed7i permission th\u01b0\u1eddng g\u1eb7p."

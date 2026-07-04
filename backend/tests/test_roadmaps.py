@@ -1,6 +1,7 @@
 import pytest
 
 from conftest import auth_headers, create_analysis, create_profile
+from app.services.roadmap_generator import build_roadmap_from_analysis
 
 
 def test_generate_roadmap_from_career_profile(client):
@@ -136,3 +137,56 @@ def test_update_latest_roadmap_item_completion_rejects_missing_item(client):
 
     assert update_response.status_code == 404
 
+def test_backend_roadmap_sql_orm_node_does_not_generate_frontend_actions():
+    roadmap = build_roadmap_from_analysis(
+        target_role="Backend Intern",
+        current_level="Intern",
+        timeline="3 tuần",
+        prioritized_missing_skills={
+            "high_priority": ["Node.js", "SQL", "ORM"],
+            "medium_priority": [],
+            "low_priority": [],
+        },
+        improvement_plan=[],
+        critical_skills=["Node.js", "SQL", "ORM"],
+        role_family="backend",
+        stack_groups=["node_backend"],
+    )
+
+    flattened = " ".join(
+        " ".join(
+            [
+                str(item["practice_task"]),
+                *[str(action) for action in item["actions"]],
+            ]
+        )
+        for item in roadmap["items"]
+    )
+    assert "màn hình UI" not in flattened
+    assert "component" not in flattened.lower()
+    assert "css" not in flattened.lower()
+    assert "html" not in flattened.lower()
+    assert "API" in flattened or "database" in flattened
+
+
+def test_frontend_roadmap_keeps_frontend_practice_for_frontend_skills():
+    roadmap = build_roadmap_from_analysis(
+        target_role="Frontend Intern",
+        current_level="Intern",
+        timeline="2 tuần",
+        prioritized_missing_skills={
+            "high_priority": ["React", "CSS"],
+            "medium_priority": [],
+            "low_priority": [],
+        },
+        improvement_plan=[],
+        critical_skills=["React", "CSS"],
+        role_family="frontend",
+        stack_groups=["react_frontend"],
+    )
+
+    generated_text = " ".join(
+        str(item["practice_task"]) + " " + " ".join(str(action) for action in item["actions"])
+        for item in roadmap["items"]
+    )
+    assert "giao diện" in generated_text.lower() or "frontend" in generated_text.lower()

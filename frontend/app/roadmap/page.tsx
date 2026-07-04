@@ -274,6 +274,7 @@ export default function RoadmapPage() {
                 updatingItemIndex={updatingItemIndex}
               />
               <FeedbackBlock token={token} feedbackType="roadmap" />
+              <RoadmapNextActions />
             </>
           ) : <EmptyRoadmap />}
         </div>
@@ -309,47 +310,64 @@ function EmptyRoadmap() {
 function RoadmapCard({ roadmap, title, compact = false, onSelect, onToggleItem, updatingItemIndex }: { roadmap: LearningRoadmap; title?: string; compact?: boolean; onSelect?: () => void; onToggleItem?: (itemIndex: number, completed: boolean) => void; updatingItemIndex?: number | null }) {
   const completedCount = roadmap.items.filter((item) => item.completed === true).length;
 
+  if (compact) {
+    return (
+      <article className="min-w-0 rounded-lg border border-white/10 bg-slate-950/60 p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h3 className="break-words text-base font-semibold text-slate-100">{formatRoadmapText(roadmap.title)}</h3>
+            <p className="mt-1 text-xs text-slate-500">Tạo lúc {new Date(roadmap.created_at).toLocaleString("vi-VN")}</p>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-300">
+              <span>Thời gian: {formatRoadmapText(roadmap.timeline)}</span>
+              <span>{roadmap.items.length} bước học tập</span>
+              <span>Đã hoàn thành {completedCount}/{roadmap.items.length}</span>
+            </div>
+          </div>
+          <button type="button" onClick={onSelect} className="shrink-0 rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
+            {TEXT.viewRoadmap}
+          </button>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className="min-w-0 rounded-lg border border-white/10 bg-slate-950/60 p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">{title ?? TEXT.roadmapLearning}</p>
-          <h3 className="mt-2 break-words text-lg font-semibold text-slate-100">{roadmap.title}</h3>
+          <h3 className="mt-2 break-words text-lg font-semibold text-slate-100">{formatRoadmapText(roadmap.title)}</h3>
           <p className="mt-1 text-xs text-slate-500">{TEXT.createdAt} {new Date(roadmap.created_at).toLocaleString("vi-VN")}</p>
         </div>
         <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Timeline</p>
-          <p className="mt-1 text-sm font-bold">{roadmap.timeline}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em]">Thời gian</p>
+          <p className="mt-1 text-sm font-bold">{formatRoadmapText(roadmap.timeline)}</p>
         </div>
       </div>
 
-      <p className="mt-4 break-words text-sm leading-6 text-slate-300">{roadmap.summary}</p>
+      <section className="mt-4 rounded-md border border-cyan-300/20 bg-cyan-300/5 p-4">
+        <h4 className="text-sm font-semibold text-cyan-100">Mục tiêu roadmap này</h4>
+        <p className="mt-2 break-words text-sm leading-6 text-slate-300">{buildRoadmapGoal(roadmap)}</p>
+      </section>
+
+      <p className="mt-4 break-words text-sm leading-6 text-slate-300">{formatRoadmapText(roadmap.summary)}</p>
       {roadmap.items.length > 0 ? (
         <p className="mt-3 rounded-md border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100">
           {TEXT.progressSummary} {completedCount}/{roadmap.items.length} {TEXT.roadmapItems}
         </p>
       ) : null}
 
-      {!compact ? (
-        <div className="mt-5 space-y-4">
-          {roadmap.items.map((item, itemIndex) => (
-            <RoadmapItemCard
-              key={`${roadmap.id}-${item.week}-${item.focus}-${itemIndex}`}
-              item={item}
-              itemIndex={itemIndex}
-              onToggleItem={onToggleItem}
-              isUpdating={updatingItemIndex === itemIndex}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-400">{roadmap.items.length} {TEXT.steps}</p>
-          <button type="button" onClick={onSelect} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-            {TEXT.viewRoadmap}
-          </button>
-        </div>
-      )}
+      <div className="mt-5 space-y-4">
+        {roadmap.items.map((item, itemIndex) => (
+          <RoadmapItemCard
+            key={`${roadmap.id}-${item.week}-${item.focus}-${itemIndex}`}
+            item={item}
+            itemIndex={itemIndex}
+            onToggleItem={onToggleItem}
+            isUpdating={updatingItemIndex === itemIndex}
+          />
+        ))}
+      </div>
     </article>
   );
 }
@@ -364,14 +382,14 @@ function RoadmapItemCard({ item, itemIndex, onToggleItem, isUpdating = false }: 
   }[priority] ?? "border-slate-300/20 bg-slate-300/10 text-slate-100";
 
   return (
-    <section className="min-w-0 rounded-md border border-white/10 bg-white/5 p-4">
+    <section className={`min-w-0 rounded-md border p-4 ${isCompleted ? "border-emerald-300/20 bg-emerald-300/5" : "border-white/10 bg-white/5"}`}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{item.week}</p>
-          <h4 className="mt-1 break-words text-base font-semibold text-slate-100">{item.learning_focus ?? item.focus}</h4>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{formatRoadmapText(item.week)}</p>
+          <h4 className="mt-1 break-words text-base font-semibold text-slate-100">{formatRoadmapText(item.learning_focus ?? item.focus)}</h4>
         </div>
-        <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
-          <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] ${priorityClass}`}>
+        <div className="flex shrink-0 flex-row flex-wrap gap-2 sm:justify-end">
+          <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${priorityClass}`}>
             {PRIORITY_LABELS[priority] ?? priority}
           </span>
           <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold ${isCompleted ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-100" : "border-slate-300/20 bg-slate-300/10 text-slate-300"}`}>
@@ -386,8 +404,8 @@ function RoadmapItemCard({ item, itemIndex, onToggleItem, isUpdating = false }: 
           <p className="mt-2 text-sm text-slate-500">{TEXT.noSkillFocus}</p>
         ) : (
           <div className="mt-2 flex flex-wrap gap-2">
-            {item.skills.map((skill) => (
-              <span key={skill} className="break-words rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-100">
+            {item.skills.map((skill, skillIndex) => (
+              <span key={`${skillIndex}-${skill}`} className="max-w-full break-words rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-100">
                 {skill}
               </span>
             ))}
@@ -395,30 +413,35 @@ function RoadmapItemCard({ item, itemIndex, onToggleItem, isUpdating = false }: 
         )}
       </div>
 
-      <InfoPanel title={TEXT.practiceTask} value={item.practice_task ?? item.actions[0] ?? TEXT.practiceFallback} />
-      <InfoPanel title={TEXT.cvEvidence} value={item.cv_evidence_output ?? item.expected_output} tone="emerald" />
+      <InfoPanel title={TEXT.practiceTask} value={formatRoadmapText(item.practice_task ?? item.actions[0] ?? TEXT.practiceFallback)} />
+      <InfoPanel title={TEXT.cvEvidence} value={formatRoadmapText(item.cv_evidence_output ?? item.expected_output)} tone="emerald" />
 
-      <div className="mt-4">
-        <p className="text-sm font-semibold text-slate-200">{TEXT.actions}</p>
-        <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
-          {item.actions.map((action, actionIndex) => (
-            <li key={`${item.week}-action-${actionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{action}</li>
-          ))}
-        </ul>
-      </div>
+      <details className="group mt-4 rounded-md border border-white/10 bg-slate-950/50">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-sm font-semibold text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+          Xem hành động và nội dung chuẩn bị
+          <span className="text-xs text-slate-500 group-open:hidden">Mở</span>
+          <span className="hidden text-xs text-slate-500 group-open:inline">Thu gọn</span>
+        </summary>
+        <div className="border-t border-white/10 p-3">
+          <p className="text-sm font-semibold text-slate-200">{TEXT.actions}</p>
+          <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
+            {item.actions.map((action, actionIndex) => (
+              <li key={`${item.week}-action-${actionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{formatRoadmapText(action)}</li>
+            ))}
+          </ul>
 
-      <div className="mt-4">
-        <p className="text-sm font-semibold text-slate-200">{TEXT.interviewPrep}</p>
-        <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
-          {(item.interview_prep?.length ? item.interview_prep : [TEXT.interviewFallback]).map((question, questionIndex) => (
-            <li key={`${item.week}-question-${questionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{question}</li>
-          ))}
-        </ul>
-      </div>
+          <p className="mt-4 text-sm font-semibold text-slate-200">{TEXT.interviewPrep}</p>
+          <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-300">
+            {(item.interview_prep?.length ? item.interview_prep : [TEXT.interviewFallback]).map((question, questionIndex) => (
+              <li key={`${item.week}-question-${questionIndex}`} className="break-words rounded-md border border-white/10 bg-slate-950/70 p-3">{formatRoadmapText(question)}</li>
+            ))}
+          </ul>
 
-      <div className="mt-4 rounded-md border border-emerald-300/20 bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">
-        <span className="font-semibold">{TEXT.expectedOutput}:</span> {item.expected_output}
-      </div>
+          <div className="mt-4 rounded-md border border-emerald-300/20 bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">
+            <span className="font-semibold">{TEXT.expectedOutput}:</span> {formatRoadmapText(item.expected_output)}
+          </div>
+        </div>
+      </details>
 
       {onToggleItem ? (
         <button
@@ -432,6 +455,50 @@ function RoadmapItemCard({ item, itemIndex, onToggleItem, isUpdating = false }: 
       ) : null}
     </section>
   );
+}
+
+function RoadmapNextActions() {
+  const actions = [
+    { href: "/interview", label: "Luyện Mock Interview" },
+    { href: "/analysis", label: "Chạy lại Resume ↔ JD Matching" },
+    { href: "/documents", label: "Quản lý CV/JD" }
+  ];
+  return (
+    <section className="rounded-lg border border-cyan-300/20 bg-cyan-300/5 p-5">
+      <h2 className="text-base font-semibold text-cyan-100">Tiếp theo nên làm gì?</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-300">Chọn bước phù hợp để tiếp tục kiểm tra và cải thiện mức độ sẵn sàng của bạn.</p>
+      <div className="mt-4 flex flex-wrap gap-3">
+        {actions.map((action) => (
+          <Link key={action.href} href={action.href} className="rounded-md border border-cyan-300/30 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/10">
+            {action.label}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function buildRoadmapGoal(roadmap: LearningRoadmap) {
+  const skills = Array.from(new Set(roadmap.items.flatMap((item) => item.skills))).slice(0, 3);
+  if (skills.length === 0) {
+    return "Roadmap này giúp bạn chuyển các khoảng trống kỹ năng thành việc cần làm cụ thể.";
+  }
+  const role = formatRoadmapText(roadmap.target_role || "vai trò mục tiêu");
+  return `Trong ${formatRoadmapText(roadmap.timeline)}, roadmap này tập trung giúp bạn chứng minh ${skills.join(", ")} bằng bài thực hành phù hợp với ${role}, cùng README, commit và mô tả CV rõ ràng.`;
+}
+
+function formatRoadmapText(value?: string | null) {
+  if (!value) return "";
+  return value
+    .replace(/\bTimeline\b/gi, "Thời gian")
+    .replace(/\bCV alignment\b/gi, "mức độ khớp với CV")
+    .replace(/\bproduction-ready\b/gi, "sẵn sàng dùng thực tế")
+    .replace(/\bpractice task\b/gi, "bài thực hành")
+    .replace(/\bexpected output\b/gi, "kết quả mong đợi")
+    .replace(/\binterview prep\b/gi, "chuẩn bị phỏng vấn")
+    .replace(/\bthe target skill\b/gi, "kỹ năng mục tiêu")
+    .replace(/\bevidence\b/gi, "minh chứng")
+    .replace(/\boutput\b/gi, "kết quả");
 }
 
 function InfoPanel({ title, value, tone = "slate" }: { title: string; value: string; tone?: "slate" | "emerald" }) {
