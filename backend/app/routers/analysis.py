@@ -92,6 +92,33 @@ def get_analysis_history(current_user: User = Depends(get_current_user), db: Ses
     return [_to_response(analysis) for analysis in analyses]
 
 
+@router.delete("/{analysis_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_analysis(
+    analysis_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    analysis = (
+        db.query(MatchAnalysis)
+        .filter(MatchAnalysis.id == analysis_id, MatchAnalysis.user_id == current_user.id)
+        .first()
+    )
+    if analysis is None:
+        logger.warning(
+            "Analysis delete rejected: analysis not found",
+            extra={"user_id": current_user.id, "analysis_id": analysis_id},
+        )
+        raise_app_error(
+            status.HTTP_404_NOT_FOUND,
+            "Không tìm thấy kết quả phân tích.",
+            "ANALYSIS_NOT_FOUND",
+        )
+
+    db.delete(analysis)
+    db.commit()
+    logger.info("Analysis deleted", extra={"user_id": current_user.id, "analysis_id": analysis_id})
+
+
 def _load_json_list(value: str) -> list[str]:
     parsed = json.loads(value)
     if not isinstance(parsed, list):

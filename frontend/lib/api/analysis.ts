@@ -129,3 +129,12 @@ export function runResumeJobMatch(token: string, payload: ResumeJobMatchPayload)
 export function getAnalysisHistory(token: string): Promise<MatchAnalysis[]> {
   return analysisRequest<MatchAnalysis[]>("/api/analysis/history", token);
 }
+
+export async function deleteAnalysis(token: string, analysisId: number): Promise<void> {
+  await apiFetch(`${API_URL}/api/analysis/${analysisId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }, "Không thể xóa kết quả phân tích.");
+}

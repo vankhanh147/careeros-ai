@@ -215,3 +215,34 @@ def test_resume_feedback_u10_does_not_hallucinate_backend_skills(monkeypatch):
     assert "Developed ASP.NET Core backend APIs" not in all_suggested
     assert "If you actually" in all_suggested or "If you have" in all_suggested
 
+def test_delete_analysis_removes_only_owned_analysis(client):
+    headers = auth_headers(client)
+    analysis = create_analysis(client, headers)
+
+    response = client.delete(f"/api/analysis/{analysis['id']}", headers=headers)
+
+    assert response.status_code == 204
+    assert all(item["id"] != analysis["id"] for item in client.get("/api/analysis/history", headers=headers).json())
+    assert client.get("/api/resumes/me", headers=headers).json()
+    assert client.get("/api/job-descriptions/me", headers=headers).json()
+
+
+def test_delete_analysis_owned_by_another_user_returns_404(client):
+    owner_headers = auth_headers(client, email="owner@example.com")
+    analysis = create_analysis(client, owner_headers)
+    other_headers = auth_headers(client, email="other@example.com")
+
+    response = client.delete(f"/api/analysis/{analysis['id']}", headers=other_headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "ANALYSIS_NOT_FOUND"
+    assert any(item["id"] == analysis["id"] for item in client.get("/api/analysis/history", headers=owner_headers).json())
+
+
+def test_delete_missing_analysis_returns_404(client):
+    headers = auth_headers(client)
+
+    response = client.delete("/api/analysis/99999", headers=headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "ANALYSIS_NOT_FOUND"

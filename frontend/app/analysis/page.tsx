@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { getAnalysisHistory, runResumeJobMatch, type MatchAnalysis } from "@/lib/api/analysis";
+import { deleteAnalysis, getAnalysisHistory, runResumeJobMatch, type MatchAnalysis } from "@/lib/api/analysis";
 import { getMyJobDescriptions, getMyResumes, type JobDescription, type Resume } from "@/lib/api/documents";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { FeedbackBlock } from "@/components/FeedbackBlock";
@@ -22,6 +22,7 @@ export default function AnalysisPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [isFetching, setIsFetching] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [deletingAnalysisId, setDeletingAnalysisId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -81,6 +82,30 @@ export default function AnalysisPage() {
     [jobDescriptions, selectedJobDescriptionId]
   );
   const canRunAnalysis = Boolean(selectedResumeId && selectedJobDescriptionId) && !isAnalyzing;
+
+  async function handleDeleteAnalysis(analysisId: number) {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+    if (!window.confirm("Bạn có chắc muốn xóa kết quả phân tích này không?")) {
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setDeletingAnalysisId(analysisId);
+    try {
+      await deleteAnalysis(token, analysisId);
+      setHistory((current) => current.filter((item) => item.id !== analysisId));
+      setCurrentResult((current) => current?.id === analysisId ? null : current);
+      setStatusMessage("Đã xóa kết quả phân tích.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa kết quả phân tích. Vui lòng thử lại.");
+    } finally {
+      setDeletingAnalysisId(null);
+    }
+  }
 
   async function handleRunAnalysis(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -219,7 +244,15 @@ export default function AnalysisPage() {
             {history.length === 0 ? (
               <p className="text-sm leading-6 text-slate-400">Chưa có kết quả phân tích. Hãy chạy Resume ↔ JD Matching để xem điểm phù hợp, khoảng trống kỹ năng và gợi ý cải thiện.</p>
             ) : (
-              history.map((analysis) => <AnalysisResultCard key={analysis.id} analysis={analysis} compact />)
+              history.map((analysis) => (
+                <AnalysisResultCard
+                  key={analysis.id}
+                  analysis={analysis}
+                  compact
+                  onDelete={handleDeleteAnalysis}
+                  isDeleting={deletingAnalysisId === analysis.id}
+                />
+              ))
             )}
           </div>
         </div>
@@ -239,7 +272,19 @@ function EmptyResult() {
   );
 }
 
-function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compact = false }: { analysis: MatchAnalysis; title?: string; compact?: boolean }) {
+function AnalysisResultCard({
+  analysis,
+  title = "Kết quả phân tích",
+  compact = false,
+  onDelete,
+  isDeleting = false
+}: {
+  analysis: MatchAnalysis;
+  title?: string;
+  compact?: boolean;
+  onDelete?: (analysisId: number) => void;
+  isDeleting?: boolean;
+}) {
   const scoreMeaning = getScoreMeaning(analysis.match_score);
   const criticalGapCount = analysis.prioritized_missing_skills.high_priority.length;
 
@@ -249,6 +294,16 @@ function AnalysisResultCard({ analysis, title = "Kết quả phân tích", compa
         <div className="min-w-0">
           <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(analysis.created_at).toLocaleString("vi-VN")}</p>
+          {compact && onDelete ? (
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={() => onDelete(analysis.id)}
+              className="mt-3 rounded-md border border-red-300/20 px-3 py-1.5 text-xs font-semibold text-red-200 transition hover:bg-red-300/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isDeleting ? "Đang xóa..." : "Xóa"}
+            </button>
+          ) : null}
         </div>
         <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
           <p className="text-xs font-semibold uppercase tracking-[0.16em]">Điểm phù hợp</p>
@@ -598,6 +653,9 @@ function formatAnalysisText(value?: string | null) {
 
   const patterns: Array<[RegExp, (match: RegExpMatchArray) => string]> = [
     [/^Missing evidence for (.+)$/i, (m) => `Thiếu minh chứng cho kỹ năng ${m[1]}`],
+    [/^JD requires (.+), but the CV does not show clear evidence for it yet\.$/i, (m) => `JD yêu cầu ${m[1]}, nhưng CV chưa thể hiện minh chứng rõ ràng cho kỹ năng này.`],
+    [/^The CV has evidence for (.+), but the strongest bullet can be more explicit\.$/i, (m) => `CV đã có minh chứng cho ${m[1]}, nhưng nội dung nổi bật nhất vẫn có thể được diễn đạt cụ thể hơn.`],
+    [/^The CV currently reads closer to (.+), while the JD is closer to (.+)\.$/i, (m) => `CV hiện thể hiện gần với ${formatRole(m[1])}, trong khi JD gần với ${formatRole(m[2])}.`],
     [/^Critical JD skills to prove first: (.+)\.$/i, (m) => `Các kỹ năng quan trọng trong JD cần chứng minh trước: ${m[1]}.`],
     [/^Role alignment needs attention: CV currently looks closer to (.+), while this JD looks closer to (.+)\.$/i, (m) => `Cần chú ý độ khớp vai trò: CV hiện gần với ${formatRole(m[1])}, trong khi JD gần với ${formatRole(m[2])}.`],
     [/^For a (.+) role, recruiters usually look for proof of role-critical skills, not only adjacent experience\.$/i, (m) => `Với vai trò ${formatRole(m[1])}, nhà tuyển dụng thường tìm minh chứng cho kỹ năng cốt lõi, không chỉ kinh nghiệm liên quan gián tiếp.`],
