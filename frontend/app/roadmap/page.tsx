@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { FeedbackBlock } from "@/components/FeedbackBlock";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
-import { generateRoadmap, getMyRoadmaps, updateLatestRoadmapItemCompletion, type LearningRoadmap } from "@/lib/api/roadmaps";
+import { deleteRoadmap, generateRoadmap, getMyRoadmaps, updateLatestRoadmapItemCompletion, type LearningRoadmap } from "@/lib/api/roadmaps";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 const TEXT = {
@@ -77,6 +77,7 @@ export default function RoadmapPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [updatingItemIndex, setUpdatingItemIndex] = useState<number | null>(null);
+  const [deletingRoadmapId, setDeletingRoadmapId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -155,6 +156,34 @@ export default function RoadmapPage() {
       setError(err instanceof Error ? err.message : TEXT.createError);
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function handleDeleteRoadmap(roadmapId: number) {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+    const confirmed = window.confirm(
+      "Bạn có chắc muốn xóa roadmap này không? Việc này chỉ xóa roadmap, không xóa CV, JD hoặc kết quả phân tích."
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setDeletingRoadmapId(roadmapId);
+    try {
+      await deleteRoadmap(token, roadmapId);
+      const remainingRoadmaps = roadmaps.filter((roadmap) => roadmap.id !== roadmapId);
+      setRoadmaps(remainingRoadmaps);
+      setCurrentRoadmap((current) => current?.id === roadmapId ? (remainingRoadmaps[0] ?? null) : current);
+      setStatusMessage("Đã xóa roadmap.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa roadmap. Vui lòng thử lại.");
+    } finally {
+      setDeletingRoadmapId(null);
     }
   }
 
@@ -288,7 +317,14 @@ export default function RoadmapPage() {
               <p className="text-sm leading-6 text-slate-400">{TEXT.emptyHistory}</p>
             ) : (
               roadmaps.map((roadmap) => (
-                <RoadmapCard key={roadmap.id} roadmap={roadmap} compact onSelect={() => setCurrentRoadmap(roadmap)} />
+                <RoadmapCard
+                  key={roadmap.id}
+                  roadmap={roadmap}
+                  compact
+                  onSelect={() => setCurrentRoadmap(roadmap)}
+                  onDelete={handleDeleteRoadmap}
+                  isDeleting={deletingRoadmapId === roadmap.id}
+                />
               ))
             )}
           </div>
@@ -307,7 +343,25 @@ function EmptyRoadmap() {
   );
 }
 
-function RoadmapCard({ roadmap, title, compact = false, onSelect, onToggleItem, updatingItemIndex }: { roadmap: LearningRoadmap; title?: string; compact?: boolean; onSelect?: () => void; onToggleItem?: (itemIndex: number, completed: boolean) => void; updatingItemIndex?: number | null }) {
+function RoadmapCard({
+  roadmap,
+  title,
+  compact = false,
+  onSelect,
+  onDelete,
+  isDeleting = false,
+  onToggleItem,
+  updatingItemIndex
+}: {
+  roadmap: LearningRoadmap;
+  title?: string;
+  compact?: boolean;
+  onSelect?: () => void;
+  onDelete?: (roadmapId: number) => void;
+  isDeleting?: boolean;
+  onToggleItem?: (itemIndex: number, completed: boolean) => void;
+  updatingItemIndex?: number | null;
+}) {
   const completedCount = roadmap.items.filter((item) => item.completed === true).length;
 
   if (compact) {
@@ -323,9 +377,21 @@ function RoadmapCard({ roadmap, title, compact = false, onSelect, onToggleItem, 
               <span>Đã hoàn thành {completedCount}/{roadmap.items.length}</span>
             </div>
           </div>
-          <button type="button" onClick={onSelect} className="shrink-0 rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-            {TEXT.viewRoadmap}
-          </button>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <button type="button" onClick={onSelect} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
+              {TEXT.viewRoadmap}
+            </button>
+            {onDelete ? (
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => onDelete(roadmap.id)}
+                className="rounded-md border border-red-300/25 px-4 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-300/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isDeleting ? "Đang xóa..." : "Xóa"}
+              </button>
+            ) : null}
+          </div>
         </div>
       </article>
     );

@@ -190,3 +190,45 @@ def test_frontend_roadmap_keeps_frontend_practice_for_frontend_skills():
         for item in roadmap["items"]
     )
     assert "giao diện" in generated_text.lower() or "frontend" in generated_text.lower()
+
+def test_delete_owned_roadmap_keeps_source_data(client):
+    headers = auth_headers(client)
+    create_profile(client, headers)
+    analysis = create_analysis(client, headers)
+    create_response = client.post(
+        "/api/roadmaps/generate",
+        json={"analysis_id": analysis["id"], "timeline": "2 tuần"},
+        headers=headers,
+    )
+    roadmap = create_response.json()
+
+    response = client.delete(f"/api/roadmaps/{roadmap['id']}", headers=headers)
+
+    assert response.status_code == 204
+    assert all(item["id"] != roadmap["id"] for item in client.get("/api/roadmaps/me", headers=headers).json())
+    assert any(item["id"] == analysis["id"] for item in client.get("/api/analysis/history", headers=headers).json())
+    assert client.get("/api/resumes/me", headers=headers).json()
+    assert client.get("/api/job-descriptions/me", headers=headers).json()
+
+
+def test_delete_roadmap_owned_by_another_user_returns_404(client):
+    owner_headers = auth_headers(client, email="roadmap-owner@example.com")
+    create_profile(client, owner_headers)
+    create_response = client.post("/api/roadmaps/generate", json={"timeline": "1 tuần"}, headers=owner_headers)
+    roadmap = create_response.json()
+    other_headers = auth_headers(client, email="roadmap-other@example.com")
+
+    response = client.delete(f"/api/roadmaps/{roadmap['id']}", headers=other_headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "ROADMAP_NOT_FOUND"
+    assert any(item["id"] == roadmap["id"] for item in client.get("/api/roadmaps/me", headers=owner_headers).json())
+
+
+def test_delete_missing_roadmap_returns_404(client):
+    headers = auth_headers(client)
+
+    response = client.delete("/api/roadmaps/99999", headers=headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "ROADMAP_NOT_FOUND"

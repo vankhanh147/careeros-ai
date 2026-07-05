@@ -67,3 +67,12 @@ export function updateLatestRoadmapItemCompletion(token: string, itemIndex: numb
     body: JSON.stringify({ completed })
   });
 }
+
+export async function deleteRoadmap(token: string, roadmapId: number): Promise<void> {
+  await apiFetch(`${API_URL}/api/roadmaps/${roadmapId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }, "Không thể xóa roadmap.");
+}

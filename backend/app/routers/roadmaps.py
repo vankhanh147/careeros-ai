@@ -139,6 +139,33 @@ def get_roadmap_by_id(roadmap_id: int, current_user: User = Depends(get_current_
     return _to_response(roadmap)
 
 
+@router.delete("/{roadmap_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_roadmap(
+    roadmap_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    roadmap = (
+        db.query(LearningRoadmap)
+        .filter(LearningRoadmap.id == roadmap_id, LearningRoadmap.user_id == current_user.id)
+        .first()
+    )
+    if roadmap is None:
+        logger.warning(
+            "Roadmap delete rejected: roadmap not found",
+            extra={"user_id": current_user.id, "roadmap_id": roadmap_id},
+        )
+        raise_app_error(
+            status.HTTP_404_NOT_FOUND,
+            "Không tìm thấy roadmap.",
+            "ROADMAP_NOT_FOUND",
+        )
+
+    db.delete(roadmap)
+    db.commit()
+    logger.info("Roadmap deleted", extra={"user_id": current_user.id, "roadmap_id": roadmap_id})
+
+
 def _to_response(roadmap: LearningRoadmap) -> LearningRoadmapResponse:
     return LearningRoadmapResponse(
         id=roadmap.id,
