@@ -76,3 +76,12 @@ export function finishInterview(token: string, sessionId: number): Promise<Inter
     method: "POST"
   });
 }
+
+export async function deleteInterviewSession(token: string, sessionId: number): Promise<void> {
+  await apiFetch(`${API_URL}/api/interviews/${sessionId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }, "Không thể xóa phiên phỏng vấn.");
+}

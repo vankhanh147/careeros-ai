@@ -112,3 +112,51 @@ def test_interview_v2_generated_content_avoids_long_english_copy():
 
     forbidden = ["How would you", "What did you", "High-priority", "Practice task", "Expected output"]
     assert not any(phrase in combined for phrase in forbidden)
+
+def test_delete_owned_interview_session_keeps_source_data(client):
+    headers = auth_headers(client)
+    create_profile(client, headers)
+    analysis = create_analysis(client, headers)
+    roadmap_response = client.post(
+        "/api/roadmaps/generate",
+        json={"analysis_id": analysis["id"], "timeline": "2 tuần"},
+        headers=headers,
+    )
+    start_response = client.post(
+        "/api/interviews/start",
+        json={"analysis_id": analysis["id"], "target_role": "Backend Developer"},
+        headers=headers,
+    )
+    session = start_response.json()
+
+    response = client.delete(f"/api/interviews/{session['id']}", headers=headers)
+
+    assert response.status_code == 204
+    assert all(item["id"] != session["id"] for item in client.get("/api/interviews/me", headers=headers).json())
+    assert any(item["id"] == analysis["id"] for item in client.get("/api/analysis/history", headers=headers).json())
+    assert any(item["id"] == roadmap_response.json()["id"] for item in client.get("/api/roadmaps/me", headers=headers).json())
+    assert client.get("/api/resumes/me", headers=headers).json()
+    assert client.get("/api/job-descriptions/me", headers=headers).json()
+
+
+def test_delete_interview_session_owned_by_another_user_returns_404(client):
+    owner_headers = auth_headers(client, email="interview-owner@example.com")
+    create_profile(client, owner_headers)
+    start_response = client.post("/api/interviews/start", json={}, headers=owner_headers)
+    session = start_response.json()
+    other_headers = auth_headers(client, email="interview-other@example.com")
+
+    response = client.delete(f"/api/interviews/{session['id']}", headers=other_headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "INTERVIEW_SESSION_NOT_FOUND"
+    assert any(item["id"] == session["id"] for item in client.get("/api/interviews/me", headers=owner_headers).json())
+
+
+def test_delete_missing_interview_session_returns_404(client):
+    headers = auth_headers(client)
+
+    response = client.delete("/api/interviews/99999", headers=headers)
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "INTERVIEW_SESSION_NOT_FOUND"

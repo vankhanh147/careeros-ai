@@ -78,6 +78,21 @@ def get_interview_session(session_id: int, current_user: User = Depends(get_curr
     return _to_response(session)
 
 
+@router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_interview_session(
+    session_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    session = _get_user_session(db, current_user.id, session_id)
+    db.delete(session)
+    db.commit()
+    logger.info(
+        "Interview session deleted",
+        extra={"user_id": current_user.id, "session_id": session_id},
+    )
+
+
 @router.post("/{session_id}/answer", response_model=InterviewSessionResponse)
 def answer_interview_question(
     session_id: int,

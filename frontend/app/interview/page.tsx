@@ -8,6 +8,7 @@ import { FeedbackBlock } from "@/components/FeedbackBlock";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import {
   answerInterviewQuestion,
+  deleteInterviewSession,
   finishInterview,
   getMyInterviews,
   startInterview,
@@ -48,8 +49,8 @@ const TEXT = {
   score: "\u0110i\u1ec3m",
   nextQuestion: "C\u00e2u h\u1ecfi ti\u1ebfp theo",
   whyAsked: "V\u00ec sao c\u00e2u n\u00e0y \u0111\u01b0\u1ee3c h\u1ecfi",
-  relatedSkills: "K\u1ef9 n\u0103ng li\u00ean quan",
-  expectedKeywords: "T\u1eeb kh\u00f3a n\u00ean c\u00f3",
+  relatedSkills: "K\u1ef9 n\u0103ng \u0111\u01b0\u1ee3c \u0111\u00e1nh gi\u00e1",
+  expectedKeywords: "\u0110i\u1ec3m n\u00ean nh\u1eafc t\u1edbi",
   answerLabel: "C\u00e2u tr\u1ea3 l\u1eddi c\u1ee7a b\u1ea1n",
   answerPlaceholder: "Tr\u1ea3 l\u1eddi theo c\u1ea5u tr\u00fac: kh\u00e1i ni\u1ec7m, c\u00e1ch l\u00e0m, v\u00ed d\u1ee5 t\u1eeb d\u1ef1 \u00e1n v\u00e0 l\u1ef1a ch\u1ecdn k\u1ef9 thu\u1eadt n\u1ebfu c\u00f3...",
   grading: "\u0110ang ch\u1ea5m c\u00e2u tr\u1ea3 l\u1eddi...",
@@ -61,7 +62,7 @@ const TEXT = {
   notGraded: "Ch\u01b0a ch\u1ea5m",
   viewSession: "Xem phi\u00ean",
   inProgress: "\u0110ang luy\u1ec7n",
-  done: "Ho\u00e0n t\u1ea5t",
+  done: "\u0110\u00e3 ho\u00e0n th\u00e0nh",
   none: "Ch\u01b0a c\u00f3",
   notFinished: "Ch\u01b0a ho\u00e0n th\u00e0nh"
 };
@@ -81,6 +82,7 @@ export default function InterviewPage() {
   const [isStarting, setIsStarting] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [deletingSessionId, setDeletingSessionId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -196,6 +198,35 @@ export default function InterviewPage() {
       setError(err instanceof Error ? err.message : TEXT.answerError);
     } finally {
       setIsAnswering(false);
+    }
+  }
+
+  async function handleDeleteSession(sessionId: number) {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+    const confirmed = window.confirm(
+      "Bạn có chắc muốn xóa phiên phỏng vấn này không? Việc này chỉ xóa phiên phỏng vấn, không xóa CV, JD, Roadmap hoặc kết quả phân tích."
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setStatusMessage("");
+    setDeletingSessionId(sessionId);
+    try {
+      await deleteInterviewSession(token, sessionId);
+      const remainingSessions = sessions.filter((session) => session.id !== sessionId);
+      setSessions(remainingSessions);
+      setCurrentSession((current) => current?.id === sessionId ? (remainingSessions[0] ?? null) : current);
+      setAnswerText("");
+      setStatusMessage("Đã xóa phiên phỏng vấn.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa phiên phỏng vấn. Vui lòng thử lại.");
+    } finally {
+      setDeletingSessionId(null);
     }
   }
 
@@ -330,7 +361,16 @@ export default function InterviewPage() {
               <p className="text-sm leading-6 text-slate-400">{TEXT.emptyHistory}</p>
             ) : (
               sessions.map((session) => (
-                <InterviewHistoryCard key={session.id} session={session} onSelect={() => setCurrentSession(session)} />
+                <InterviewHistoryCard
+                  key={session.id}
+                  session={session}
+                  onSelect={() => {
+                    setCurrentSession(session);
+                    setAnswerText("");
+                  }}
+                  onDelete={handleDeleteSession}
+                  isDeleting={deletingSessionId === session.id}
+                />
               ))
             )}
           </div>
@@ -381,6 +421,25 @@ function InterviewSessionPanel({
           <h2 className="mt-2 break-words text-xl font-semibold">{session.target_role}</h2>
           <p className="mt-1 text-sm text-slate-400">{answeredCount}/{session.answers.length} {TEXT.answered}</p>
           <p className="mt-1 text-sm text-slate-400">{TEXT.status}: {formatInterviewStatus(session.status)}</p>
+          <div className="mt-4 max-w-md">
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className="font-medium text-slate-200">Tiến độ phỏng vấn</span>
+              <span className="text-slate-400">{answeredCount} / {session.answers.length} câu</span>
+            </div>
+            <div
+              className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"
+              role="progressbar"
+              aria-label="Tiến độ phỏng vấn"
+              aria-valuemin={0}
+              aria-valuemax={session.answers.length}
+              aria-valuenow={answeredCount}
+            >
+              <div
+                className="h-full rounded-full bg-cyan-300 transition-[width]"
+                style={{ width: `${session.answers.length > 0 ? (answeredCount / session.answers.length) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
         </div>
         <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
           <p className="text-xs font-semibold uppercase tracking-[0.16em]">{TEXT.score}</p>
@@ -392,16 +451,25 @@ function InterviewSessionPanel({
 
       {!isFinished && currentQuestion ? (
         <form onSubmit={onAnswer} className="mt-6 space-y-4">
-          <QuestionPanel answer={currentQuestion} />
+          <QuestionPanel answer={currentQuestion} questionNumber={session.answers.findIndex((answer) => answer.id === currentQuestion.id) + 1} totalQuestions={session.answers.length} />
           <label className="block text-sm font-medium text-slate-200">
             {TEXT.answerLabel}
             <textarea
               rows={7}
               value={answerText}
               onChange={(event) => setAnswerText(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.ctrlKey && event.key === "Enter") {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               placeholder={TEXT.answerPlaceholder}
               className="mt-2 w-full resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
             />
+            <span className="mt-2 block text-xs leading-5 text-slate-500">
+              Gợi ý cấu trúc: khái niệm → cách triển khai → ví dụ dự án → tradeoff nếu có. Nhấn Ctrl + Enter để gửi.
+            </span>
           </label>
           <button
             type="submit"
@@ -433,17 +501,22 @@ function InterviewSessionPanel({
   );
 }
 
-function QuestionPanel({ answer }: { answer: InterviewAnswer }) {
-  const relatedSkills = answer.related_skills?.length ? answer.related_skills : answer.expected_keywords.slice(0, 4);
+function QuestionPanel({ answer, questionNumber, totalQuestions }: { answer: InterviewAnswer; questionNumber: number; totalQuestions: number }) {
+  const relatedSkills = Array.from(new Set(answer.related_skills?.length ? answer.related_skills : answer.expected_keywords)).slice(0, 6);
+  const relatedSet = new Set(relatedSkills.map((item) => item.toLowerCase()));
+  const expectedPoints = Array.from(new Set(answer.expected_keywords))
+    .filter((item) => !relatedSet.has(item.toLowerCase()))
+    .slice(0, 6);
+
   return (
-    <div className="rounded-md border border-white/10 bg-slate-950/60 p-4">
+    <div className="rounded-md border border-cyan-300/20 bg-slate-950/70 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{TEXT.nextQuestion}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Câu {questionNumber} / {totalQuestions}</p>
           <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-100">{answer.question}</p>
         </div>
         {answer.question_category ? (
-          <span className="w-fit rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+          <span className="w-fit max-w-full rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
             {formatQuestionCategory(answer.question_category)}
           </span>
         ) : null}
@@ -457,25 +530,26 @@ function QuestionPanel({ answer }: { answer: InterviewAnswer }) {
       ) : null}
 
       <SkillChips title={TEXT.relatedSkills} items={relatedSkills} />
-      <SkillChips title={TEXT.expectedKeywords} items={answer.expected_keywords} muted />
+      <SkillChips title={TEXT.expectedKeywords} items={expectedPoints} muted emptyText="Hãy tập trung trả lời rõ khái niệm, cách triển khai và ví dụ thực tế." />
     </div>
   );
 }
 
-function SkillChips({ title, items, muted = false }: { title: string; items: string[]; muted?: boolean }) {
-  if (items.length === 0) {
-    return null;
-  }
+function SkillChips({ title, items, muted = false, emptyText }: { title: string; items: string[]; muted?: boolean; emptyText?: string }) {
   return (
     <div className="mt-4">
       <p className="text-sm font-semibold text-slate-200">{title}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {items.map((item, index) => (
-          <span key={`${title}-${item}-${index}`} className={`break-words rounded-full border px-3 py-1 text-xs ${muted ? "border-white/10 bg-white/5 text-slate-300" : "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"}`}>
-            {item}
-          </span>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        emptyText ? <p className="mt-2 text-sm leading-6 text-slate-500">{emptyText}</p> : null
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {items.map((item, index) => (
+            <span key={`${title}-${item}-${index}`} className={`max-w-full break-words rounded-full border px-3 py-1 text-xs ${muted ? "border-white/10 bg-white/5 text-slate-300" : "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"}`}>
+              {item}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -485,7 +559,7 @@ function AnswerCard({ answer, index }: { answer: InterviewAnswer; index: number 
     <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">C?u {index + 1}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Câu {index + 1}</p>
           <p className="mt-1 break-words text-sm font-semibold leading-6 text-slate-100">{answer.question}</p>
         </div>
         <p className="shrink-0 rounded-md border border-white/10 px-3 py-2 text-sm font-semibold text-cyan-100">
@@ -509,32 +583,62 @@ function AnswerCard({ answer, index }: { answer: InterviewAnswer; index: number 
   );
 }
 
-function InterviewHistoryCard({ session, onSelect }: { session: InterviewSession; onSelect: () => void }) {
+function InterviewHistoryCard({
+  session,
+  onSelect,
+  onDelete,
+  isDeleting = false
+}: {
+  session: InterviewSession;
+  onSelect: () => void;
+  onDelete: (sessionId: number) => void;
+  isDeleting?: boolean;
+}) {
+  const answeredCount = session.answers.filter((answer) => Boolean(answer.user_answer)).length;
   return (
     <article className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h3 className="break-words font-semibold text-slate-100">{session.target_role}</h3>
+          <h3 className="break-words font-semibold text-slate-100">{formatTargetRole(session.target_role)}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(session.created_at).toLocaleString("vi-VN")}</p>
-          <p className="mt-1 text-sm text-slate-400">
-            {TEXT.status}: {formatInterviewStatus(session.status)} - {TEXT.score}: {formatInterviewScore(session.score)}
-          </p>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-400">
+            <span>{formatInterviewStatus(session.status)}</span>
+            <span>{answeredCount}/{session.answers.length} câu đã trả lời</span>
+            <span>Điểm: {formatInterviewScore(session.score)}</span>
+          </div>
         </div>
-        <button type="button" onClick={onSelect} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-          {TEXT.viewSession}
-        </button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <button type="button" onClick={onSelect} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
+            {TEXT.viewSession}
+          </button>
+          <button
+            type="button"
+            disabled={isDeleting}
+            onClick={() => onDelete(session.id)}
+            className="rounded-md border border-red-300/25 px-4 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-300/10 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isDeleting ? "Đang xóa..." : "Xóa"}
+          </button>
+        </div>
       </div>
     </article>
   );
 }
 
+function formatTargetRole(role: string) {
+  return role
+    .replace(/\bbackend intern\b/gi, "Backend Intern")
+    .replace(/\bfrontend intern\b/gi, "Frontend Intern")
+    .replace(/\bfullstack intern\b/gi, "Fullstack Intern");
+}
+
 function formatQuestionCategory(category: string) {
   const labels: Record<string, string> = {
-    concept: "Concept",
-    project_evidence: "Project evidence",
-    debugging: "Debugging",
-    tradeoff: "Tradeoff",
-    behavioral_lite: "Behavioral-lite"
+    concept: "Kiến thức nền",
+    project_evidence: "Minh chứng dự án",
+    debugging: "Xử lý lỗi",
+    tradeoff: "Đánh đổi kỹ thuật",
+    behavioral_lite: "Tình huống làm việc"
   };
   return labels[category] ?? category;
 }
