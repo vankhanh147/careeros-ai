@@ -1,85 +1,38 @@
-
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
 
 import { getDashboardSummary, type DashboardSummary } from "@/lib/api/dashboard";
 import { useAuth } from "@/lib/auth/AuthContext";
 
-type NextAction = {
+type WorkspaceAction = {
   title: string;
   description: string;
   href: string;
   cta: string;
-  tone: "primary" | "secondary";
 };
 
-const TEXT = {
-  loadingTitle: "\u0110ang t\u1ea3i dashboard...",
-  loadingDescription: "CareerOS AI \u0111ang \u0111\u1ed3ng b\u1ed9 tr\u1ea1ng th\u00e1i h\u1ed3 s\u01a1, CV/JD v\u00e0 c\u00e1c k\u1ebft qu\u1ea3 AI g\u1ea7n nh\u1ea5t.",
-  loadError: "Kh\u00f4ng th\u1ec3 t\u1ea3i dashboard. Vui l\u00f2ng ki\u1ec3m tra backend v\u00e0 th\u1eed l\u1ea1i.",
-  loadFailedTitle: "Ch\u01b0a t\u1ea3i \u0111\u01b0\u1ee3c dashboard",
-  loginAgain: "Vui l\u00f2ng \u0111\u0103ng nh\u1eadp l\u1ea1i ho\u1eb7c ki\u1ec3m tra backend \u0111ang ch\u1ea1y.",
-  retry: "Th\u1eed t\u1ea3i l\u1ea1i",
-  backToLogin: "V\u1ec1 trang \u0111\u0103ng nh\u1eadp",
-  dashboardTitle: "Dashboard t\u1ed5ng quan",
-  refresh: "L\u00e0m m\u1edbi",
-  logout: "\u0110\u0103ng xu\u1ea5t",
-  careerWorkspace: "Kh\u00f4ng gian ngh\u1ec1 nghi\u1ec7p",
-  hello: "Xin ch\u00e0o",
-  heroDescription: "Theo d\u00f5i h\u1ed3 s\u01a1, CV/JD, Resume \u2194 JD Matching, Roadmap v\u00e0 Mock Interview trong m\u1ed9t lu\u1ed3ng ph\u00e1t tri\u1ec3n th\u1ed1ng nh\u1ea5t.",
-  progressLabel: "Ti\u1ebfn \u0111\u1ed9 h\u00e0nh tr\u00ecnh",
-  uploadedCv: "CV \u0111\u00e3 t\u1ea3i l\u00ean",
-  savedJd: "Job Description \u0111\u00e3 l\u01b0u",
-  profileLabel: "H\u1ed3 s\u01a1",
-  profileAvailable: "\u0110\u00e3 c\u00f3",
-  profileMissing: "Ch\u01b0a c\u00f3",
-  careerProfile: "H\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p",
-  nextStepTitle: "B\u01b0\u1edbc ti\u1ebfp theo n\u00ean l\u00e0m",
-  nextStepDescription: "CareerOS AI \u01b0u ti\u00ean h\u00e0nh \u0111\u1ed9ng c\u00f3 t\u00e1c \u0111\u1ed9ng nh\u1ea5t d\u1ef1a tr\u00ean d\u1eef li\u1ec7u hi\u1ec7n t\u1ea1i c\u1ee7a b\u1ea1n.",
-  profileReady: "\u0110\u00e3 c\u00f3 d\u1eef li\u1ec7u",
-  profileIncomplete: "Ch\u01b0a ho\u00e0n thi\u1ec7n",
-  updateProfile: "C\u1eadp nh\u1eadt h\u1ed3 s\u01a1",
-  profileCardDescription: "Vai tr\u00f2 m\u1ee5c ti\u00eau, tr\u00ecnh \u0111\u1ed9, k\u1ef9 n\u0103ng v\u00e0 kinh nghi\u1ec7m l\u00e0 n\u1ec1n t\u1ea3ng cho c\u00e1c g\u1ee3i \u00fd c\u00e1 nh\u00e2n h\u00f3a.",
-  manageCvJd: "Qu\u1ea3n l\u00fd CV/JD",
-  cvJdCardDescription: "Qu\u1ea3n l\u00fd CV PDF v\u00e0 JD m\u1ee5c ti\u00eau tr\u01b0\u1edbc khi ph\u00e2n t\u00edch m\u1ee9c \u0111\u1ed9 ph\u00f9 h\u1ee3p.",
-  matchScore: "\u0110i\u1ec3m ph\u00f9 h\u1ee3p",
-  noAnalysis: "Ch\u01b0a c\u00f3 ph\u00e2n t\u00edch",
-  analysisCardDescription: "Ph\u00e2n t\u00edch \u0111i\u1ec3m ph\u00f9 h\u1ee3p, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 c\u00e1ch c\u1ea3i thi\u1ec7n CV.",
-  analyzeCvJd: "Ph\u00e2n t\u00edch CV \u2194 JD",
-  noRoadmap: "Ch\u01b0a c\u00f3 roadmap",
-  roadmapCardDescription: "T\u1ea1o k\u1ebf ho\u1ea1ch h\u1ecdc t\u1eadp ng\u1eafn h\u1ea1n t\u1eeb h\u1ed3 s\u01a1 v\u00e0 kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng.",
-  createRoadmap: "T\u1ea1o roadmap",
-  noInterview: "Ch\u01b0a luy\u1ec7n ph\u1ecfng v\u1ea5n",
-  interviewCardDescription: "Luy\u1ec7n c\u00e2u h\u1ecfi k\u1ef9 thu\u1eadt theo vai tr\u00f2, stack v\u00e0 \u0111i\u1ec3m y\u1ebfu \u0111\u00e3 ph\u00e1t hi\u1ec7n.",
-  latest: "G\u1ea7n nh\u1ea5t",
-  practiceInterview: "Luy\u1ec7n ph\u1ecfng v\u1ea5n",
-  latestAnalysis: "Ph\u00e2n t\u00edch g\u1ea7n nh\u1ea5t",
-  latestAnalysisEmpty: "Ch\u01b0a c\u00f3 k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch. H\u00e3y ch\u1ecdn CV v\u00e0 JD \u0111\u1ec3 b\u1eaft \u0111\u1ea7u.",
-  runMatching: "Ch\u1ea1y ph\u00e2n t\u00edch",
-  latestRoadmap: "Roadmap g\u1ea7n nh\u1ea5t",
-  latestRoadmapEmpty: "Ch\u01b0a c\u00f3 Roadmap h\u1ecdc t\u1eadp. B\u1ea1n c\u00f3 th\u1ec3 t\u1ea1o t\u1eeb h\u1ed3 s\u01a1 ho\u1eb7c k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch.",
-  timeline: "Th\u1eddi gian",
-  latestInterview: "Phi\u00ean ph\u1ecfng v\u1ea5n g\u1ea7n nh\u1ea5t",
-  latestInterviewEmpty: "Ch\u01b0a c\u00f3 Mock Interview. H\u00e3y b\u1eaft \u0111\u1ea7u khi b\u1ea1n \u0111\u00e3 x\u00e1c \u0111\u1ecbnh vai tr\u00f2 m\u1ee5c ti\u00eau.",
-  status: "Tr\u1ea1ng th\u00e1i",
-  score: "\u0110i\u1ec3m",
-  inProgress: "\u0110ang luy\u1ec7n",
-  finished: "Ho\u00e0n t\u1ea5t",
-  none: "Ch\u01b0a c\u00f3",
-  unfinished: "Ch\u01b0a ho\u00e0n th\u00e0nh",
-  roadmapProgress: "Ti\u1ebfn \u0111\u1ed9 roadmap",
-  rerunAnalysis: "Ph\u00e2n t\u00edch l\u1ea1i",
-  cvUpdatedTitle: "B\u1ea1n \u0111\u00e3 c\u1eadp nh\u1eadt CV m\u1edbi",
-  cvUpdatedDescription: "N\u00ean ch\u1ea1y l\u1ea1i ph\u00e2n t\u00edch CV \u2194 JD \u0111\u1ec3 k\u1ebft qu\u1ea3 matching ph\u1ea3n \u00e1nh CV m\u1edbi nh\u1ea5t.",
-  roadmapCompletedTitle: "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh m\u1ed9t ph\u1ea7n roadmap",
-  roadmapCompletedDescription: "H\u00e3y c\u1eadp nh\u1eadt CV v\u00e0 ch\u1ea1y l\u1ea1i matching \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9.",
-  interviewAfterRoadmapTitle: "Luy\u1ec7n Mock Interview \u0111\u1ec3 ki\u1ec3m tra ti\u1ebfn b\u1ed9",
-  interviewAfterRoadmapDescription: "B\u1ea1n \u0111\u00e3 c\u00f3 k\u1ebft qu\u1ea3 ph\u00e2n t\u00edch v\u00e0 Roadmap. H\u00e3y luy\u1ec7n ph\u1ecfng v\u1ea5n \u0111\u1ec3 ki\u1ec3m tra c\u00e1c k\u1ef9 n\u0103ng \u0111ang c\u1ea3i thi\u1ec7n."
+type HealthCheck = {
+  label: string;
+  complete: boolean;
 };
+
+type RecentActivity = {
+  title: string;
+  detail: string;
+  createdAt: string;
+  href: string;
+};
+
+const QUICK_ACTIONS = [
+  { href: "/profile", label: "Hồ sơ nghề nghiệp" },
+  { href: "/documents", label: "CV & JD" },
+  { href: "/analysis", label: "Resume ↔ JD Matching" },
+  { href: "/roadmap", label: "Learning Roadmap" },
+  { href: "/interview", label: "Mock Interview" }
+];
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -99,14 +52,12 @@ export default function DashboardPage() {
       setIsFetching(false);
       return;
     }
-
     try {
       setError("");
       setIsFetching(true);
-      const data = await getDashboardSummary(token);
-      setSummary(data);
+      setSummary(await getDashboardSummary(token));
     } catch (err) {
-      setError(err instanceof Error ? err.message : TEXT.loadError);
+      setError(err instanceof Error ? err.message : "Không thể tải Dashboard. Vui lòng kiểm tra kết nối backend.");
     } finally {
       setIsFetching(false);
     }
@@ -116,19 +67,20 @@ export default function DashboardPage() {
     let isMounted = true;
 
     async function run() {
-      if (!isMounted) return;
-      await loadDashboard();
+      if (isMounted) {
+        await loadDashboard();
+      }
     }
 
     void run();
-
     return () => {
       isMounted = false;
     };
   }, [loadDashboard]);
 
-  const nextActions = useMemo(() => (summary ? buildNextActions(summary) : []), [summary]);
-  const progress = useMemo(() => (summary ? getProgress(summary) : { completed: 0, total: 5, percent: 0 }), [summary]);
+  const health = useMemo(() => summary ? buildCareerHealth(summary) : null, [summary]);
+  const nextAction = useMemo(() => summary ? buildNextAction(summary) : null, [summary]);
+  const activities = useMemo(() => summary ? buildRecentActivities(summary) : [], [summary]);
 
   function handleLogout() {
     logout();
@@ -136,31 +88,24 @@ export default function DashboardPage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <div className="rounded-lg border border-white/10 bg-white/5 p-6 text-center">
-          <p className="text-sm font-medium text-slate-100">{TEXT.loadingTitle}</p>
-          <p className="mt-2 text-xs text-slate-500">{TEXT.loadingDescription}</p>
-        </div>
-      </main>
-    );
+    return <DashboardSkeleton />;
   }
 
-  if (!summary) {
+  if (!summary || !health || !nextAction) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <div className="max-w-md rounded-lg border border-white/10 bg-white/5 p-6 text-center">
-          <h1 className="text-xl font-semibold">{TEXT.loadFailedTitle}</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{error || TEXT.loginAgain}</p>
+        <section className="w-full max-w-md rounded-lg border border-white/10 bg-white/5 p-6 text-center">
+          <h1 className="text-xl font-semibold">Chưa tải được Career Workspace</h1>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{error || "Vui lòng đăng nhập lại hoặc kiểm tra backend đang chạy."}</p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <button type="button" onClick={() => void loadDashboard()} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
-              {TEXT.retry}
+            <button type="button" onClick={() => void loadDashboard()} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+              Thử tải lại
             </button>
-            <Link href="/login" className="rounded-md border border-white/15 px-5 py-3 text-sm font-semibold transition hover:bg-white/10">
-              {TEXT.backToLogin}
+            <Link href="/login" className="rounded-md border border-white/15 px-5 py-3 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+              Về trang đăng nhập
             </Link>
           </div>
-        </div>
+        </section>
       </main>
     );
   }
@@ -171,215 +116,227 @@ export default function DashboardPage() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
-            <h1 className="mt-1 text-xl font-semibold">{TEXT.dashboardTitle}</h1>
+            <h1 className="mt-1 text-xl font-semibold">Career Workspace</h1>
           </div>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => void loadDashboard()} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-              {TEXT.refresh}
+            <button type="button" onClick={() => void loadDashboard()} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+              Làm mới
             </button>
-            <button type="button" onClick={handleLogout} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-              {TEXT.logout}
+            <button type="button" onClick={handleLogout} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+              Đăng xuất
             </button>
           </div>
         </div>
       </header>
 
-      <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <section className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-            <p className="text-sm font-medium text-cyan-200">{TEXT.careerWorkspace}</p>
-            <h2 className="mt-3 break-words text-3xl font-semibold tracking-tight">{TEXT.hello}, {summary.user.full_name}</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">{TEXT.heroDescription}</p>
-            <div className="mt-6 rounded-md border border-white/10 bg-slate-950/60 p-4">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="font-medium text-slate-100">{TEXT.progressLabel}</span>
-                <span className="text-cyan-200">{progress.completed}/{progress.total}</span>
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${progress.percent}%` }} />
-              </div>
-            </div>
-            <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-              <MetricCard label="CV" value={summary.resume_count} helper={TEXT.uploadedCv} />
-              <MetricCard label="JD" value={summary.job_description_count} helper={TEXT.savedJd} />
-              <MetricCard label={TEXT.profileLabel} value={summary.has_career_profile ? TEXT.profileAvailable : TEXT.profileMissing} helper={TEXT.careerProfile} />
-            </dl>
-          </section>
-
-          <section className="min-w-0 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-cyan-50">{TEXT.nextStepTitle}</h2>
-            <p className="mt-2 text-sm leading-6 text-cyan-100/80">{TEXT.nextStepDescription}</p>
-            <ul className="mt-4 space-y-3">
-              {nextActions.map((action) => (
-                <li key={action.title} className="rounded-md border border-cyan-300/20 bg-slate-950/40 p-3 text-sm leading-6 text-cyan-50">
-                  <div className="flex flex-col gap-3">
-                    <div className="min-w-0">
-                      <p className="break-words font-semibold">{action.title}</p>
-                      <p className="mt-1 break-words text-xs leading-5 text-cyan-100/75">{action.description}</p>
-                    </div>
-                    <Link href={action.href} className={`${action.tone === "primary" ? "bg-cyan-300 text-slate-950 hover:bg-cyan-200" : "border border-cyan-300/30 text-cyan-50 hover:bg-cyan-300/10"} rounded-md px-3 py-2 text-center text-xs font-semibold transition`}>
-                      {action.cta}
-                    </Link>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+      <section className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <div className="max-w-3xl">
+          <p className="text-sm font-medium text-cyan-200">Không gian nghề nghiệp</p>
+          <h2 className="mt-2 break-words text-2xl font-semibold sm:text-3xl">Xin chào, {summary.user.full_name}</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Theo dõi mức độ sẵn sàng của hồ sơ, Matching, Roadmap và Mock Interview trong một luồng thống nhất.
+          </p>
         </div>
 
-        {error ? <p className="mt-6 rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
+        {error ? <p className="mt-5 rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          <DashboardFeatureCard title={TEXT.careerProfile} status={summary.has_career_profile ? TEXT.profileReady : TEXT.profileIncomplete} description={TEXT.profileCardDescription} href="/profile" cta={TEXT.updateProfile} />
-          <DashboardFeatureCard title="CV & JD" status={`${summary.resume_count} CV \u00b7 ${summary.job_description_count} JD`} description={TEXT.cvJdCardDescription} href="/documents" cta={TEXT.manageCvJd} />
-          <DashboardFeatureCard title="Resume ↔ JD Matching" status={summary.latest_analysis ? `${TEXT.matchScore} ${summary.latest_analysis.match_score}%` : TEXT.noAnalysis} description={summary.latest_analysis?.skill_gap_summary ?? TEXT.analysisCardDescription} href="/analysis" cta={TEXT.analyzeCvJd} />
-          <DashboardFeatureCard
-            title="Roadmap"
-            status={summary.latest_roadmap ? summary.latest_roadmap.timeline : TEXT.noRoadmap}
-            description={summary.learning_loop_summary ?? summary.latest_roadmap?.title ?? TEXT.roadmapCardDescription}
-            href="/roadmap"
-            cta={TEXT.createRoadmap}
-          />
-          <DashboardFeatureCard title="Mock Interview" status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} \u00b7 ${formatInterviewScore(summary.latest_interview.score)}` : TEXT.noInterview} description={summary.latest_interview ? `${TEXT.latest}: ${summary.latest_interview.target_role}` : TEXT.interviewCardDescription} href="/interview" cta={TEXT.practiceInterview} />
+        <div className="mt-7 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+          <CareerHealthCard health={health} nextAction={nextAction} />
+          <NextActionCard action={nextAction} />
         </div>
 
-        <section className="mt-8 grid gap-5 lg:grid-cols-3">
-          <LatestInsightCard title={TEXT.latestAnalysis} empty={TEXT.latestAnalysisEmpty} href="/analysis" cta={TEXT.runMatching}>
-            {summary.latest_analysis ? (
-              <>
-                <p className="text-3xl font-bold text-cyan-200">{summary.latest_analysis.match_score}%</p>
-                <p className="mt-3 line-clamp-4 break-words text-sm leading-6 text-slate-300">{summary.latest_analysis.skill_gap_summary}</p>
-                <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_analysis.created_at)}</p>
-              </>
-            ) : null}
-          </LatestInsightCard>
-
-          <LatestInsightCard title={TEXT.latestRoadmap} empty={TEXT.latestRoadmapEmpty} href="/roadmap" cta={TEXT.createRoadmap}>
-            {summary.latest_roadmap ? (
-              <>
-                <h3 className="break-words text-lg font-semibold text-slate-100">{summary.latest_roadmap.title}</h3>
-                <p className="mt-2 text-sm text-cyan-200">{TEXT.timeline}: {summary.latest_roadmap.timeline}</p>
-                {summary.latest_roadmap.total_items > 0 ? (
-                  <p className="mt-2 text-sm text-slate-300">
-                    {TEXT.roadmapProgress}: {summary.latest_roadmap.completed_items}/{summary.latest_roadmap.total_items}
-                  </p>
-                ) : null}
-                <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_roadmap.created_at)}</p>
-              </>
-            ) : null}
-          </LatestInsightCard>
-
-          <LatestInsightCard title={TEXT.latestInterview} empty={TEXT.latestInterviewEmpty} href="/interview" cta={TEXT.practiceInterview}>
-            {summary.latest_interview ? (
-              <>
-                <h3 className="break-words text-lg font-semibold text-slate-100">{summary.latest_interview.target_role}</h3>
-                <p className="mt-2 text-sm text-cyan-200">{TEXT.status}: {formatInterviewStatus(summary.latest_interview.status)}</p>
-                <p className="mt-2 text-sm text-slate-300">{TEXT.score}: {formatInterviewScore(summary.latest_interview.score)}</p>
-                <p className="mt-3 text-xs text-slate-500">{formatDate(summary.latest_interview.created_at)}</p>
-              </>
-            ) : null}
-          </LatestInsightCard>
+        <section className="mt-8">
+          <div>
+            <p className="text-sm font-medium text-cyan-200">Trạng thái hiện tại</p>
+            <h2 className="mt-1 text-xl font-semibold">Career Workspace</h2>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <WorkspaceCard title="Hồ sơ nghề nghiệp" status={summary.has_career_profile ? "Đã sẵn sàng" : "Chưa hoàn thiện"} description={summary.has_career_profile ? "Đã có dữ liệu nền cho các gợi ý cá nhân hóa." : "Cần bổ sung vai trò, kỹ năng và mục tiêu nghề nghiệp."} href="/profile" cta="Cập nhật hồ sơ" ready={summary.has_career_profile} />
+            <WorkspaceCard title="CV" status={summary.resume_count > 0 ? `${summary.resume_count} CV đã lưu` : "Chưa có CV"} description={summary.resume_count > 0 ? "CV đã sẵn sàng để chọn khi chạy Matching." : "Tải CV PDF lên để bắt đầu phân tích."} href="/documents" cta="Quản lý CV" ready={summary.resume_count > 0} />
+            <WorkspaceCard title="Job Description" status={summary.job_description_count > 0 ? `${summary.job_description_count} JD đã lưu` : "Chưa có JD"} description={summary.job_description_count > 0 ? "JD mục tiêu đã sẵn sàng để so khớp." : "Thêm một JD phù hợp với vai trò mục tiêu."} href="/documents" cta="Quản lý JD" ready={summary.job_description_count > 0} />
+            <WorkspaceCard title="Resume ↔ JD Matching" status={summary.latest_analysis ? `${summary.latest_analysis.match_score}% phù hợp` : "Chưa có Matching"} description={summary.latest_analysis?.skill_gap_summary ?? "Chạy phân tích để thấy kỹ năng đã khớp và khoảng trống cần cải thiện."} href="/analysis" cta="Mở Matching" ready={Boolean(summary.latest_analysis)} />
+            <WorkspaceCard title="Roadmap" status={summary.latest_roadmap ? `${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước hoàn thành` : "Chưa có Roadmap"} description={summary.latest_roadmap?.title ?? "Chuyển skill gap thành kế hoạch học tập và minh chứng CV."} href="/roadmap" cta="Mở Roadmap" ready={Boolean(summary.latest_roadmap)} />
+            <WorkspaceCard title="Mock Interview" status={summary.latest_interview ? `${formatInterviewStatus(summary.latest_interview.status)} · ${formatInterviewScore(summary.latest_interview.score)}` : "Chưa luyện"} description={summary.latest_interview ? `Vai trò gần nhất: ${summary.latest_interview.target_role}` : "Luyện câu hỏi kỹ thuật theo vai trò và điểm cần cải thiện."} href="/interview" cta="Mở Mock Interview" ready={Boolean(summary.latest_interview)} />
+          </div>
         </section>
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+          <RecentActivitySection activities={activities} />
+          <QuickActions />
+        </div>
       </section>
     </main>
   );
 }
 
-function MetricCard({ label, value, helper }: { label: string; value: string | number; helper: string }) {
+function DashboardSkeleton() {
   return (
-    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
-      <dt className="text-xs uppercase tracking-[0.18em] text-slate-500">{label}</dt>
-      <dd className="mt-2 break-words text-xl font-semibold text-slate-100">{value}</dd>
-      <p className="mt-1 text-xs text-slate-500">{helper}</p>
+    <main className="min-h-screen bg-slate-950 px-4 py-8 text-white sm:px-6">
+      <div className="mx-auto w-full max-w-6xl animate-pulse">
+        <div className="h-6 w-40 rounded bg-white/10" />
+        <div className="mt-5 h-9 max-w-md rounded bg-white/10" />
+        <div className="mt-8 grid gap-5 lg:grid-cols-2">
+          <div className="h-72 rounded-lg border border-white/10 bg-white/5" />
+          <div className="h-72 rounded-lg border border-white/10 bg-white/5" />
+        </div>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-44 rounded-lg border border-white/10 bg-white/5" />)}
+        </div>
+        <p className="sr-only">Đang tải Career Workspace...</p>
+      </div>
+    </main>
+  );
+}
+
+function CareerHealthCard({ health, nextAction }: { health: ReturnType<typeof buildCareerHealth>; nextAction: WorkspaceAction }) {
+  return (
+    <section className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-cyan-200">Career Health</p>
+          <h2 className="mt-1 text-xl font-semibold">Mức độ hoàn thiện hành trình</h2>
+        </div>
+        <p className="shrink-0 text-3xl font-bold text-cyan-200">{health.percent}%</p>
+      </div>
+      <div
+        className="mt-4 h-3 overflow-hidden rounded-full bg-white/10"
+        role="progressbar"
+        aria-label="Mức độ hoàn thiện Career Health"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={health.percent}
+      >
+        <div className="h-full rounded-full bg-cyan-300 transition-[width]" style={{ width: `${health.percent}%` }} />
+      </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <HealthList title="Đã hoàn thành" items={health.completed} tone="positive" />
+        <HealthList title="Còn thiếu" items={health.missing} tone="muted" />
+      </div>
+      <div className="mt-5 rounded-md border border-cyan-300/20 bg-cyan-300/5 p-3 text-sm">
+        <span className="font-semibold text-cyan-100">Tiếp theo nên làm:</span>
+        <span className="ml-2 text-slate-300">{nextAction.title}</span>
+      </div>
+    </section>
+  );
+}
+
+function HealthList({ title, items, tone }: { title: string; items: string[]; tone: "positive" | "muted" }) {
+  return (
+    <div className="min-w-0">
+      <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
+      {items.length > 0 ? (
+        <ul className="mt-2 space-y-2 text-sm">
+          {items.map((item) => <li key={`${title}-${item}`} className={tone === "positive" ? "text-emerald-200" : "text-slate-400"}>{tone === "positive" ? "✓" : "•"} {item}</li>)}
+        </ul>
+      ) : <p className="mt-2 text-sm text-slate-500">{tone === "positive" ? "Chưa có bước hoàn thành." : "Không còn bước bắt buộc."}</p>}
     </div>
   );
 }
 
-function DashboardFeatureCard({ title, status, description, href, cta }: { title: string; status: string; description: string; href: string; cta: string }) {
+function NextActionCard({ action }: { action: WorkspaceAction }) {
+  return (
+    <section className="flex min-w-0 flex-col rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-5 sm:p-6">
+      <p className="text-sm font-medium text-cyan-100">Việc tiếp theo</p>
+      <h2 className="mt-2 break-words text-xl font-semibold text-cyan-50">{action.title}</h2>
+      <p className="mt-3 flex-1 break-words text-sm leading-6 text-cyan-100/80">{action.description}</p>
+      <Link href={action.href} className="mt-6 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+        {action.cta}
+      </Link>
+    </section>
+  );
+}
+
+function WorkspaceCard({ title, status, description, href, cta, ready }: { title: string; status: string; description: string; href: string; cta: string; ready: boolean }) {
   return (
     <article className="flex min-w-0 flex-col rounded-lg border border-white/10 bg-white/5 p-5">
-      <p className="break-words text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">{status}</p>
-      <h2 className="mt-3 text-lg font-semibold text-slate-100">{title}</h2>
-      <p className="mt-2 line-clamp-4 min-h-24 break-words text-sm leading-6 text-slate-300">{description}</p>
-      <Link href={href} className="mt-5 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
+      <span className={`w-fit max-w-full break-words rounded-full border px-2.5 py-1 text-xs font-semibold ${ready ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-400"}`}>
+        {status}
+      </span>
+      <h3 className="mt-4 text-lg font-semibold text-slate-100">{title}</h3>
+      <p className="mt-2 line-clamp-3 min-h-18 flex-1 break-words text-sm leading-6 text-slate-300">{description}</p>
+      <Link href={href} className="mt-5 inline-flex justify-center rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
         {cta}
       </Link>
     </article>
   );
 }
 
-function LatestInsightCard({ title, empty, href, cta, children }: { title: string; empty: string; href: string; cta: string; children: ReactNode }) {
-  const hasContent = Boolean(children);
+function RecentActivitySection({ activities }: { activities: RecentActivity[] }) {
   return (
-    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-      <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
-      <div className="mt-4 min-h-28">{hasContent ? children : <p className="text-sm leading-6 text-slate-400">{empty}</p>}</div>
-      <Link href={href} className="mt-5 inline-flex rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-        {cta}
-      </Link>
-    </article>
+    <section className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+      <h2 className="text-lg font-semibold">Hoạt động gần đây</h2>
+      {activities.length > 0 ? (
+        <ol className="mt-4 space-y-3">
+          {activities.map((activity) => (
+            <li key={`${activity.title}-${activity.createdAt}`} className="rounded-md border border-white/10 bg-slate-950/50 p-3">
+              <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <p className="break-words text-sm font-semibold text-slate-100">✓ {activity.title}</p>
+                  <p className="mt-1 break-words text-xs text-slate-400">{activity.detail}</p>
+                </div>
+                <time className="shrink-0 text-xs text-slate-500">{formatDate(activity.createdAt)}</time>
+              </div>
+              <Link href={activity.href} className="mt-2 inline-flex text-xs font-semibold text-cyan-200 hover:text-cyan-100">Xem chi tiết</Link>
+            </li>
+          ))}
+        </ol>
+      ) : <p className="mt-3 text-sm leading-6 text-slate-400">Chưa có hoạt động để hiển thị. Hãy hoàn thiện hồ sơ hoặc thêm CV/JD để bắt đầu.</p>}
+    </section>
   );
 }
 
-function buildNextActions(summary: DashboardSummary): NextAction[] {
-  if (!summary.has_career_profile) {
-    return [
-      { title: "Ho\u00e0n thi\u1ec7n h\u1ed3 s\u01a1 ngh\u1ec1 nghi\u1ec7p", description: "Nh\u1eadp vai tr\u00f2 m\u1ee5c ti\u00eau, k\u1ef9 n\u0103ng v\u00e0 th\u1eddi gian d\u1ef1 ki\u1ebfn \u0111\u1ec3 AI c\u00f3 ng\u1eef c\u1ea3nh t\u1ed1t h\u01a1n.", href: "/profile", cta: TEXT.updateProfile, tone: "primary" },
-      { title: "Chu\u1ea9n b\u1ecb CV v\u00e0 JD", description: "B\u1ea1n v\u1eabn c\u00f3 th\u1ec3 upload CV/JD tr\u01b0\u1edbc khi profile ho\u00e0n ch\u1ec9nh.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
-    ];
-  }
-  if (summary.resume_count === 0 || summary.job_description_count === 0) {
-    return [
-      { title: "T\u1ea3i CV l\u00ean v\u00e0 th\u00eam JD m\u1ee5c ti\u00eau", description: "C\u1ea7n \u00edt nh\u1ea5t m\u1ed9t CV v\u00e0 m\u1ed9t JD \u0111\u1ec3 ch\u1ea1y Resume \u2194 JD Matching.", href: "/documents", cta: "Th\u00eam CV/JD", tone: "primary" },
-      { title: "Ki\u1ec3m tra l\u1ea1i profile", description: "Profile t\u1ed1t gi\u00fap roadmap v\u00e0 ph\u1ecfng v\u1ea5n s\u00e1t m\u1ee5c ti\u00eau h\u01a1n.", href: "/profile", cta: "Xem profile", tone: "secondary" }
-    ];
-  }
-  if (!summary.latest_analysis) {
-    return [
-      { title: "Ch\u1ea1y Resume \u2194 JD Matching", description: "Ph\u00e2n t\u00edch m\u1ee9c ph\u00f9 h\u1ee3p, kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng v\u00e0 c\u00e1c g\u1ee3i \u00fd c\u1ea3i thi\u1ec7n CV.", href: "/analysis", cta: TEXT.runMatching, tone: "primary" },
-      { title: "Qu\u1ea3n l\u00fd th\u00eam JD kh\u00e1c", description: "Th\u1eed nhi\u1ec1u JD gi\u00fap b\u1ea1n hi\u1ec3u th\u1ecb tr\u01b0\u1eddng v\u00e0 ch\u1ecdn m\u1ee5c ti\u00eau ph\u00f9 h\u1ee3p h\u01a1n.", href: "/documents", cta: "Th\u00eam JD", tone: "secondary" }
-    ];
-  }
-  if (!summary.latest_roadmap) {
-    return [
-      { title: "T\u1ea1o Roadmap h\u1ecdc t\u1eadp", description: "Bi\u1ebfn kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng th\u00e0nh k\u1ebf ho\u1ea1ch h\u00e0nh \u0111\u1ed9ng ng\u1eafn h\u1ea1n, d\u1ec5 b\u1eaft \u0111\u1ea7u.", href: "/roadmap", cta: TEXT.createRoadmap, tone: "primary" },
-      { title: "Xem l\u1ea1i ph\u00e2n t\u00edch g\u1ea7n nh\u1ea5t", description: "Ki\u1ec3m tra preview CV/JD v\u00e0 breakdown \u0111\u1ec3 ch\u1eafc h\u1ec7 th\u1ed1ng \u0111\u1ecdc \u0111\u00fang d\u1eef li\u1ec7u.", href: "/analysis", cta: "Xem analysis", tone: "secondary" }
-    ];
-  }
-  if (summary.has_new_resume_after_analysis) {
-    return [
-      { title: TEXT.cvUpdatedTitle, description: TEXT.cvUpdatedDescription, href: "/analysis", cta: TEXT.rerunAnalysis, tone: "primary" },
-      { title: "Ki\u1ec3m tra CV/JD", description: "Xem l\u1ea1i CV v\u00e0 JD \u0111ang l\u01b0u tr\u01b0\u1edbc khi ph\u00e2n t\u00edch l\u1ea1i.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
-    ];
-  }
-  if (summary.latest_roadmap.completed_items > 0) {
-    return [
-      { title: TEXT.roadmapCompletedTitle, description: TEXT.roadmapCompletedDescription, href: "/analysis", cta: TEXT.rerunAnalysis, tone: "primary" },
-      { title: "C\u1eadp nh\u1eadt CV", description: "Th\u00eam minh ch\u1ee9ng m\u1edbi t\u1eeb roadmap v\u00e0o CV n\u1ebfu b\u1ea1n th\u1ef1c s\u1ef1 \u0111\u00e3 ho\u00e0n th\u00e0nh.", href: "/documents", cta: TEXT.manageCvJd, tone: "secondary" }
-    ];
-  }
-  if (!summary.latest_interview || summary.latest_interview.status !== "finished") {
-    return [
-      { title: TEXT.interviewAfterRoadmapTitle, description: TEXT.interviewAfterRoadmapDescription, href: "/interview", cta: TEXT.practiceInterview, tone: "primary" },
-      { title: "Theo roadmap", description: "D\u00e0nh th\u1eddi gian ho\u00e0n th\u00e0nh output c\u1ee7a t\u1eebng b\u01b0\u1edbc tr\u01b0\u1edbc khi apply.", href: "/roadmap", cta: "Xem roadmap", tone: "secondary" }
-    ];
-  }
-  return [
-    { title: "Th\u1eed JD m\u1edbi ho\u1eb7c c\u1ea3i thi\u1ec7n CV", description: "B\u1ea1n \u0111\u00e3 \u0111i h\u1ebft MVP flow. H\u00e3y d\u00f9ng feedback \u0111\u1ec3 t\u1ed1i \u01b0u CV ho\u1eb7c th\u1eed m\u1ed9t JD kh\u00f3 h\u01a1n.", href: "/documents", cta: "Th\u00eam JD m\u1edbi", tone: "primary" },
-    { title: "Ch\u1ea1y l\u1ea1i ph\u00e2n t\u00edch", description: "Sau khi s\u1eeda CV, h\u00e3y ph\u00e2n t\u00edch l\u1ea1i \u0111\u1ec3 xem \u0111i\u1ec3m ph\u00f9 h\u1ee3p v\u00e0 kho\u1ea3ng tr\u1ed1ng k\u1ef9 n\u0103ng thay \u0111\u1ed5i th\u1ebf n\u00e0o.", href: "/analysis", cta: "Ph\u00e2n t\u00edch l\u1ea1i", tone: "secondary" }
-  ];
+function QuickActions() {
+  return (
+    <nav aria-label="Thao tác nhanh" className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+      <h2 className="text-lg font-semibold">Thao tác nhanh</h2>
+      <div className="mt-4 grid gap-3">
+        {QUICK_ACTIONS.map((action) => (
+          <Link key={action.href} href={action.href} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-slate-950/40 px-4 py-3 text-sm font-semibold transition hover:border-cyan-300/30 hover:bg-cyan-300/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+            <span className="break-words">{action.label}</span>
+            <span aria-hidden="true" className="text-cyan-300">+</span>
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
 }
 
-function getProgress(summary: DashboardSummary) {
-  const checks = [
-    summary.has_career_profile,
-    summary.resume_count > 0 && summary.job_description_count > 0,
-    Boolean(summary.latest_analysis),
-    Boolean(summary.latest_roadmap),
-    Boolean(summary.latest_interview?.status === "finished")
+function buildCareerHealth(summary: DashboardSummary) {
+  const checks: HealthCheck[] = [
+    { label: "Hồ sơ nghề nghiệp", complete: summary.has_career_profile },
+    { label: "CV", complete: summary.resume_count > 0 },
+    { label: "Job Description", complete: summary.job_description_count > 0 },
+    { label: "Resume ↔ JD Matching", complete: Boolean(summary.latest_analysis) },
+    { label: "Roadmap hoặc Mock Interview", complete: Boolean(summary.latest_roadmap || summary.latest_interview) }
   ];
-  const completed = checks.filter(Boolean).length;
-  return { completed, total: checks.length, percent: Math.round((completed / checks.length) * 100) };
+  const completed = checks.filter((item) => item.complete).map((item) => item.label);
+  const missing = checks.filter((item) => !item.complete).map((item) => item.label);
+  return {
+    completed,
+    missing,
+    percent: Math.round((completed.length / checks.length) * 100)
+  };
+}
+
+function buildNextAction(summary: DashboardSummary): WorkspaceAction {
+  if (!summary.has_career_profile) return { title: "Hoàn thiện hồ sơ nghề nghiệp", description: "Bổ sung vai trò mục tiêu, kỹ năng và mục tiêu để CareerOS có đủ ngữ cảnh.", href: "/profile", cta: "Cập nhật hồ sơ" };
+  if (summary.resume_count === 0) return { title: "Tải CV lên", description: "Thêm CV PDF để hệ thống có dữ liệu hồ sơ cho bước Matching.", href: "/documents", cta: "Thêm CV" };
+  if (summary.job_description_count === 0) return { title: "Thêm Job Description", description: "Lưu JD mục tiêu để đối chiếu CV với yêu cầu tuyển dụng cụ thể.", href: "/documents", cta: "Thêm JD" };
+  if (!summary.latest_analysis) return { title: "Chạy Resume ↔ JD Matching", description: "Kiểm tra điểm phù hợp, skill gap và các gợi ý cải thiện CV.", href: "/analysis", cta: "Chạy Matching" };
+  if (summary.has_new_resume_after_analysis || summary.should_rerun_analysis) return { title: "Chạy lại Matching", description: "CV hoặc tiến độ học tập đã thay đổi; hãy cập nhật kết quả phân tích.", href: "/analysis", cta: "Phân tích lại" };
+  if (!summary.latest_roadmap) return { title: "Tạo Roadmap học tập", description: "Chuyển skill gap thành các bước học, bài thực hành và minh chứng CV.", href: "/roadmap", cta: "Tạo Roadmap" };
+  if (summary.latest_interview?.status === "in_progress") return { title: "Hoàn thành Mock Interview hiện tại", description: "Tiếp tục các câu còn lại để có tổng kết phiên rõ ràng hơn.", href: "/interview", cta: "Tiếp tục phỏng vấn" };
+  if (summary.latest_roadmap.total_items > 0 && summary.latest_roadmap.completed_items < summary.latest_roadmap.total_items) return { title: "Tiếp tục Roadmap", description: `Bạn đã hoàn thành ${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước.`, href: "/roadmap", cta: "Mở Roadmap" };
+  if (!summary.latest_interview) return { title: "Luyện Mock Interview", description: "Kiểm tra khả năng giải thích kỹ thuật theo vai trò và kỹ năng đang cải thiện.", href: "/interview", cta: "Bắt đầu luyện" };
+  return { title: "Cập nhật CV và kiểm tra lại Matching", description: "Dùng kết quả Roadmap và Mock Interview để cải thiện CV trước lần phân tích tiếp theo.", href: "/documents", cta: "Quản lý CV/JD" };
+}
+
+function buildRecentActivities(summary: DashboardSummary): RecentActivity[] {
+  const activities: RecentActivity[] = [];
+  if (summary.latest_analysis) activities.push({ title: "Đã chạy Resume ↔ JD Matching", detail: `Điểm phù hợp ${summary.latest_analysis.match_score}%`, createdAt: summary.latest_analysis.created_at, href: "/analysis" });
+  if (summary.latest_roadmap) activities.push({ title: "Đã tạo Roadmap", detail: `${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước đã hoàn thành`, createdAt: summary.latest_roadmap.created_at, href: "/roadmap" });
+  if (summary.latest_interview) activities.push({ title: summary.latest_interview.status === "finished" ? "Đã hoàn thành Mock Interview" : "Đã bắt đầu Mock Interview", detail: `${summary.latest_interview.target_role} · ${formatInterviewScore(summary.latest_interview.score)}`, createdAt: summary.latest_interview.created_at, href: "/interview" });
+  return activities.sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()).slice(0, 4);
 }
 
 function formatDate(value: string) {
@@ -387,11 +344,11 @@ function formatDate(value: string) {
 }
 
 function formatInterviewStatus(status: string) {
-  if (status === "in_progress") return TEXT.inProgress;
-  if (status === "finished") return TEXT.finished;
-  return status || TEXT.none;
+  if (status === "in_progress") return "Đang luyện";
+  if (status === "finished") return "Đã hoàn thành";
+  return "Chưa xác định";
 }
 
 function formatInterviewScore(score: number | null) {
-  return score === null ? TEXT.unfinished : `${score}/100`;
+  return score === null ? "Chưa có điểm" : `${score}/100`;
 }

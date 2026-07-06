@@ -58,7 +58,7 @@ const TEXT = {
   finishing: "\u0110ang t\u1ed5ng k\u1ebft phi\u00ean ph\u1ecfng v\u1ea5n...",
   finishButton: "Ho\u00e0n t\u1ea5t phi\u00ean ph\u1ecfng v\u1ea5n",
   feedbackCategory: "Ph\u00e2n lo\u1ea1i nh\u1eadn x\u00e9t",
-  betterHint: "G\u1ee3i \u00fd tr\u1ea3 l\u1eddi t\u1ed1t h\u01a1n",
+  betterHint: "C\u00e1ch c\u1ea3i thi\u1ec7n c\u00e2u tr\u1ea3 l\u1eddi",
   notGraded: "Ch\u01b0a ch\u1ea5m",
   viewSession: "Xem phi\u00ean",
   inProgress: "\u0110ang luy\u1ec7n",
@@ -451,6 +451,7 @@ function InterviewSessionPanel({
       <InterviewSummaryCard session={session} answeredCount={answeredCount} readiness={insights.readiness} />
       <StrengthsAndImprovements strengths={insights.strengths} improvements={insights.improvements} answeredCount={answeredCount} />
       <InterviewSkillSummary items={insights.skillSummary} />
+      <NextPracticeSection items={insights.nextPractice} answeredCount={answeredCount} />
 
       {session.summary ? <p className="mt-4 break-words rounded-md bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">{formatInterviewFeedback(session.summary)}</p> : null}
 
@@ -581,6 +582,27 @@ function InterviewSkillSummary({ items }: { items: Array<{ skill: string; status
   );
 }
 
+function NextPracticeSection({ items, answeredCount }: { items: string[]; answeredCount: number }) {
+  return (
+    <section className="mt-4 rounded-md border border-violet-300/20 bg-violet-300/5 p-4">
+      <h3 className="text-sm font-semibold text-violet-100">Luyện gì tiếp theo?</h3>
+      {items.length > 0 ? (
+        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+          {items.map((item, index) => (
+            <li key={`${index}-${item}`} className="break-words rounded-md border border-white/10 bg-slate-950/40 p-3">{item}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm leading-6 text-slate-400">
+          {answeredCount === 0
+            ? "Trả lời thêm vài câu để CareerOS đề xuất nội dung luyện tiếp chính xác hơn."
+            : "Chưa có đủ tín hiệu rõ ràng để đề xuất nội dung luyện tiếp."}
+        </p>
+      )}
+    </section>
+  );
+}
+
 function QuestionPanel({ answer, questionNumber, totalQuestions }: { answer: InterviewAnswer; questionNumber: number; totalQuestions: number }) {
   const relatedSkills = Array.from(new Set(answer.related_skills?.length ? answer.related_skills : answer.expected_keywords)).slice(0, 6);
   const relatedSet = new Set(relatedSkills.map((item) => item.toLowerCase()));
@@ -602,15 +624,37 @@ function QuestionPanel({ answer, questionNumber, totalQuestions }: { answer: Int
         ) : null}
       </div>
 
-      {answer.question_reason ? (
-        <div className="mt-4 rounded-md border border-white/10 bg-white/5 p-3 text-sm leading-6 text-slate-300">
-          <p className="font-semibold text-slate-100">{TEXT.whyAsked}</p>
-          <p className="mt-1 break-words">{answer.question_reason}</p>
-        </div>
-      ) : null}
+      <div className="mt-4 rounded-md border border-white/10 bg-white/5 p-3 text-sm leading-6 text-slate-300">
+        <p className="font-semibold text-slate-100">Vì sao CareerOS hỏi câu này?</p>
+        <p className="mt-1 break-words">{buildQuestionReason(answer)}</p>
+      </div>
 
       <SkillChips title={TEXT.relatedSkills} items={relatedSkills} />
       <SkillChips title={TEXT.expectedKeywords} items={expectedPoints} muted emptyText="Hãy tập trung trả lời rõ khái niệm, cách triển khai và ví dụ thực tế." />
+
+      <details className="group mt-4 rounded-md border border-amber-300/20 bg-amber-300/5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-sm font-semibold text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+          Gợi ý nhẹ
+          <span className="text-xs text-amber-200/70 group-open:hidden">Mở</span>
+          <span className="hidden text-xs text-amber-200/70 group-open:inline">Thu gọn</span>
+        </summary>
+        <div className="border-t border-amber-300/10 p-3 text-sm leading-6 text-slate-300">
+          {answer.expected_keywords.length > 0 ? (
+            <>
+              <p>Những điểm có thể nhắc tới:</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {Array.from(new Set(answer.expected_keywords)).slice(0, 5).map((keyword) => (
+                  <span key={`hint-${keyword}`} className="max-w-full break-words rounded-full border border-white/10 bg-slate-950/50 px-2 py-1 text-xs text-amber-100">{keyword}</span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p>Chưa có từ khóa gợi ý cụ thể cho câu này.</p>
+          )}
+          <p className="mt-3">Cấu trúc nên dùng: khái niệm → cách triển khai → ví dụ dự án → tradeoff nếu có.</p>
+          <p className="mt-1 text-xs text-slate-500">Gợi ý chỉ định hướng cấu trúc, không phải đáp án mẫu.</p>
+        </div>
+      </details>
     </div>
   );
 }
@@ -747,11 +791,26 @@ function buildInterviewInsights(session: InterviewSession) {
     return { skill, status: mentioned && average !== null && average >= 70 ? "Tốt" : "Cần luyện thêm" };
   });
 
+  const nextPractice: string[] = [];
+  const unansweredCount = session.answers.length - answered.length;
+  if (unansweredCount > 0 && answered.length > 0) {
+    nextPractice.push(`Hoàn thành ${unansweredCount} câu còn lại để có tổng kết đầy đủ hơn.`);
+  }
+  for (const answer of answered.filter((item) => (item.score ?? 0) < 70)) {
+    const missing = getKeywordSummary(answer).missing.slice(0, 2);
+    if (missing.length > 0) {
+      nextPractice.push(`Luyện thêm ${missing.join(", ")} vì câu trả lời hiện chưa nhắc tới các điểm này.`);
+    } else {
+      nextPractice.push("Bổ sung ví dụ từ project thật và giải thích rõ lựa chọn kỹ thuật trong câu trả lời.");
+    }
+  }
+
   return {
     readiness,
     strengths: Array.from(new Set(strengths)).slice(0, 5),
     improvements: Array.from(new Set(improvements)).slice(0, 5),
-    skillSummary
+    skillSummary,
+    nextPractice: Array.from(new Set(nextPractice)).slice(0, 3)
   };
 }
 
@@ -768,6 +827,20 @@ function containsKeyword(text: string, keyword: string) {
   return text.toLocaleLowerCase("vi").includes(keyword.toLocaleLowerCase("vi"));
 }
 
+function buildQuestionReason(answer: InterviewAnswer) {
+  if (answer.question_reason) {
+    return formatInterviewFeedback(answer.question_reason);
+  }
+  const skills = Array.from(new Set(answer.related_skills ?? [])).slice(0, 3);
+  if (skills.length > 0) {
+    return `Câu hỏi này giúp kiểm tra cách bạn giải thích và áp dụng ${skills.join(", ")}.`;
+  }
+  if (answer.question_category) {
+    return `Câu hỏi thuộc nhóm ${formatQuestionCategory(answer.question_category).toLocaleLowerCase("vi")} và giúp kiểm tra cách bạn trình bày suy nghĩ kỹ thuật.`;
+  }
+  return "Câu hỏi này giúp kiểm tra cách bạn giải thích kiến thức và liên hệ với kinh nghiệm thực tế.";
+}
+
 function formatInterviewFeedback(value?: string | null) {
   if (!value) return "";
   const exact: Record<string, string> = {
@@ -778,7 +851,10 @@ function formatInterviewFeedback(value?: string | null) {
   return exact[value] ?? value
     .replace(/\bGood answer\b/gi, "Câu trả lời tốt")
     .replace(/\bMissing keywords?\b/gi, "Thiếu từ khóa quan trọng")
-    .replace(/\bNeeds more detail\b/gi, "Cần giải thích cụ thể hơn");
+    .replace(/\bNeeds more detail\b/gi, "Cần giải thích cụ thể hơn")
+    .replace(/\bAdd a real project example\b/gi, "Bổ sung ví dụ từ project thật")
+    .replace(/\bMention the tradeoff\b/gi, "Nêu rõ đánh đổi kỹ thuật")
+    .replace(/\bExplain your implementation\b/gi, "Giải thích rõ cách triển khai");
 }
 
 function InterviewHistoryCard({
@@ -832,13 +908,13 @@ function formatTargetRole(role: string) {
 
 function formatQuestionCategory(category: string) {
   const labels: Record<string, string> = {
-    concept: "Kiến thức nền",
+    concept: "Kiến thức nền tảng",
     project_evidence: "Minh chứng dự án",
     debugging: "Xử lý lỗi",
     tradeoff: "Đánh đổi kỹ thuật",
     behavioral_lite: "Tình huống làm việc"
   };
-  return labels[category] ?? category;
+  return labels[category] ?? "Câu hỏi luyện tập";
 }
 
 function formatInterviewStatus(status: string) {
