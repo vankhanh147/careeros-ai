@@ -14,7 +14,7 @@ export default function Home() {
           <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-              Biến CV và mục tiêu nghề nghiệp thành kế hoạch phát triển rõ ràng.
+              Biến CV thành lộ trình nghề nghiệp rõ ràng.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
               So khớp CV với JD, nhận diện khoảng trống kỹ năng, cải thiện cách trình bày kinh nghiệm và luyện phỏng vấn theo đúng vai trò bạn đang hướng tới.
@@ -56,10 +56,13 @@ export default function Home() {
 
 function ProductPreview() {
   return (
-    <aside className="min-w-0 rounded-lg border border-cyan-300/20 bg-white/5 p-4 shadow-2xl shadow-cyan-950/20 sm:p-5">
+    <aside className="min-w-0 rounded-lg border border-cyan-300/20 bg-white/5 p-4 shadow-2xl shadow-cyan-950/20 sm:p-5" aria-label="Bản xem trước kết quả CareerOS AI">
       <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Không gian nghề nghiệp</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Không gian nghề nghiệp</p>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">Bản xem trước</span>
+          </div>
           <h2 className="mt-2 text-lg font-semibold text-slate-100">Backend Developer</h2>
         </div>
         <span className="shrink-0 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-xs font-medium text-emerald-200">
@@ -67,8 +70,21 @@ function ProductPreview() {
         </span>
       </div>
 
-      <div className="mt-4 grid gap-3">
-        {productSignals.map((signal) => (
+      <div className="mt-4 rounded-md border border-white/10 bg-slate-950/70 p-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs text-slate-500">{productSignals[0].label}</p>
+            <p className="mt-1 text-3xl font-bold text-cyan-200">{productSignals[0].value}</p>
+          </div>
+          <p className="text-right text-xs leading-5 text-slate-500">Dữ liệu minh họa</p>
+        </div>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Điểm phù hợp minh họa" aria-valuemin={0} aria-valuemax={100} aria-valuenow={78}>
+          <div className="h-full w-[78%] rounded-full bg-cyan-300" />
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        {productSignals.slice(1).map((signal) => (
           <div key={signal.label} className="min-w-0 rounded-md border border-white/10 bg-slate-950/70 p-4">
             <p className="text-xs text-slate-500">{signal.label}</p>
             <p className="mt-1 break-words text-sm font-semibold text-slate-100">{signal.value}</p>
@@ -88,7 +104,7 @@ function ProductPreview() {
 
 function OnboardingStep({ step, title, description }: { step: string; title: string; description: string }) {
   return (
-    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5">
+    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 transition hover:border-cyan-300/25 hover:bg-white/[0.07]">
       <div className="flex items-center gap-3">
         <p className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-cyan-300 text-sm font-bold text-slate-950">{step}</p>
         <h3 className="text-base font-semibold text-slate-100">{title}</h3>

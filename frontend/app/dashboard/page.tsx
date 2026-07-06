@@ -25,14 +25,15 @@ type RecentActivity = {
   detail: string;
   createdAt: string;
   href: string;
+  marker: string;
 };
 
 const QUICK_ACTIONS = [
-  { href: "/profile", label: "Hồ sơ nghề nghiệp" },
-  { href: "/documents", label: "CV & JD" },
-  { href: "/analysis", label: "Resume ↔ JD Matching" },
-  { href: "/roadmap", label: "Learning Roadmap" },
-  { href: "/interview", label: "Mock Interview" }
+  { href: "/profile", label: "Hồ sơ nghề nghiệp", marker: "HS" },
+  { href: "/documents", label: "CV & JD", marker: "CV" },
+  { href: "/analysis", label: "Resume ↔ JD Matching", marker: "M" },
+  { href: "/roadmap", label: "Roadmap học tập", marker: "R" },
+  { href: "/interview", label: "Mock Interview", marker: "MI" }
 ];
 
 export default function DashboardPage() {
@@ -143,7 +144,7 @@ export default function DashboardPage() {
 
         <div className="mt-7 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
           <CareerHealthCard health={health} nextAction={nextAction} />
-          <NextActionCard action={nextAction} />
+          <NextActionCard action={nextAction} summary={summary} />
         </div>
 
         <section className="mt-8">
@@ -192,12 +193,15 @@ function DashboardSkeleton() {
 function CareerHealthCard({ health, nextAction }: { health: ReturnType<typeof buildCareerHealth>; nextAction: WorkspaceAction }) {
   return (
     <section className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-medium text-cyan-200">Career Health</p>
           <h2 className="mt-1 text-xl font-semibold">Mức độ hoàn thiện hành trình</h2>
         </div>
-        <p className="shrink-0 text-3xl font-bold text-cyan-200">{health.percent}%</p>
+        <div className="flex items-baseline gap-2 sm:text-right">
+          <p className="text-4xl font-bold text-cyan-200">{health.percent}%</p>
+          <span className="text-xs font-medium text-slate-500">đã hoàn thiện</span>
+        </div>
       </div>
       <div
         className="mt-4 h-3 overflow-hidden rounded-full bg-white/10"
@@ -234,13 +238,18 @@ function HealthList({ title, items, tone }: { title: string; items: string[]; to
   );
 }
 
-function NextActionCard({ action }: { action: WorkspaceAction }) {
+function NextActionCard({ action, summary }: { action: WorkspaceAction; summary: DashboardSummary }) {
+  const context = buildNextActionContext(summary, action);
   return (
     <section className="flex min-w-0 flex-col rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-5 sm:p-6">
       <p className="text-sm font-medium text-cyan-100">Việc tiếp theo</p>
       <h2 className="mt-2 break-words text-xl font-semibold text-cyan-50">{action.title}</h2>
-      <p className="mt-3 flex-1 break-words text-sm leading-6 text-cyan-100/80">{action.description}</p>
-      <Link href={action.href} className="mt-6 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+      <p className="mt-3 break-words text-sm leading-6 text-cyan-100/80">{action.description}</p>
+      <div className="mt-5 rounded-md border border-cyan-100/15 bg-slate-950/20 p-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-100/60">Dữ liệu hiện tại</p>
+        <p className="mt-1 break-words text-sm text-cyan-50">{context}</p>
+      </div>
+      <Link href={action.href} className="mt-5 inline-flex justify-center rounded-md bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
         {action.cta}
       </Link>
     </section>
@@ -270,7 +279,10 @@ function RecentActivitySection({ activities }: { activities: RecentActivity[] })
             <li key={`${activity.title}-${activity.createdAt}`} className="rounded-md border border-white/10 bg-slate-950/50 p-3">
               <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold text-slate-100">✓ {activity.title}</p>
+                  <div className="flex items-start gap-3">
+                    <span aria-hidden="true" className="flex h-7 min-w-7 items-center justify-center rounded-md border border-cyan-300/20 bg-cyan-300/10 px-1 text-[10px] font-bold text-cyan-200">{activity.marker}</span>
+                    <p className="break-words pt-1 text-sm font-semibold text-slate-100">{activity.title}</p>
+                  </div>
                   <p className="mt-1 break-words text-xs text-slate-400">{activity.detail}</p>
                 </div>
                 <time className="shrink-0 text-xs text-slate-500">{formatDate(activity.createdAt)}</time>
@@ -292,7 +304,7 @@ function QuickActions() {
         {QUICK_ACTIONS.map((action) => (
           <Link key={action.href} href={action.href} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-slate-950/40 px-4 py-3 text-sm font-semibold transition hover:border-cyan-300/30 hover:bg-cyan-300/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
             <span className="break-words">{action.label}</span>
-            <span aria-hidden="true" className="text-cyan-300">+</span>
+            <span aria-hidden="true" className="flex h-7 min-w-7 items-center justify-center rounded-md border border-cyan-300/20 bg-cyan-300/10 px-1 text-[10px] font-bold text-cyan-200">{action.marker}</span>
           </Link>
         ))}
       </div>
@@ -330,11 +342,27 @@ function buildNextAction(summary: DashboardSummary): WorkspaceAction {
   return { title: "Cập nhật CV và kiểm tra lại Matching", description: "Dùng kết quả Roadmap và Mock Interview để cải thiện CV trước lần phân tích tiếp theo.", href: "/documents", cta: "Quản lý CV/JD" };
 }
 
+function buildNextActionContext(summary: DashboardSummary, action: WorkspaceAction) {
+  if (action.href === "/roadmap" && summary.latest_roadmap) {
+    return `Roadmap gần nhất đã hoàn thành ${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước.`;
+  }
+  if (action.href === "/analysis" && summary.latest_analysis) {
+    return `Kết quả gần nhất đạt ${summary.latest_analysis.match_score}% phù hợp.`;
+  }
+  if (action.href === "/documents") {
+    return `${summary.resume_count} CV và ${summary.job_description_count} JD đang được lưu.`;
+  }
+  if (action.href === "/interview" && summary.latest_interview) {
+    return `Phiên gần nhất cho vai trò ${summary.latest_interview.target_role}: ${formatInterviewStatus(summary.latest_interview.status)}.`;
+  }
+  return `${summary.resume_count} CV · ${summary.job_description_count} JD · ${summary.latest_analysis ? "Đã có Matching" : "Chưa có Matching"}`;
+}
+
 function buildRecentActivities(summary: DashboardSummary): RecentActivity[] {
   const activities: RecentActivity[] = [];
-  if (summary.latest_analysis) activities.push({ title: "Đã chạy Resume ↔ JD Matching", detail: `Điểm phù hợp ${summary.latest_analysis.match_score}%`, createdAt: summary.latest_analysis.created_at, href: "/analysis" });
-  if (summary.latest_roadmap) activities.push({ title: "Đã tạo Roadmap", detail: `${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước đã hoàn thành`, createdAt: summary.latest_roadmap.created_at, href: "/roadmap" });
-  if (summary.latest_interview) activities.push({ title: summary.latest_interview.status === "finished" ? "Đã hoàn thành Mock Interview" : "Đã bắt đầu Mock Interview", detail: `${summary.latest_interview.target_role} · ${formatInterviewScore(summary.latest_interview.score)}`, createdAt: summary.latest_interview.created_at, href: "/interview" });
+  if (summary.latest_analysis) activities.push({ title: "Đã chạy Resume ↔ JD Matching", detail: `Điểm phù hợp ${summary.latest_analysis.match_score}%`, createdAt: summary.latest_analysis.created_at, href: "/analysis", marker: "M" });
+  if (summary.latest_roadmap) activities.push({ title: "Đã tạo Roadmap", detail: `${summary.latest_roadmap.completed_items}/${summary.latest_roadmap.total_items} bước đã hoàn thành`, createdAt: summary.latest_roadmap.created_at, href: "/roadmap", marker: "R" });
+  if (summary.latest_interview) activities.push({ title: summary.latest_interview.status === "finished" ? "Đã hoàn thành Mock Interview" : "Đã bắt đầu Mock Interview", detail: `${summary.latest_interview.target_role} · ${formatInterviewScore(summary.latest_interview.score)}`, createdAt: summary.latest_interview.created_at, href: "/interview", marker: "MI" });
   return activities.sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()).slice(0, 4);
 }
 

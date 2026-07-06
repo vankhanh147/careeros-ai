@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-white">
+    <main className="flex min-h-screen items-start justify-center bg-slate-950 px-6 pb-12 pt-16 text-white sm:pt-20 lg:pt-24">
       <section className="w-full max-w-md">
         <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
         <h1 className="text-3xl font-semibold tracking-tight">Đăng nhập</h1>
@@ -55,7 +55,7 @@ export default function LoginPage() {
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-200">Mật khẩu</label>
             <input id="password" type="password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" placeholder="Ít nhất 8 ký tự" />
-            <p className="mt-2 text-xs text-slate-500">Mật khẩu tối thiểu 8 ký tự.</p>
+            <p className="mt-2 text-xs text-slate-500">Nhập mật khẩu của tài khoản CareerOS AI.</p>
           </div>
 
           {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}

@@ -38,7 +38,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-white">
+    <main className="flex min-h-screen items-start justify-center bg-slate-950 px-6 pb-12 pt-16 text-white sm:pt-20 lg:pt-24">
       <section className="w-full max-w-md">
         <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
         <h1 className="text-3xl font-semibold tracking-tight">Tạo tài khoản</h1>
@@ -69,6 +69,9 @@ export default function RegisterPage() {
           <button type="submit" disabled={!canSubmit} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
             {isSubmitting ? "Đang tạo tài khoản..." : "Đăng ký"}
           </button>
+          <p className="text-center text-xs leading-5 text-slate-500">
+            Miễn phí cho bản beta. Dữ liệu dùng để cá nhân hóa hành trình nghề nghiệp của bạn.
+          </p>
         </form>
 
         <p className="mt-6 text-sm text-slate-300">
