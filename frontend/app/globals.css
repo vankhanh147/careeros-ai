@@ -10,3 +10,26 @@ body {
   margin: 0;
   background: #020617;
 }
+
+@layer base {
+  html {
+    text-rendering: optimizeLegibility;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid rgb(103 232 249 / 0.8);
+    outline-offset: 2px;
+  }
+}

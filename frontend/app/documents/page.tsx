@@ -19,6 +19,7 @@ import {
 } from "@/lib/api/documents";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -349,11 +350,7 @@ export default function DocumentsPage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center overflow-x-hidden bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">Đang tải tài liệu...</p>
-      </main>
-    );
+    return <PageLoading title="Đang tải tài liệu..." description="CareerOS AI đang đồng bộ CV và Job Description." />;
   }
 
   return (
@@ -390,7 +387,7 @@ export default function DocumentsPage() {
               className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
             />
             <p className="text-xs leading-5 text-slate-500">Chỉ nhận PDF tối đa 5MB. File này sẽ được dùng để trích xuất text khi chạy analysis.</p>
-            <button type="submit" disabled={!canUploadResume} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+            <button type="submit" disabled={!canUploadResume} className={buttonStyles("primary")}>
               {isUploadingResume ? "Đang tải CV lên..." : "Tải CV lên"}
             </button>
           </form>
@@ -485,7 +482,7 @@ export default function DocumentsPage() {
                 className="block w-full min-w-0 max-w-full rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-cyan-300 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-950"
               />
               <p className="text-xs leading-5 text-slate-500">Tải JD lên khi bạn có tệp từ nhà tuyển dụng. Nếu không, hãy dán nội dung JD vào biểu mẫu bên dưới.</p>
-              <button type="submit" disabled={!canUploadJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+              <button type="submit" disabled={!canUploadJd} className={buttonStyles("primary")}>
                 {isUploadingJd ? "Đang đọc JD..." : "Tải JD lên"}
               </button>
             </form>
@@ -513,7 +510,7 @@ export default function DocumentsPage() {
                 Nội dung JD
                 <textarea required rows={8} value={jdContent} onChange={(event) => setJdContent(event.target.value)} placeholder="Dán mô tả công việc, yêu cầu kỹ năng và trách nhiệm..." className="mt-2 w-full min-w-0 resize-y rounded-md border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300" />
               </label>
-              <button type="submit" disabled={!canSaveJd} className="rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+              <button type="submit" disabled={!canSaveJd} className={buttonStyles("primary")}>
                 {isSavingJd ? "Đang lưu JD..." : editingJobDescriptionId ? "Lưu cập nhật" : "Lưu JD"}
               </button>
             </form>

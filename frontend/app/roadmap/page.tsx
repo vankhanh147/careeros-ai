@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { FeedbackBlock } from "@/components/FeedbackBlock";
+import { EmptyState, PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import { deleteRoadmap, generateRoadmap, getMyRoadmaps, updateLatestRoadmapItemCompletion, type LearningRoadmap } from "@/lib/api/roadmaps";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -209,11 +210,7 @@ export default function RoadmapPage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">{TEXT.loading}</p>
-      </main>
-    );
+    return <PageLoading title="Đang tải Roadmap..." description="CareerOS AI đang đồng bộ Roadmap và lịch sử học tập." />;
   }
 
   return (
@@ -286,7 +283,7 @@ export default function RoadmapPage() {
             <button
               type="submit"
               disabled={!canGenerateRoadmap}
-              className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+              className={buttonStyles("primary", "w-full")}
             >
               {isGenerating ? TEXT.generating : TEXT.createButton}
             </button>
@@ -335,12 +332,7 @@ export default function RoadmapPage() {
 }
 
 function EmptyRoadmap() {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-      <h2 className="text-xl font-semibold">{TEXT.emptyTitle}</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-300">{TEXT.emptyBody}</p>
-    </div>
-  );
+  return <EmptyState title="Chưa có Roadmap" description="Tạo Roadmap từ hồ sơ nghề nghiệp hoặc kết quả Resume ↔ JD Matching để bắt đầu." action={{ href: "/analysis", label: "Xem Matching" }} />;
 }
 
 function RoadmapCard({

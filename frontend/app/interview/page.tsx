@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { FeedbackBlock } from "@/components/FeedbackBlock";
+import { EmptyState, PageLoading, StatusBadge, buttonStyles } from "@/components/ui/ProductUI";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import {
   answerInterviewQuestion,
@@ -252,11 +253,7 @@ export default function InterviewPage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">{TEXT.loading}</p>
-      </main>
-    );
+    return <PageLoading title="Đang tải Mock Interview..." description="CareerOS AI đang đồng bộ phiên luyện tập và lịch sử phỏng vấn." />;
   }
 
   return (
@@ -324,7 +321,7 @@ export default function InterviewPage() {
             <button
               type="submit"
               disabled={!canStartInterview}
-              className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+              className={buttonStyles("primary", "w-full")}
             >
               {isStarting ? TEXT.creating : TEXT.startButton}
             </button>
@@ -382,12 +379,7 @@ export default function InterviewPage() {
 }
 
 function EmptyInterview() {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-      <h2 className="text-xl font-semibold">{TEXT.emptyTitle}</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-300">{TEXT.emptyBody}</p>
-    </div>
-  );
+  return <EmptyState title="Chưa có phiên Mock Interview" description="Bắt đầu một phiên để luyện câu hỏi theo vai trò mục tiêu và kỹ năng cần cải thiện." action={{ href: "#start-interview", label: "Bắt đầu phỏng vấn" }} />;
 }
 
 function InterviewSessionPanel({
@@ -480,7 +472,7 @@ function InterviewSessionPanel({
           <button
             type="submit"
             disabled={answerText.trim().length === 0 || isAnswering}
-            className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+            className={buttonStyles("primary", "w-full")}
           >
             {isAnswering ? TEXT.grading : TEXT.sendAnswer}
           </button>
@@ -876,7 +868,7 @@ function InterviewHistoryCard({
           <h3 className="break-words font-semibold text-slate-100">{formatTargetRole(session.target_role)}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(session.created_at).toLocaleString("vi-VN")}</p>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-400">
-            <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${session.status === "finished" ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"}`}>{formatInterviewStatus(session.status)}</span>
+            <StatusBadge tone={session.status === "finished" ? "success" : "info"}>{formatInterviewStatus(session.status)}</StatusBadge>
             <span>{answeredCount}/{session.answers.length} câu đã trả lời</span>
             <span>Điểm: {formatInterviewScore(session.score)}</span>
           </div>

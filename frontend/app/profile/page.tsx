@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 
 import { getMyCareerProfile, updateMyCareerProfile, type CareerProfilePayload } from "@/lib/api/careerProfile";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 
 const emptyProfile: CareerProfilePayload = {
   target_role: "",
@@ -117,11 +118,7 @@ export default function ProfilePage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">Đang tải hồ sơ nghề nghiệp...</p>
-      </main>
-    );
+    return <PageLoading title="Đang tải hồ sơ nghề nghiệp..." description="CareerOS AI đang đồng bộ thông tin hồ sơ của bạn." />;
   }
 
   return (
@@ -233,7 +230,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={isSaving || !hasAnyProfileData}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className={buttonStyles("primary", "w-full px-6 py-3 sm:w-auto")}
             >
               <SaveIcon />
               {isSaving ? "Đang lưu hồ sơ..." : "Lưu hồ sơ"}

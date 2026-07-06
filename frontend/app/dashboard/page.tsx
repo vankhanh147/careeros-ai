@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getDashboardSummary, type DashboardSummary } from "@/lib/api/dashboard";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { StatusBadge } from "@/components/ui/ProductUI";
 
 type WorkspaceAction = {
   title: string;
@@ -249,9 +250,7 @@ function NextActionCard({ action }: { action: WorkspaceAction }) {
 function WorkspaceCard({ title, status, description, href, cta, ready }: { title: string; status: string; description: string; href: string; cta: string; ready: boolean }) {
   return (
     <article className="flex min-w-0 flex-col rounded-lg border border-white/10 bg-white/5 p-5">
-      <span className={`w-fit max-w-full break-words rounded-full border px-2.5 py-1 text-xs font-semibold ${ready ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-400"}`}>
-        {status}
-      </span>
+      <StatusBadge tone={ready ? "success" : "neutral"}>{status}</StatusBadge>
       <h3 className="mt-4 text-lg font-semibold text-slate-100">{title}</h3>
       <p className="mt-2 line-clamp-3 min-h-18 flex-1 break-words text-sm leading-6 text-slate-300">{description}</p>
       <Link href={href} className="mt-5 inline-flex justify-center rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">

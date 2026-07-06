@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { deleteAnalysis, getAnalysisHistory, runResumeJobMatch, type MatchAnalysis } from "@/lib/api/analysis";
 import { getMyJobDescriptions, getMyResumes, type JobDescription, type Resume } from "@/lib/api/documents";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { EmptyState, PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 import { FeedbackBlock } from "@/components/FeedbackBlock";
 
 export default function AnalysisPage() {
@@ -138,11 +139,7 @@ export default function AnalysisPage() {
   }
 
   if (isLoading || isFetching) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <p className="text-sm text-slate-300">Đang tải dữ liệu phân tích...</p>
-      </main>
-    );
+    return <PageLoading title="Đang tải dữ liệu phân tích..." description="CareerOS AI đang đồng bộ CV, JD và lịch sử Matching." />;
   }
 
   return (
@@ -217,7 +214,7 @@ export default function AnalysisPage() {
               <button
                 type="submit"
                 disabled={!canRunAnalysis}
-                className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+                className={buttonStyles("primary", "w-full")}
               >
                 {isAnalyzing ? "Đang phân tích..." : "Phân tích mức độ phù hợp"}
               </button>
@@ -262,14 +259,7 @@ export default function AnalysisPage() {
 }
 
 function EmptyResult() {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-      <h2 className="text-xl font-semibold">Kết quả phân tích</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-300">
-        Chọn một CV và một JD để xem điểm phù hợp, kỹ năng đã khớp, khoảng trống kỹ năng và dữ liệu hệ thống đã đọc.
-      </p>
-    </div>
-  );
+  return <EmptyState title="Chưa có kết quả phân tích" description="Chọn một CV và một JD để xem điểm phù hợp, khoảng trống kỹ năng và gợi ý cải thiện." action={{ href: "/documents", label: "Quản lý CV/JD" }} />;
 }
 
 function AnalysisResultCard({
