@@ -279,7 +279,7 @@ export default function InterviewPage() {
       </header>
 
       <section className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+        <div id="start-interview" className="min-w-0 scroll-mt-6 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
           <h2 className="text-xl font-semibold">{TEXT.startTitle}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">{TEXT.intro}</p>
 
@@ -346,6 +346,7 @@ export default function InterviewPage() {
                 onFinish={() => void handleFinishInterview()}
               />
               {currentSession.status === "finished" ? <FeedbackBlock token={token} feedbackType="interview" /> : null}
+              <InterviewNextActions isFinished={currentSession.status === "finished"} />
             </>
           ) : (
             <EmptyInterview />
@@ -412,14 +413,14 @@ function InterviewSessionPanel({
 }) {
   const isFinished = session.status === "finished";
   const allAnswered = answeredCount === session.answers.length;
+  const insights = buildInterviewInsights(session);
 
   return (
-    <article className="min-w-0 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
+    <article id="current-interview" className="min-w-0 scroll-mt-6 rounded-lg border border-white/10 bg-white/5 p-5 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">{TEXT.rolePracticing}</p>
-          <h2 className="mt-2 break-words text-xl font-semibold">{session.target_role}</h2>
-          <p className="mt-1 text-sm text-slate-400">{answeredCount}/{session.answers.length} {TEXT.answered}</p>
+          <h2 className="mt-2 break-words text-xl font-semibold">{formatTargetRole(session.target_role)}</h2>
           <p className="mt-1 text-sm text-slate-400">{TEXT.status}: {formatInterviewStatus(session.status)}</p>
           <div className="mt-4 max-w-md">
             <div className="flex items-center justify-between gap-3 text-sm">
@@ -443,11 +444,15 @@ function InterviewSessionPanel({
         </div>
         <div className="shrink-0 rounded-md bg-cyan-300 px-4 py-3 text-center text-slate-950">
           <p className="text-xs font-semibold uppercase tracking-[0.16em]">{TEXT.score}</p>
-          <p className="mt-1 text-2xl font-bold">{session.score ?? "--"}</p>
+          <p className="mt-1 text-2xl font-bold">{session.score === null ? "Chưa có" : `${session.score}/100`}</p>
         </div>
       </div>
 
-      {session.summary ? <p className="mt-4 break-words rounded-md bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">{session.summary}</p> : null}
+      <InterviewSummaryCard session={session} answeredCount={answeredCount} readiness={insights.readiness} />
+      <StrengthsAndImprovements strengths={insights.strengths} improvements={insights.improvements} answeredCount={answeredCount} />
+      <InterviewSkillSummary items={insights.skillSummary} />
+
+      {session.summary ? <p className="mt-4 break-words rounded-md bg-emerald-300/10 p-3 text-sm leading-6 text-emerald-100">{formatInterviewFeedback(session.summary)}</p> : null}
 
       {!isFinished && currentQuestion ? (
         <form onSubmit={onAnswer} className="mt-6 space-y-4">
@@ -492,12 +497,87 @@ function InterviewSessionPanel({
         </button>
       ) : null}
 
-      <div className="mt-6 space-y-3">
-        {session.answers.map((answer, index) => (
-          <AnswerCard key={answer.id} answer={answer} index={index} />
-        ))}
-      </div>
+      <section className="mt-6">
+        <h3 className="text-base font-semibold text-slate-100">Phân tích từng câu</h3>
+        <div className="mt-3 space-y-3">
+          {session.answers.map((answer, index) => (
+            <AnswerCard key={answer.id} answer={answer} index={index} />
+          ))}
+        </div>
+      </section>
     </article>
+  );
+}
+
+function InterviewSummaryCard({ session, answeredCount, readiness }: { session: InterviewSession; answeredCount: number; readiness: string }) {
+  return (
+    <section className="mt-5 rounded-md border border-cyan-300/20 bg-cyan-300/5 p-4">
+      <h3 className="text-sm font-semibold text-cyan-100">Tổng kết phiên phỏng vấn</h3>
+      <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+        <SummaryItem label="Trạng thái phiên" value={formatInterviewStatus(session.status)} />
+        <SummaryItem label="Tiến độ" value={`${answeredCount}/${session.answers.length} câu đã trả lời`} />
+        <SummaryItem label="Điểm tổng" value={session.score === null ? "Chưa có điểm" : `${session.score}/100`} />
+        <SummaryItem label="Mức độ sẵn sàng" value={readiness} />
+      </dl>
+    </section>
+  );
+}
+
+function SummaryItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-white/10 bg-slate-950/60 p-3">
+      <dt className="text-xs uppercase tracking-[0.14em] text-slate-500">{label}</dt>
+      <dd className="mt-1 break-words text-sm font-semibold text-slate-100">{value}</dd>
+    </div>
+  );
+}
+
+function StrengthsAndImprovements({ strengths, improvements, answeredCount }: { strengths: string[]; improvements: string[]; answeredCount: number }) {
+  if (answeredCount === 0) {
+    return (
+      <section className="mt-4 rounded-md border border-white/10 bg-slate-950/40 p-4">
+        <h3 className="text-sm font-semibold text-slate-100">Điểm mạnh và điểm cần cải thiện</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-400">Hệ thống cần thêm câu trả lời để tổng hợp điểm mạnh và điểm cần cải thiện.</p>
+      </section>
+    );
+  }
+  return (
+    <section className="mt-4 grid gap-4 md:grid-cols-2">
+      <InsightList title="Điểm mạnh" items={strengths} emptyText="Chưa có đủ bằng chứng để xác định điểm mạnh rõ ràng." tone="positive" />
+      <InsightList title="Cần cải thiện" items={improvements} emptyText="Chưa phát hiện điểm cần cải thiện rõ ràng từ các câu đã trả lời." tone="warning" />
+    </section>
+  );
+}
+
+function InsightList({ title, items, emptyText, tone }: { title: string; items: string[]; emptyText: string; tone: "positive" | "warning" }) {
+  const toneClass = tone === "positive" ? "border-emerald-300/20 bg-emerald-300/5 text-emerald-100" : "border-amber-300/20 bg-amber-300/5 text-amber-100";
+  return (
+    <div className={`rounded-md border p-4 ${toneClass}`}>
+      <h3 className="text-sm font-semibold">{title}</h3>
+      {items.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {items.map((item) => <span key={`${title}-${item}`} className="max-w-full break-words rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs">{item}</span>)}
+        </div>
+      ) : <p className="mt-2 text-sm leading-6 opacity-80">{emptyText}</p>}
+    </div>
+  );
+}
+
+function InterviewSkillSummary({ items }: { items: Array<{ skill: string; status: string }> }) {
+  return (
+    <section className="mt-4 rounded-md border border-white/10 bg-slate-950/40 p-4">
+      <h3 className="text-sm font-semibold text-slate-100">Tổng hợp kỹ năng phỏng vấn</h3>
+      {items.length > 0 ? (
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {items.map((item) => (
+            <div key={item.skill} className="flex min-w-0 items-center justify-between gap-3 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm">
+              <span className="break-words font-medium text-slate-200">{item.skill}</span>
+              <span className="shrink-0 text-xs text-slate-400">{item.status}</span>
+            </div>
+          ))}
+        </div>
+      ) : <p className="mt-2 text-sm leading-6 text-slate-400">Chưa đủ dữ liệu để tổng hợp kỹ năng phỏng vấn.</p>}
+    </section>
   );
 }
 
@@ -555,32 +635,150 @@ function SkillChips({ title, items, muted = false, emptyText }: { title: string;
 }
 
 function AnswerCard({ answer, index }: { answer: InterviewAnswer; index: number }) {
+  const keywordSummary = getKeywordSummary(answer);
+  const status = answer.score !== null ? "Đã chấm" : answer.user_answer ? "Đã trả lời" : "Chưa trả lời";
   return (
-    <div className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
+    <article className="min-w-0 rounded-md border border-white/10 bg-slate-950/60 p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Câu {index + 1}</p>
-          <p className="mt-1 break-words text-sm font-semibold leading-6 text-slate-100">{answer.question}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Câu {index + 1}</p>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-slate-400">{status}</span>
+          </div>
+          <p className="mt-2 break-words text-sm font-semibold leading-6 text-slate-100">{answer.question}</p>
         </div>
         <p className="shrink-0 rounded-md border border-white/10 px-3 py-2 text-sm font-semibold text-cyan-100">
           {answer.score === null ? TEXT.notGraded : `${answer.score}/100`}
         </p>
       </div>
-      {answer.question_reason ? <p className="mt-3 break-words text-xs leading-5 text-slate-500">{TEXT.whyAsked}: {answer.question_reason}</p> : null}
-      {answer.user_answer ? <p className="mt-3 whitespace-pre-line break-words text-sm leading-6 text-slate-300">{answer.user_answer}</p> : null}
+
+      {answer.user_answer ? (
+        <>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <KeywordPanel title="Đã nhắc tới" items={keywordSummary.mentioned} tone="positive" />
+            <KeywordPanel title="Còn thiếu" items={keywordSummary.missing} tone="warning" />
+          </div>
+          <details className="group mt-3 rounded-md border border-white/10 bg-white/5">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-sm font-semibold text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+              Xem câu trả lời của bạn
+              <span className="text-xs text-slate-500 group-open:hidden">Mở</span>
+              <span className="hidden text-xs text-slate-500 group-open:inline">Thu gọn</span>
+            </summary>
+            <p className="whitespace-pre-line break-words border-t border-white/10 p-3 text-sm leading-6 text-slate-300">{answer.user_answer}</p>
+          </details>
+        </>
+      ) : <p className="mt-3 text-sm text-slate-500">Câu này chưa được trả lời.</p>}
+
       {answer.feedback_category ? (
         <p className="mt-3 rounded-md border border-amber-300/20 bg-amber-300/10 p-3 text-sm leading-6 text-amber-100">
-          <span className="font-semibold">{TEXT.feedbackCategory}:</span> {answer.feedback_category}
+          <span className="font-semibold">{TEXT.feedbackCategory}:</span> {formatInterviewFeedback(answer.feedback_category)}
         </p>
       ) : null}
-      {answer.feedback ? <p className="mt-3 break-words rounded-md bg-cyan-300/10 p-3 text-sm leading-6 text-cyan-100">{answer.feedback}</p> : null}
+      {answer.feedback ? <p className="mt-3 break-words rounded-md bg-cyan-300/10 p-3 text-sm leading-6 text-cyan-100">{formatInterviewFeedback(answer.feedback)}</p> : null}
       {answer.better_answer_hint ? (
         <p className="mt-3 break-words rounded-md border border-white/10 bg-white/5 p-3 text-sm leading-6 text-slate-300">
-          <span className="font-semibold text-slate-100">{TEXT.betterHint}:</span> {answer.better_answer_hint}
+          <span className="font-semibold text-slate-100">{TEXT.betterHint}:</span> {formatInterviewFeedback(answer.better_answer_hint)}
         </p>
       ) : null}
+    </article>
+  );
+}
+
+function KeywordPanel({ title, items, tone }: { title: string; items: string[]; tone: "positive" | "warning" }) {
+  const color = tone === "positive" ? "text-emerald-200" : "text-amber-200";
+  return (
+    <div className="min-w-0">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</p>
+      {items.length > 0 ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {items.slice(0, 5).map((item) => <span key={`${title}-${item}`} className={`max-w-full break-words rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs ${color}`}>{item}</span>)}
+        </div>
+      ) : <p className="mt-2 text-xs text-slate-500">Chưa có.</p>}
     </div>
   );
+}
+
+function InterviewNextActions({ isFinished }: { isFinished: boolean }) {
+  return (
+    <section className="rounded-lg border border-cyan-300/20 bg-cyan-300/5 p-5">
+      <h2 className="text-base font-semibold text-cyan-100">Bạn nên làm gì tiếp theo?</h2>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <a href={isFinished ? "#start-interview" : "#current-interview"} className="rounded-md bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
+          {isFinished ? "Luyện lại" : "Luyện tiếp"}
+        </a>
+        <Link href="/roadmap" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">Tạo Roadmap</Link>
+        <Link href="/analysis" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">Xem Resume ↔ JD Matching</Link>
+        <Link href="/documents" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">Quản lý CV/JD</Link>
+      </div>
+    </section>
+  );
+}
+
+function buildInterviewInsights(session: InterviewSession) {
+  const answered = session.answers.filter((answer) => Boolean(answer.user_answer));
+  const scored = answered.filter((answer) => answer.score !== null);
+  const averageScore = session.score ?? (scored.length > 0 ? scored.reduce((sum, answer) => sum + (answer.score ?? 0), 0) / scored.length : null);
+  const readiness = answered.length === 0 || averageScore === null
+    ? "Chưa đủ dữ liệu"
+    : averageScore < 50
+      ? "Cần luyện thêm"
+      : averageScore < 75
+        ? "Khá ổn"
+        : "Sẵn sàng hơn";
+
+  const strengths: string[] = [];
+  const improvements: string[] = [];
+  for (const answer of answered) {
+    const summary = getKeywordSummary(answer);
+    if ((answer.score ?? 0) >= 60) strengths.push(...summary.mentioned);
+    improvements.push(...summary.missing);
+  }
+
+  const skillNames = Array.from(new Set(session.answers.flatMap((answer) => answer.related_skills?.length ? answer.related_skills : answer.expected_keywords))).slice(0, 8);
+  const skillSummary = skillNames.map((skill) => {
+    const relevantAnswers = session.answers.filter((answer) =>
+      [...(answer.related_skills ?? []), ...answer.expected_keywords].some((item) => item.toLowerCase() === skill.toLowerCase())
+    );
+    const answeredRelevant = relevantAnswers.filter((answer) => Boolean(answer.user_answer));
+    if (answeredRelevant.length === 0) return { skill, status: "Chưa đủ dữ liệu" };
+    const mentioned = answeredRelevant.some((answer) => containsKeyword(answer.user_answer ?? "", skill));
+    const scores = answeredRelevant.filter((answer) => answer.score !== null).map((answer) => answer.score ?? 0);
+    const average = scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null;
+    return { skill, status: mentioned && average !== null && average >= 70 ? "Tốt" : "Cần luyện thêm" };
+  });
+
+  return {
+    readiness,
+    strengths: Array.from(new Set(strengths)).slice(0, 5),
+    improvements: Array.from(new Set(improvements)).slice(0, 5),
+    skillSummary
+  };
+}
+
+function getKeywordSummary(answer: InterviewAnswer) {
+  const keywords = Array.from(new Set(answer.expected_keywords));
+  if (!answer.user_answer) return { mentioned: [], missing: keywords };
+  return {
+    mentioned: keywords.filter((keyword) => containsKeyword(answer.user_answer ?? "", keyword)),
+    missing: keywords.filter((keyword) => !containsKeyword(answer.user_answer ?? "", keyword))
+  };
+}
+
+function containsKeyword(text: string, keyword: string) {
+  return text.toLocaleLowerCase("vi").includes(keyword.toLocaleLowerCase("vi"));
+}
+
+function formatInterviewFeedback(value?: string | null) {
+  if (!value) return "";
+  const exact: Record<string, string> = {
+    "Good answer": "Câu trả lời tốt",
+    "Missing keyword": "Thiếu từ khóa quan trọng",
+    "Needs more detail": "Cần giải thích cụ thể hơn"
+  };
+  return exact[value] ?? value
+    .replace(/\bGood answer\b/gi, "Câu trả lời tốt")
+    .replace(/\bMissing keywords?\b/gi, "Thiếu từ khóa quan trọng")
+    .replace(/\bNeeds more detail\b/gi, "Cần giải thích cụ thể hơn");
 }
 
 function InterviewHistoryCard({
@@ -602,7 +800,7 @@ function InterviewHistoryCard({
           <h3 className="break-words font-semibold text-slate-100">{formatTargetRole(session.target_role)}</h3>
           <p className="mt-1 text-xs text-slate-500">{new Date(session.created_at).toLocaleString("vi-VN")}</p>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-400">
-            <span>{formatInterviewStatus(session.status)}</span>
+            <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${session.status === "finished" ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"}`}>{formatInterviewStatus(session.status)}</span>
             <span>{answeredCount}/{session.answers.length} câu đã trả lời</span>
             <span>Điểm: {formatInterviewScore(session.score)}</span>
           </div>
