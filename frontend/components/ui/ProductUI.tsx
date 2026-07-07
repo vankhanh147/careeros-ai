@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 type BadgeTone = "success" | "info" | "warning" | "neutral";
+type AlertTone = "success" | "error" | "warning" | "info";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-cyan-300 text-slate-950 hover:bg-cyan-200",
@@ -16,6 +17,20 @@ const BADGE_TONES: Record<BadgeTone, string> = {
   info: "border-cyan-300/20 bg-cyan-300/10 text-cyan-100",
   warning: "border-amber-300/20 bg-amber-300/10 text-amber-100",
   neutral: "border-white/10 bg-white/5 text-slate-400"
+};
+
+const ALERT_TONES: Record<AlertTone, string> = {
+  success: "border-emerald-300/20 bg-emerald-300/10 text-emerald-100",
+  error: "border-red-300/20 bg-red-500/10 text-red-100",
+  warning: "border-amber-300/20 bg-amber-300/10 text-amber-100",
+  info: "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
+};
+
+const ALERT_LABELS: Record<AlertTone, string> = {
+  success: "Đã xong",
+  error: "Cần kiểm tra",
+  warning: "Lưu ý",
+  info: "Thông tin"
 };
 
 export function buttonStyles(variant: ButtonVariant = "secondary", className = "") {
@@ -33,6 +48,16 @@ export function StatusBadge({ children, tone = "neutral", className = "" }: { ch
     <span className={`inline-flex min-h-7 max-w-full items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${BADGE_TONES[tone]} ${className}`}>
       <span className="break-words">{children}</span>
     </span>
+  );
+}
+
+export function InlineAlert({ tone = "info", children, className = "" }: { tone?: AlertTone; children: ReactNode; className?: string }) {
+  const isError = tone === "error";
+  return (
+    <div role={isError ? "alert" : "status"} aria-live={isError ? "assertive" : "polite"} className={`rounded-md border p-3 text-sm leading-6 ${ALERT_TONES[tone]} ${className}`}>
+      <span className="font-semibold">{ALERT_LABELS[tone]}: </span>
+      <span className="break-words">{children}</span>
+    </div>
   );
 }
 

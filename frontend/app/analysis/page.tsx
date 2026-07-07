@@ -7,7 +7,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { deleteAnalysis, getAnalysisHistory, runResumeJobMatch, type MatchAnalysis } from "@/lib/api/analysis";
 import { getMyJobDescriptions, getMyResumes, type JobDescription, type Resume } from "@/lib/api/documents";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { EmptyState, PageLoading, buttonStyles } from "@/components/ui/ProductUI";
+import { EmptyState, InlineAlert, PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 import { FeedbackBlock } from "@/components/FeedbackBlock";
 
 export default function AnalysisPage() {
@@ -150,12 +150,12 @@ export default function AnalysisPage() {
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-1 text-xl font-semibold">Resume ↔ JD Matching</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:flex sm:flex-wrap">
             <Link href="/documents" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
               CV & JD
             </Link>
             <Link href="/dashboard" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-              Dashboard
+              Về Dashboard
             </Link>
           </div>
         </div>
@@ -223,8 +223,8 @@ export default function AnalysisPage() {
         </div>
 
         <div className="min-w-0 space-y-6">
-          {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
-          {statusMessage ? <p className="rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
+          {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+          {statusMessage ? <InlineAlert tone="success">{statusMessage}</InlineAlert> : null}
           {currentResult ? (
             <>
               <AnalysisResultCard analysis={currentResult} title="Kết quả vừa tạo" />
@@ -526,7 +526,7 @@ function SemanticInsightBlock({ insight }: { insight?: MatchAnalysis["semantic_i
 function HybridEvaluationBlock({ evaluation, semanticEnabled }: { evaluation?: MatchAnalysis["hybrid_evaluation"]; semanticEnabled: boolean }) {
   if (!evaluation) return null;
   return (
-    <AnalysisSection title="Hybrid evaluation" badge="Đánh giá nội bộ" defaultOpen={false}>
+    <AnalysisSection title="Đánh giá Hybrid" badge="Đánh giá nội bộ" defaultOpen={false}>
       <p className="text-sm leading-6 text-slate-300">Điểm thử nghiệm này chưa thay thế điểm phù hợp chính và không ảnh hưởng kết quả người dùng.</p>
       <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <TextItem label="Điểm production hiện tại" value={`${evaluation.rule_based_score}%`} />

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getDashboardSummary, type DashboardSummary } from "@/lib/api/dashboard";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { StatusBadge } from "@/components/ui/ProductUI";
+import { InlineAlert, StatusBadge, buttonStyles } from "@/components/ui/ProductUI";
 
 type WorkspaceAction = {
   title: string;
@@ -59,7 +59,7 @@ export default function DashboardPage() {
       setIsFetching(true);
       setSummary(await getDashboardSummary(token));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể tải Dashboard. Vui lòng kiểm tra kết nối backend.");
+      setError(err instanceof Error ? err.message : "Không thể tải dashboard. Vui lòng kiểm tra kết nối backend.");
     } finally {
       setIsFetching(false);
     }
@@ -118,13 +118,13 @@ export default function DashboardPage() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="min-w-0">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
-            <h1 className="mt-1 text-xl font-semibold">Career Workspace</h1>
+            <h1 className="mt-1 text-xl font-semibold">Dashboard nghề nghiệp</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => void loadDashboard()} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+          <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:flex sm:flex-wrap">
+            <button type="button" onClick={() => void loadDashboard()} className={buttonStyles("secondary", "w-full sm:w-auto")}>
               Làm mới
             </button>
-            <button type="button" onClick={handleLogout} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
+            <button type="button" onClick={handleLogout} className={buttonStyles("secondary", "w-full sm:w-auto")}>
               Đăng xuất
             </button>
           </div>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {error ? <p className="mt-5 rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
+        {error ? <InlineAlert tone="error" className="mt-5">{error}</InlineAlert> : null}
 
         <div className="mt-7 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
           <CareerHealthCard health={health} nextAction={nextAction} />
@@ -150,7 +150,7 @@ export default function DashboardPage() {
         <section className="mt-8">
           <div>
             <p className="text-sm font-medium text-cyan-200">Trạng thái hiện tại</p>
-            <h2 className="mt-1 text-xl font-semibold">Career Workspace</h2>
+            <h2 className="mt-1 text-xl font-semibold">Tổng quan hành trình</h2>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <WorkspaceCard title="Hồ sơ nghề nghiệp" status={summary.has_career_profile ? "Đã sẵn sàng" : "Chưa hoàn thiện"} description={summary.has_career_profile ? "Đã có dữ liệu nền cho các gợi ý cá nhân hóa." : "Cần bổ sung vai trò, kỹ năng và mục tiêu nghề nghiệp."} href="/profile" cta="Cập nhật hồ sơ" ready={summary.has_career_profile} />

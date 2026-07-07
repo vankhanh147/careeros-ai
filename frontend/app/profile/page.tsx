@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 
 import { getMyCareerProfile, updateMyCareerProfile, type CareerProfilePayload } from "@/lib/api/careerProfile";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { PageLoading, buttonStyles } from "@/components/ui/ProductUI";
+import { InlineAlert, PageLoading, buttonStyles } from "@/components/ui/ProductUI";
 
 const emptyProfile: CareerProfilePayload = {
   target_role: "",
@@ -222,8 +222,8 @@ export default function ProfilePage() {
           />
 
           <div aria-live="polite" className="space-y-3">
-            {error ? <p className="rounded-md border border-red-300/15 bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
-            {statusMessage ? <p className="rounded-md border border-emerald-300/15 bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
+            {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+            {statusMessage ? <InlineAlert tone="success">{statusMessage}</InlineAlert> : null}
           </div>
 
           <div className="flex border-t border-white/10 pt-6 sm:justify-end">

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { FeedbackBlock } from "@/components/FeedbackBlock";
-import { EmptyState, PageLoading, StatusBadge, buttonStyles } from "@/components/ui/ProductUI";
+import { EmptyState, InlineAlert, PageLoading, StatusBadge, buttonStyles } from "@/components/ui/ProductUI";
 import { getAnalysisHistory, type MatchAnalysis } from "@/lib/api/analysis";
 import {
   answerInterviewQuestion,
@@ -264,12 +264,12 @@ export default function InterviewPage() {
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-cyan-300">CareerOS AI</p>
             <h1 className="mt-1 text-xl font-semibold">{TEXT.title}</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:flex sm:flex-wrap">
             <Link href="/analysis" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
               {TEXT.matching}
             </Link>
             <Link href="/dashboard" className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10">
-              Dashboard
+              Về Dashboard
             </Link>
           </div>
         </div>
@@ -280,8 +280,8 @@ export default function InterviewPage() {
           <h2 className="text-xl font-semibold">{TEXT.startTitle}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-300">{TEXT.intro}</p>
 
-          {error ? <p className="mt-5 rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
-          {statusMessage ? <p className="mt-5 rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-200">{statusMessage}</p> : null}
+          {error ? <InlineAlert tone="error" className="mt-5">{error}</InlineAlert> : null}
+          {statusMessage ? <InlineAlert tone="success" className="mt-5">{statusMessage}</InlineAlert> : null}
 
           <form onSubmit={handleStartInterview} className="mt-6 space-y-4">
             <label className="block text-sm font-medium text-slate-200">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
 import { useAuth } from "@/lib/auth/AuthContext";
+import { InlineAlert, buttonStyles } from "@/components/ui/ProductUI";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -58,9 +59,9 @@ export default function LoginPage() {
             <p className="mt-2 text-xs text-slate-500">Nhập mật khẩu của tài khoản CareerOS AI.</p>
           </div>
 
-          {error ? <p className="rounded-md bg-red-500/10 p-3 text-sm text-red-200">{error}</p> : null}
+          {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-          <button type="submit" disabled={!canSubmit} className="w-full rounded-md bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70">
+          <button type="submit" disabled={!canSubmit} className={buttonStyles("primary", "w-full")}>
             {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
